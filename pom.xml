@@ -18,7 +18,7 @@
 
     <dependencies>
 		<dependency>
-		    <groupId>com.kttdevelopment</groupId>
+		    <groupId>com.github.ktt-development</groupId>
 		    <artifactId>ktt.lib.httpserver</artifactId>
 		    <version>v02.00.01</version>
 		</dependency>
