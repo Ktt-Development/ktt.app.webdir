@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group 'com.kttdevelopment'
+version 'DEVELOPMENT'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'com.kttdevelopment:ktt.lib.httpserver:v02.00.01-gradle-SNAPSHOT'
+}

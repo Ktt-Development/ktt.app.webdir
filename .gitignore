@@ -1,0 +1,10 @@
+# IntelliJ ignore
+.idea
+out
+*.iml
+# Project ignore
+.docs
+src/LICENSE.txt
+src/_ignore
+# Gradle
+.gradle
