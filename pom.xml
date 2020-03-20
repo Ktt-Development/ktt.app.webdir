@@ -22,6 +22,11 @@
 		    <artifactId>ktt.lib.httpserver</artifactId>
 		    <version>v02.00.01</version>
 		</dependency>
+		<dependency>
+    		<groupId>com.esotericsoftware.yamlbeans</groupId>
+			<artifactId>yamlbeans</artifactId>
+			<version>1.13</version>
+	  	</dependency>
     </dependencies>
 
 </project>
