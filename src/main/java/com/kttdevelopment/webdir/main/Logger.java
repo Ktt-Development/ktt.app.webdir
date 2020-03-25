@@ -20,6 +20,8 @@ public abstract class Logger {
 
             // todo: add file handler
             logger.logger.setUseParentHandlers(false);
+
+            logger.logger.info("Logger started");
         }
 
     }

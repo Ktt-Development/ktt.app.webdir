@@ -1,6 +1,9 @@
 package com.kttdevelopment.webdir.main;
 
+import java.util.*;
+import java.util.Locale;
 import java.util.logging.*;
+import java.util.logging.Formatter;
 import java.util.logging.Logger;
 
 abstract class _vars {
@@ -18,6 +21,10 @@ abstract class _vars {
     }
 
     abstract static class locale {
+
+        public static final String resource = "/lang";
+        public static final Map<String, ResourceBundle> bundle = new HashMap<>();
+        public static Locale loadedLocale;
 
     }
 
