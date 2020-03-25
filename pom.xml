@@ -31,20 +31,20 @@
 
     <dependencies>
 		<dependency>
-		    <groupId>com.kttdevelopment</groupId>
-		    <artifactId>simplehttpserver</artifactId>
-		    <version>03.00.00</version>
+			<groupId>com.kttdevelopment</groupId>
+			<artifactId>simplehttpserver</artifactId>
+			<version>03.00.00</version>
 		</dependency>
 		<dependency>
-    		<groupId>com.esotericsoftware.yamlbeans</groupId>
+			<groupId>com.esotericsoftware.yamlbeans</groupId>
 			<artifactId>yamlbeans</artifactId>
 			<version>1.13</version>
-	  	</dependency>
-		<dependency>
-		  <groupId>nl.big-o</groupId>
-		  <artifactId>liqp</artifactId>
-		  <version>0.7.9</version>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>nl.big-o</groupId>
+			<artifactId>liqp</artifactId>
+			<version>0.7.9</version>
+		</dependency>
+	</dependencies>
 
 </project>
