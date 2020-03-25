@@ -27,6 +27,11 @@
 			<artifactId>yamlbeans</artifactId>
 			<version>1.13</version>
 	  	</dependency>
+		<dependency>
+		  <groupId>nl.big-o</groupId>
+		  <artifactId>liqp</artifactId>
+		  <version>0.7.9</version>
+		</dependency>
     </dependencies>
 
 </project>
