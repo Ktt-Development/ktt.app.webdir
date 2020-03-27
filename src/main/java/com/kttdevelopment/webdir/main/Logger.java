@@ -18,7 +18,7 @@ public abstract class Logger {
                 }}
             );
 
-            // todo: add file handler
+            // todo: add file handler (also keep copy for latest)
             logger.logger.setUseParentHandlers(false);
 
             logger.logger.info("Logger started");

@@ -1,8 +1,11 @@
 package com.kttdevelopment.webdir.main;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
+
+import static com.kttdevelopment.webdir.main._vars.*;
 
 public abstract class Locale {
 
@@ -14,13 +17,24 @@ public abstract class Locale {
             final File[] langs  = lang.listFiles(file -> !file.isDirectory() && file.getName().endsWith(".properties"));
 
             for(final File iterator : langs){
-
-                _vars.locale.bundle.put(iterator.getName().substring(7),ResourceBundle.getBundle("lang/bundle"),)
+                try{
+                    final Properties properties = new Properties();
+                    properties.load(new FileReader(iterator));
+                    final java.util.Locale lcl = new java.util.Locale(
+                        properties.get("bundle.language.code").toString(),
+                        properties.get("bundle.language.region").toString());
+                    locale.bundle.put(
+                        lcl,
+                        ResourceBundle.getBundle(
+                            "lang/bundle",
+                            new java.util.Locale(
+                                properties.get("bundle.language.code").toString(),
+                                properties.get("bundle.language.region").toString()
+                            )
+                        )
+                    );
+                }catch(final IOException ignored){ }
             }
-
-            final ResourceBundle bundle = ResourceBundle.getBundle("lang/bundle",new java.util.Locale("EN","US"));
-            System.out.println(bundle.getString("bundle.language.region"));
-
         }
 
     }

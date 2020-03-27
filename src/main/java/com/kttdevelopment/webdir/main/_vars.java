@@ -8,7 +8,15 @@ import java.util.logging.Logger;
 
 abstract class _vars {
 
+    public static final String root = "../";
+
     abstract static class config {
+
+        public static final String resource = "/config";
+
+        public static final String config = "config.yml";
+
+        public static Map loadedConfig;
 
     }
 
@@ -23,7 +31,7 @@ abstract class _vars {
     abstract static class locale {
 
         public static final String resource = "/lang";
-        public static final Map<String, ResourceBundle> bundle = new HashMap<>();
+        public static final Map<Locale, ResourceBundle> bundle = new HashMap<>();
         public static Locale loadedLocale;
 
     }
