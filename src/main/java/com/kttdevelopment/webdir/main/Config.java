@@ -1,41 +1,70 @@
 package com.kttdevelopment.webdir.main;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import com.esotericsoftware.yamlbeans.YamlReader;
+import com.esotericsoftware.yamlbeans.*;
 
 import java.io.*;
-import java.net.URL;
 import java.util.Map;
 
-import static com.kttdevelopment.webdir.main._vars.*;
-
+@SuppressWarnings("rawtypes")
 public abstract class Config {
+
+    private static String resourceFolder = "/config";
+
+    private static File configFile = new File(com.kttdevelopment.webdir.main.Main.root + "config.yml");
+    private static Map config;
+
+    private static File defaultConfigFile = new File(Config.class.getClassLoader().getResource(resourceFolder + "/" + "config.yml").getPath());
+    private static Map defaultConfig;
 
     abstract static class Main {
 
         synchronized static void init(){
-            YamlReader IN = null;
             try{
-                IN = new YamlReader(new FileReader(root + "/" + config.config));
-            }catch(final FileNotFoundException ignored){
-                logger.logger.severe(locale.bundle.get(locale.loadedLocale).getString("logging.configFileMissingUseDef"));
-                loadDefaultConfig();
+                final YamlReader IN = new YamlReader(new FileReader(defaultConfigFile));
+                defaultConfig = (Map) IN.read();
+            }catch(final FileNotFoundException | YamlException e){ // should never occur in production
+                Logger.logger.severe(
+                    "Failed to load default configuration file" +
+                    (e instanceof YamlException ? "(Invalid syntax)" : "") + ".\n" +
+                    (e instanceof YamlException ? Logger.getStackTraceAsString(e) : "")
+                );
+                throw new RuntimeException(e);
             }
-            try{
-                config.loadedConfig = (Map) IN.read();
-            }catch(final YamlException ignored){
-                logger.logger.severe(locale.bundle.get(locale.loadedLocale).getString("logging.configSyntaxIncorrect"));
-                loadDefaultConfig();
-            }
+            read();
         }
+    }
 
-        private static void loadDefaultConfig(){
-            try{
-                final YamlReader IN = new YamlReader(new FileReader(Main.class.getClassLoader().getResource(config.resource + "/" + config.config).getPath()));
-                config.loadedConfig = (Map) IN.read();
-            }catch(final FileNotFoundException | YamlException ignored){ /* Should never occur */ }
+    public synchronized static boolean read(){
+        try{
+            final YamlReader IN = new YamlReader(new FileReader(configFile));
+            config = (Map) IN.read();
+            return true;
+        }catch(final FileNotFoundException e){
+            Logger.logger.warning("Configuration file not found, creating new configuration file.");
+            config = defaultConfig;
+            if(!write())
+                Logger.logger.severe("Failed to create configuration file, using default configuration file");
+        }catch(final YamlException e){
+            Logger.logger.warning("Configuration file syntax is incorrect, using default configuration file." + "\n" + Logger.getStackTraceAsString(e));
+            config = defaultConfig;
         }
+        return false;
+    }
 
+    public synchronized static boolean write(){
+        try{
+            final YamlWriter OUT = new YamlWriter(new FileWriter(configFile));
+            OUT.write(config);
+            OUT.close();
+            return true;
+        }catch(final IOException e){
+            Logger.logger.severe(
+                "Failed to write to configuration file" +
+                (e instanceof YamlException ? " (Invalid syntax)" : "") + ".\n" +
+                Logger.getStackTraceAsString(e)
+            );
+            return false;
+        }
     }
 
 }
