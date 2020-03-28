@@ -18,13 +18,12 @@ public abstract class Logger {
     }
 
     abstract static class Main {
-
         // do not use locale here (locale not set yet)
         synchronized static void init(){
             logger.setLevel(level);
             logger.addHandler(
                 new ConsoleHandler(){{
-                    setLevel(level);
+                    setLevel(Level.ALL);
                     setFormatter(formatter);
                 }}
             );
@@ -52,7 +51,8 @@ public abstract class Logger {
 
             logger.setUseParentHandlers(false);
 
-            logger.info("Logger started");
+            logger.info("Logger started.");
+            logger.fine("Finished logger init.");
         }
 
     }
