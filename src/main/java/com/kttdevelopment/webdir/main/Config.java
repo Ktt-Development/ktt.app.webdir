@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","unchecked"})
 public abstract class Config {
 
     private static String resourceFolder = "/config";
@@ -24,12 +24,16 @@ public abstract class Config {
         return value;
     }
 
-    public static Object getOrDefault(final String key, Object def){
+    public static Object getOrDefault(final String key, final Object def){
         final Object value = config.get(key);
         if(Objects.isNull(value)){
             Logger.logger.warning(String.format(Locale.getString("config.keyNotFoundUseDefault"),key,def.toString()));
             return def;
         }else return value;
+    }
+
+    public static void set(final String key, final Object value){
+        config.put(key,value);
     }
 
     abstract static class Main {
