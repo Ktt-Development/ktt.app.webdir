@@ -1,7 +1,5 @@
 package com.kttdevelopment.webdir.main;
 
-import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 public abstract class Locale {

@@ -3,7 +3,8 @@
 out
 *.iml
 # Project ignore
-.log
+*.log
+config.yml
 src/LICENSE.txt
 src/_ignore
 # Gradle
