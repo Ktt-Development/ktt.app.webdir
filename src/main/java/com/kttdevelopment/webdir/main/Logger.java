@@ -37,7 +37,7 @@ public abstract class Logger {
                     }}
                 );
             }catch(final IOException e){
-                logger.severe("Failed to start logging for log file." + "\n" + getStackTraceAsString(e));
+                logger.severe("Failed to start logging for log file." + '\n' + getStackTraceAsString(e));
             }
             try{
                 logger.addHandler(
@@ -47,7 +47,7 @@ public abstract class Logger {
                     }}
                 );
             }catch(IOException e){
-                logger.severe("Failed to start logging for latest log file." + "\n" + getStackTraceAsString(e));
+                logger.severe("Failed to start logging for latest log file." + '\n' + getStackTraceAsString(e));
             }
 
             logger.setUseParentHandlers(false);

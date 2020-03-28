@@ -22,7 +22,7 @@ public abstract class Locale {
             Logger.logger.severe(getString("locale.localeNotFound"));
             return false;
         }else{
-            Logger.logger.severe(String.format(getString("locale.changedLocale"),loadedLocale.getLanguage() + "-" + loadedLocale.getCountry(),locale.getLanguage() + "-" + locale.getCountry()));
+            Logger.logger.severe(String.format(getString("locale.changedLocale"),loadedLocale.getLanguage() + '-' + loadedLocale.getCountry(),locale.getLanguage() + '-' + locale.getCountry()));
             loadedLocale = locale;
             loadedBundle = bundle;
             return true;
@@ -38,7 +38,7 @@ public abstract class Locale {
 
             for(final String[] code : langCode){
                 final java.util.Locale locale = new java.util.Locale(code[0],code[1]);
-                locales.put(locale, ResourceBundle.getBundle( resourceFolder.substring(1) + "/" + bundleName, locale,Main.class.getClassLoader(),ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES)));
+                locales.put(locale, ResourceBundle.getBundle( resourceFolder.substring(1) + '/' + bundleName, locale,Main.class.getClassLoader(),ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES)));
             }
 
             loadedLocale = new java.util.Locale("en","US");
