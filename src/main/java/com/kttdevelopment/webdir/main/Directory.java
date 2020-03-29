@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.main;
 
+import com.kttdevelopment.webdir.LinkedFile;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
@@ -12,6 +14,9 @@ public abstract class Directory {
     public static final File layouts = new File(com.kttdevelopment.webdir.main.Main.root + "_layouts");
     public static final File extensions = new File(com.kttdevelopment.webdir.main.Main.root + "_extensions");
     public static final File pages = new File(com.kttdevelopment.webdir.main.Main.root + "_pages");
+
+    public static final LinkedFile index = new LinkedFile(new File(com.kttdevelopment.webdir.main.Main.root + "index.html"));
+    public static final LinkedFile _404 = new LinkedFile(new File(com.kttdevelopment.webdir.main.Main.root + "404.html"));
 
     public static final File site = new File(com.kttdevelopment.webdir.main.Main.root + "site");
 
