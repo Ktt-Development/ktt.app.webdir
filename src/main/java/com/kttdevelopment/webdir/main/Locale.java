@@ -31,6 +31,17 @@ public abstract class Locale {
         }
     }
 
+    public static boolean setConfigLocale(){
+        String code = null;
+        try{
+            code = Objects.requireNonNull(Config.get("locale")).toString();
+            return setLocale(new java.util.Locale(code.substring(0, 2), code.substring(3)));
+        }catch(final IndexOutOfBoundsException ignored){
+            logger.severe(String.format(Locale.getString("config.invalidKeyValue"),code,"locale"));
+        }catch(final NullPointerException ignored){ }
+        return false;
+    }
+
     abstract static class Main {
 
         // do not use locale here (locale gets loaded here)

@@ -2,12 +2,19 @@
 .idea
 out
 *.iml
-# Project ignore
-*.log
-config.yml
-src/LICENSE.txt
-src/_ignore
+
 # Gradle
 .gradle
+
 # Maven
 target
+
+
+# WebDir
+*.log
+config.yml
+_includes
+_layouts
+_extensions
+_pages
+*.html

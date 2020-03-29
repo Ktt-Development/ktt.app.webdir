@@ -26,9 +26,11 @@ public abstract class Config {
         return value;
     }
 
-    public static Object getOrDefault(final String key, final Object def){
+    public static Object getOrDefault(final String key){
         final Object value = config.get(key);
         if(Objects.isNull(value)){
+            final Object def = defaultConfig.get(key);
+            config.put(key,def);
             logger.warning(String.format(Locale.getString("config.keyNotFoundUseDefault"),key,def.toString()));
             return def;
         }else return value;
