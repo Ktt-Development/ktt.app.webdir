@@ -32,7 +32,7 @@ public class Main {
                 logger.severe(Locale.getString("server.portTaken"));
                 throw e;
             }catch(final IOException e){
-                logger.severe(Locale.getString("server.failedCreate." + '\n' + Logger.getStackTraceAsString(e)));
+                logger.severe(Locale.getString("server.failedCreate") + '\n' + Logger.getStackTraceAsString(e));
                 throw e;
             }
 

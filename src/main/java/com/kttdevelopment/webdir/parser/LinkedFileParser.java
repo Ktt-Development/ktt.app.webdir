@@ -1,8 +1,8 @@
 package com.kttdevelopment.webdir.parser;
 
-import com.kttdevelopment.webdir.LinkedFile;
-
-import java.util.LinkedList;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class LinkedFileParser {
 
@@ -14,9 +14,16 @@ public class LinkedFileParser {
         parsers.add(parser);
     }
 
-    public final String parse(final LinkedFile file){
-        String str;
+    public final String parse(final FileConfigPair file){
+        AtomicReference<String> content = new AtomicReference<>(file.readFile());
+        final Map       config  = Objects.requireNonNullElse(file.readConfig(),new HashMap());
 
+        parsers.forEach(new Consumer<ContentParser>() {
+            @Override
+            public void accept(final ContentParser contentParser){
+                content.set(contentParser.parse(content.get(),config));
+            }
+        });
     }
 
 }
