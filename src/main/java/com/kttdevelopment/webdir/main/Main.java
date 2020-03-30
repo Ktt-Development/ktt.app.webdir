@@ -10,7 +10,7 @@ import static com.kttdevelopment.webdir.main.Logger.*;
 
 public class Main {
 
-    static final String root = "";
+    public static final String root = "";
 
     private static SimpleHttpServer server;
 
