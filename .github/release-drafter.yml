@@ -23,7 +23,5 @@ categories:
 no-changes-template: '*No changes*'
 change-template: '- $TITLE #$NUMBER (@$AUTHOR)'
 template: |
-  ## Changes
-  
   $CHANGES
   
