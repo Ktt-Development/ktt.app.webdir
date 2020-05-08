@@ -18,3 +18,4 @@ _layouts
 _extensions
 _pages
 *.html
+/dependencies/
