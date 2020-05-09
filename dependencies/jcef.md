@@ -1,1 +1,0 @@
-[lib](https://github.com/jcefbuild/java-cef-build/releases/tag/v1.0.10-81.2.24%2Bgc0b313d%2Bchromium-81.0.4044.113)

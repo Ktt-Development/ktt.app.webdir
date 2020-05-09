@@ -11,11 +11,4 @@ target
 
 
 # WebDir
-*.log
-config.yml
-_includes
-_layouts
-_extensions
-_pages
-*.html
-/dependencies/jcef
+

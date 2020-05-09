@@ -27,6 +27,11 @@
    		    <id>jitpack.io</id>
    		    <url>https://jitpack.io</url>
    		</repository>
+
+		<repository>
+		    <id>com.teamdev</id>
+		    <url>http://maven.teamdev.com/repository/products</url>
+		</repository>
    	</repositories>
 
     <dependencies>
@@ -55,20 +60,17 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.6</version>
 		</dependency>
+
 		<dependency>
-		    <groupId>com.bitbucket.jogness</groupId>
-		    <artifactId>java-cef</artifactId>
-		    <version>local</version>
-		    <scope>system</scope>
-		    <systemPath>${project.basedir}/dependencies/jcef.jar</systemPath>
+		    <groupId>com.teamdev.jxbrowser</groupId>
+		    <artifactId>jxbrowser-win64</artifactId>
+		    <version>6.22</version>
 		</dependency>
-		<!-- outdated
 		<dependency>
-		    <groupId>org.bitbucket.johness</groupId>
-		    <artifactId>java-cef</artifactId>
-		    <version>49.87.win64.2</version>
+		  <groupId>com.teamdev.jxbrowser</groupId>
+		  <artifactId>jxbrowser-javafx</artifactId>
+		  <version>7.6</version>
 		</dependency>
-		-->
 	</dependencies>
 
 </project>
