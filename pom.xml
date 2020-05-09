@@ -56,10 +56,19 @@
 		    <version>2.6</version>
 		</dependency>
 		<dependency>
+		    <groupId>com.bitbucket.jogness</groupId>
+		    <artifactId>java-cef</artifactId>
+		    <version>local</version>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/dependencies/jcef.jar</systemPath>
+		</dependency>
+		<!-- outdated
+		<dependency>
 		    <groupId>org.bitbucket.johness</groupId>
 		    <artifactId>java-cef</artifactId>
 		    <version>49.87.win64.2</version>
 		</dependency>
+		-->
 	</dependencies>
 
 </project>
