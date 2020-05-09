@@ -55,7 +55,11 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.6</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>org.bitbucket.johness</groupId>
+		    <artifactId>java-cef</artifactId>
+		    <version>49.87.win64.2</version>
+		</dependency>
 	</dependencies>
 
 </project>
