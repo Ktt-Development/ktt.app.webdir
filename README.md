@@ -8,5 +8,3 @@
 [![license](https://img.shields.io/github/license/ktt-development/webdir?color=ff5555&style=flat-square)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 Dynamic web based file explorer.
-
-jcef dependency: https://github.com/jcefbuild/java-cef-build **do not commit**
