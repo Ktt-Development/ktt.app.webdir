@@ -40,11 +40,13 @@
 			<artifactId>yamlbeans</artifactId>
 			<version>1.13</version>
 		</dependency>
+		<!-- liquid -->
 		<dependency>
 			<groupId>nl.big-o</groupId>
 			<artifactId>liqp</artifactId>
 			<version>0.7.9</version>
 		</dependency>
+		<!-- markdown -->
 		<dependency>
 		  <groupId>com.vladsch.flexmark</groupId>
 		  <artifactId>flexmark</artifactId>

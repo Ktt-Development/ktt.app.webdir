@@ -1,9 +1,15 @@
 package com.kttdevelopment.webdir;
 
-public class Server {
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 
-    public static void main(String[] args){
+import java.io.IOException;
 
+public abstract class Server {
+
+    private static SimpleHttpServer server;
+
+    public static void main() throws IOException{
+        server = SimpleHttpServer.create();
     }
 
 }
