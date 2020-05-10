@@ -8,7 +8,7 @@ public abstract class Main {
         Logger.main();
         Locale.main();
         Config.main();
-        Locale.main();
+        Directory.main();
         Server.main();
     }
 
