@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.server;
+package com.kttdevelopment.webdir;
 
 public class Server {
 
