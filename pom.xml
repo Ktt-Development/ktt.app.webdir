@@ -50,39 +50,6 @@
 		  <artifactId>flexmark</artifactId>
 		  <version>0.61.26</version>
 		</dependency>
-		<!-- jcef -->
-		<dependency>
-		    <groupId>org.bitbucket.johness</groupId>
-		    <artifactId>java-cef</artifactId>
-		    <scope>system</scope>
-		    <systemPath>${project.basedir}/jcef.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.jogamp.jogl</groupId>
-			<artifactId>jogl-all</artifactId>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jogl-all.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.jogamp.jogl</groupId>
-			<artifactId>jogl-all</artifactId>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jogl-all-natives-windows-amd64.jar</systemPath>
-			<classifier>natives-windows-amd64</classifier>
-		</dependency>
-		<dependency>
-			<groupId>org.jogamp.gluegen</groupId>
-			<artifactId>gluegen-rt</artifactId>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/gluegen-rt.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.jogamp.gluegen</groupId>
-			<artifactId>gluegen-rt</artifactId>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/gluegen-rt-natives-windows-amd64.jar</systemPath>
-			<classifier>natives-windows-amd64</classifier>
-		</dependency>
 	</dependencies>
 
 </project>
