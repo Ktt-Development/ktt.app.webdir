@@ -50,7 +50,7 @@
 		<dependency>
 		  <groupId>com.vladsch.flexmark</groupId>
 		  <artifactId>flexmark</artifactId>
-		  <version>0.61.26</version>
+		  <version>0.61.28</version>
 		</dependency>
 	</dependencies>
 
