@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.kttdevelopment</groupId>
-    <artifactId>webdir-api</artifactId>
+    <artifactId>webdir</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <url>https://github.com/Ktt-Development/webdir</url>
 
@@ -17,6 +17,11 @@
         <developerConnection>scm:git:git@github.com:Ktt-Development/webdir.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
+    <modules>
+        <module>webdir</module>
+        <module>webdir-api</module>
+    </modules>
 
     <build>
         <plugins>
