@@ -58,4 +58,12 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.kttdevelopment</groupId>
+            <artifactId>simplehttpserver</artifactId>
+            <version>03.04.00</version>
+        </dependency>
+    </dependencies>
+         
 </project>
