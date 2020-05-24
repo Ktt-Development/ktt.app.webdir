@@ -4,16 +4,13 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.logging.*;
 
-public abstract class Logger {
+public final class Logger {
 
     public static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
 
-    private static final Formatter formatter = new Formatter();
+    private final Formatter formatter = new Formatter();
 
-    private static boolean init;
-    public synchronized static void main(){
-        if(init) return; else init = true;
-
+    Logger(){
         logger.setLevel(Level.ALL);
         logger.setUseParentHandlers(false);
 

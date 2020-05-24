@@ -6,12 +6,26 @@ public abstract class Application {
 
     public static final String parent = new File("").getAbsolutePath();
 
+    //
+
+    public static final Logger logger = new Logger();
+
+    @SuppressWarnings("ConstantConditions")
+    public static final Config config = new Config(
+        new File(parent + '\\' + "config.yml"),
+        new File(Application.class.getClassLoader().getResource("config/config.yml").getFile())
+    );
+
+    public static final Locale locale = new Locale("lang/bundle");
+
+    public static final ApiLoader apiLoader = new ApiLoader(new File(parent + '\\' + "plugins"));
+
+    public static final Server server = new Server();
+
+    //
+
     public synchronized static void main(String[] args){
-        Logger.main();
-        Config.main();
-        Locale.main();
-        ApiLoader.main();
-        Server.main();
+
     }
 
 }

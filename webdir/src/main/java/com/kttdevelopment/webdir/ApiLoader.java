@@ -9,13 +9,9 @@ import java.util.*;
 
 import static com.kttdevelopment.webdir.Logger.*;
 
-public abstract class ApiLoader {
+public final class ApiLoader {
 
-    private static final File pluginsFolder = new File(Application.parent + '\\' + "plugins");
-
-    private static boolean init = false;
-    public synchronized static void main(){
-        if(init) return; else init = true;
+    ApiLoader(final File pluginsFolder){
 
         logger.info("[ApiLoader] Started api loader initialization"); // locale
 

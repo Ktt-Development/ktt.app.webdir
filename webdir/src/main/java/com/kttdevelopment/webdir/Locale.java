@@ -2,28 +2,28 @@ package com.kttdevelopment.webdir;
 
 import java.util.*;
 
-import static com.kttdevelopment.webdir.Logger.*;
+import static com.kttdevelopment.webdir.Logger.logger;
 
-public abstract class Locale {
+public final class Locale {
 
-    private static final String resource = "lang/bundle";
+    private java.util.Locale loadedLocale;
+    private ResourceBundle loadedBundle;
 
-    private static java.util.Locale loadedLocale;
-    private static ResourceBundle loadedBundle;
+    private final Map<java.util.Locale,ResourceBundle> locales = new HashMap<>();
 
-    private static final Map<java.util.Locale,ResourceBundle> locales = new HashMap<>();
-
-    public static java.util.Locale getLocale(){
+    public final java.util.Locale getLocale(){
         return loadedLocale;
     }
 
-    public static Map<java.util.Locale,ResourceBundle> getLocales(){
+    public final Map<java.util.Locale,ResourceBundle> getLocales(){
         return Collections.unmodifiableMap(locales);
     }
 
-    private static final String[] localeCodes = {"en"};
+    private final String[] localeCodes = {"en"};
 
-    public static String getString(final String key){
+    //
+
+    public final String getString(final String key){
         try{
             return loadedBundle.getString(key);
         }catch(final NullPointerException | MissingResourceException ignored){
@@ -35,7 +35,7 @@ public abstract class Locale {
         }
     }
 
-    public static String getString(final String key, final Object... param){
+    public final String getString(final String key, final Object... param){
         final String value = getString(key);
 
         try{
@@ -52,11 +52,11 @@ public abstract class Locale {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public synchronized static boolean setLocale(final String locale){
+    public synchronized final boolean setLocale(final String locale){
         return setLocale(new java.util.Locale(locale));
     }
 
-    public synchronized static boolean setLocale(final java.util.Locale locale){
+    public synchronized final boolean setLocale(final java.util.Locale locale){
         final ResourceBundle bundle = locales.get(locale);
         final java.util.Locale initLocale = getLocale();
 
@@ -86,10 +86,9 @@ public abstract class Locale {
         }
     }
 
-    private static boolean init = false;
-    public synchronized static void main(){
-        if(init) return; else init = true;
+    //
 
+    Locale(final String resource){
         logger.info("[Locale] Started locale initialization");
 
         for(final String code : localeCodes){
@@ -105,7 +104,7 @@ public abstract class Locale {
             );
             logger.finest("[Locale] +" + code);
 
-            setLocale(Config.get("locale").toString());
+            setLocale(Application.config.get("locale").toString());
 
             logger.info('[' + getString("locale") + ']' + ' ' + getString("locale.init.finished"));
         }
