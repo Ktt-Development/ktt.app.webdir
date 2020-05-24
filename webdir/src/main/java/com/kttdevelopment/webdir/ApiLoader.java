@@ -1,10 +1,11 @@
 package com.kttdevelopment.webdir;
 
+import com.kttdevelopment.webdir.api.WebDirPlugin;
+
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
 
 import static com.kttdevelopment.webdir.Logger.*;
 
@@ -26,6 +27,28 @@ public abstract class ApiLoader {
             }catch(final MalformedURLException e){
                 logger.severe("[ApiLoader] Failed to load " + plugin.getName() + " (malformed url)"); // locale
             }
+        }
+
+        try{
+            final URLClassLoader loader = new URLClassLoader(pluginUrls.toArray(new URL[0]));
+            final Enumeration<URL> resources = loader.findResources("plugin.yml");
+            final List<Class<WebDirPlugin>> classes = new ArrayList<>(pluginUrls.size());
+
+            while(resources.hasMoreElements()){
+                final URL resource = resources.nextElement();
+                // yaml read
+                Class<WebDirPlugin> main = null; // name of main class
+                try{
+                    main = (Class<WebDirPlugin>) loader.loadClass("");
+                    // main.getMethod("main").invoke();
+                }catch(ClassCastException | ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+                classes.add(main);
+            }
+
+        }catch(final IOException e){
+
         }
 
         

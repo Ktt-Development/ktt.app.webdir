@@ -40,6 +40,13 @@
     </repositories>
 
     <dependencies>
+        <!-- api -->
+        <dependency>
+            <groupId>com.kttdevelopment</groupId>
+            <artifactId>webdir-api</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>simplehttpserver</artifactId>
