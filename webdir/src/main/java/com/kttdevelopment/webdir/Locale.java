@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir;
 
 import java.util.*;
 
+import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
 
 public final class Locale {
@@ -60,8 +61,10 @@ public final class Locale {
         final ResourceBundle bundle = locales.get(locale);
         final java.util.Locale initLocale = getLocale();
 
+        final String prefix = '[' + getString("locale") + ']' + ' ';
+
         logger.info(
-            '[' + getString("locale") + ']' + ' ' +
+            prefix +
             getString(
                 "locale.setLocale.initial",
                 initLocale == null ? '␀' : initLocale.getDisplayName(),
@@ -75,7 +78,7 @@ public final class Locale {
             loadedLocale = locale;
             loadedBundle = bundle;
             logger.info(
-                '[' + getString("locale") + ']' + ' ' +
+                prefix +
                 getString(
                     "locale.setLocale.finished",
                     initLocale == null ? '␀' : initLocale.getDisplayName(),
@@ -89,7 +92,9 @@ public final class Locale {
     //
 
     Locale(final String resource){
-        logger.info("[Locale] Started locale initialization");
+        final String prefix = "[Locale]" + ' ';
+
+        logger.info(prefix + "Started locale initialization");
 
         for(final String code : localeCodes){
             final java.util.Locale locale = new java.util.Locale(code);
@@ -102,7 +107,7 @@ public final class Locale {
                     ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES)
                 )
             );
-            logger.finest("[Locale] +" + code);
+            logger.finest(prefix + '+' + code);
 
             setLocale(Application.config.get("locale").toString());
 

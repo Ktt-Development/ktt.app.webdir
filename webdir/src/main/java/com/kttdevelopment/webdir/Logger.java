@@ -11,6 +11,8 @@ public final class Logger {
     private final Formatter formatter = new Formatter();
 
     Logger(){
+        final String prefix = "[Logger]" + ' ';
+
         logger.setLevel(Level.ALL);
         logger.setUseParentHandlers(false);
 
@@ -29,7 +31,7 @@ public final class Logger {
                 }}
             );
         }catch(final IOException e){
-            logger.severe("Failed to start log log: " + '\n' + getStackTraceAsString(e));
+            logger.severe(prefix + "Failed to start log log: " + '\n' + getStackTraceAsString(e));
         }
 
         try{ // latest
@@ -40,7 +42,7 @@ public final class Logger {
                 }}
             );
         }catch(final IOException e){
-            logger.severe("Failed to start latest log: " + '\n' + getStackTraceAsString(e));
+            logger.severe(prefix + "Failed to start latest log: " + '\n' + getStackTraceAsString(e));
         }
 
         try{ // debug
@@ -51,10 +53,10 @@ public final class Logger {
                 }}
             );
         }catch(final IOException e){
-            logger.severe("Failed to start debug log: " + '\n' + getStackTraceAsString(e));
+            logger.severe(prefix + "Failed to start debug log: " + '\n' + getStackTraceAsString(e));
         }
 
-        logger.info("[Logger] Finished initialization");
+        logger.info(prefix + "Finished initialization");
     }
 
     private static final class Formatter extends java.util.logging.Formatter {
