@@ -24,16 +24,31 @@ public abstract class Locale {
     private static final String[] localeCodes = {"en"};
 
     public static String getString(final String key){
-        return loadedBundle.getString(key);
+        try{
+            return loadedBundle.getString(key);
+        }catch(final NullPointerException | MissingResourceException ignored){
+            if(getLocale() == null)
+                logger.warning("[Locale] Failed to get value for " + key + " (not found)");
+            else
+                logger.warning('[' + getString("locale") + ']' + ' ' + getString("locale.getString.notFound"));
+            return null;
+        }
     }
 
     public static String getString(final String key, final Object... param){
+        final String value = getString(key);
+
         try{
-            return String.format(getString(key),param);
+            return String.format(Objects.requireNonNull(value), param);
+        }catch(final NullPointerException ignored){
+            // logger handled in above
         }catch(final IllegalFormatException ignored){
-            logger.severe("[Locale] Failed to format " + key + " (not enough parameters)"); // locale this
-            return getString(key);
+            if(getLocale() == null)
+                logger.warning("[Locale] Failed to format " + key + " (not enough parameters)");
+            else
+                logger.warning('[' + getString("locale") + ']' + ' ' + getString("locale.getString.param"));
         }
+        return value;
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -43,16 +58,30 @@ public abstract class Locale {
 
     public synchronized static boolean setLocale(final java.util.Locale locale){
         final ResourceBundle bundle = locales.get(locale);
+        final java.util.Locale initLocale = getLocale();
 
-        // locale this
+        logger.info(
+            '[' + getString("locale") + ']' + ' ' +
+            getString(
+                "locale.setLocale.initial",
+                initLocale == null ? '␀' : initLocale.getDisplayName(),
+                locale.getDisplayName()
+            )
+        );
 
         if(bundle == null){
             return false;
         }else{
             loadedLocale = locale;
             loadedBundle = bundle;
-            //locale this
-
+            logger.info(
+                '[' + getString("locale") + ']' + ' ' +
+                getString(
+                    "locale.setLocale.finished",
+                    initLocale == null ? '␀' : initLocale.getDisplayName(),
+                    locale.getDisplayName()
+                )
+            );
             return true;
         }
     }
@@ -78,7 +107,7 @@ public abstract class Locale {
 
             setLocale(Config.get("locale").toString());
 
-            logger.info("[Locale] Finished locale initialization"); // locale this
+            logger.info('[' + getString("locale") + ']' + ' ' + getString("locale.init.finished"));
         }
     }
 
