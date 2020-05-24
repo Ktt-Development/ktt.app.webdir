@@ -22,7 +22,7 @@ public final class Permissions {
     Permissions(final File permissionsFile, final File defaultPermissionsFile){
         this.permissionsFile = permissionsFile;
 
-        final String prefix = '[' + locale.getString("prefix") + ']' + ' ';
+        final String prefix = '[' + locale.getString("permissions") + ']' + ' ';
         
         logger.info(prefix + locale.getString("permissions.init.start"));
 
