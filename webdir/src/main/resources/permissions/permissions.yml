@@ -1,0 +1,14 @@
+groups:
+  default:
+    options:
+      connection-limit: true
+  admin:
+    options:
+      connection-limit: false
+    permissions:
+      - *
+users:
+  "127.0.0.1":
+    group: admin
+    permissions:
+      - *

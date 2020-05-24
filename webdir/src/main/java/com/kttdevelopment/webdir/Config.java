@@ -4,7 +4,6 @@ import com.esotericsoftware.yamlbeans.*;
 
 import java.io.*;
 import java.util.Map;
-import java.util.logging.Level;
 
 import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
@@ -33,7 +32,7 @@ public final class Config {
     Config(final File configFile, final File defaultConfigFile){
         this.configFile = configFile;
 
-        logger.log(Level.INFO,"[Config] Started config initialization");
+        logger.info("[Config] Started config initialization");
 
         YamlReader IN = null;
         try{ // default
@@ -41,7 +40,7 @@ public final class Config {
             defaultConfig = (Map) IN.read();
         }catch(final ClassCastException | FileNotFoundException | YamlException e){
             logger.severe(
-                "[Config] Failed to load default configuration file" +
+                "[Config] Failed to load default config file" +
                 (e instanceof YamlException ? ' ' + "(invalid syntax)" + '\n' + Logger.getStackTraceAsString(e) : "")
             );
             throw new RuntimeException(e);
@@ -49,7 +48,7 @@ public final class Config {
             if(IN != null)
                 try{ IN.close();
                 }catch(final IOException e){
-                    logger.severe("[Config] Failed to close default config input stream" + '\n' + Logger.getStackTraceAsString(e));
+                    logger.warning("[Config] Failed to close default config input stream" + '\n' + Logger.getStackTraceAsString(e));
                 }
         }
 
@@ -64,7 +63,7 @@ public final class Config {
         final boolean hasLocale = locale.getLocale() != null;
         logger.info(
             hasLocale ?
-            '[' + locale.getString("config") + ']' + ' ' + locale.getString("config.read.initial") :
+            '[' + locale.getString("config") + ']' + ' ' + locale.getString("config.read.start") :
             "[Config] Loading config from file"
         );
 
@@ -126,7 +125,7 @@ public final class Config {
         final boolean hasLocale = locale.getLocale() != null;
         logger.info(
             hasLocale ?
-            '[' + locale.getString("config") + ']' + ' ' + locale.getString("config.write.initial") :
+            '[' + locale.getString("config") + ']' + ' ' + locale.getString("config.write.start") :
             "[Config] Writing config to file"
         );
 
