@@ -24,7 +24,7 @@ public abstract class Application {
         new File(Application.class.getClassLoader().getResource("permissions/permissions.yml").getFile())
     );
 
-    public static final ApiLoader apiLoader = new ApiLoader(new File(parent + '\\' + "plugins"));
+    public static final PluginService apiLoader = new PluginService(new File(parent + '\\' + "plugins"));
 
     public static final Server server = new Server();
 
