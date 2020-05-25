@@ -1,14 +1,20 @@
 groups:
   default:
+    inheritance:
+      - admin
     options:
-      connection-limit: true
+      default: true
+      connection-limit: 2
   admin:
     options:
-      connection-limit: false
+      connection-limit: -1
     permissions:
       - *
 users:
   "127.0.0.1":
-    group: admin
+    group:
+      - admin
+    options:
+      connections-limit: 0
     permissions:
-      - *
+      - test.*

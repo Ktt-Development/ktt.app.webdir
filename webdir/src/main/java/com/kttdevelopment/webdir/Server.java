@@ -36,6 +36,7 @@ public final class Server {
         // init
 
 
+
         // start
 
         logger.info(prefix + locale.getString("server.init.finished"));
