@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.simplehttpserver;
+package com.kttdevelopment.webdir.httpserver;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpCookie;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
@@ -49,7 +49,7 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
 
     @Override
     public final HttpContext getHttpContext(){
-        return exchange.getHttpContext();
+        return new HttpContextUnmodifiable(exchange.getHttpContext());
     }
 
     @Override
@@ -64,7 +64,7 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
 
     @Override
     public final Headers getRequestHeaders(){
-        return exchange.getRequestHeaders();
+        return (Headers) Collections.unmodifiableMap(exchange.getRequestHeaders());
     }
 
     @Override

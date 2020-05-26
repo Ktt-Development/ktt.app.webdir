@@ -1,12 +1,13 @@
-package com.kttdevelopment.webdir.simplehttpserver;
+package com.kttdevelopment.webdir.httpserver;
 
 import com.kttdevelopment.simplehttpserver.*;
 import com.sun.net.httpserver.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 
 public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
@@ -107,7 +108,7 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
     public final void removeContext(final HttpContext context){
 
     }
-    // potential security risk here
+
     @Override
     public final HttpHandler getContextHandler(final String context){
         return server.getContextHandler(context);
@@ -120,7 +121,11 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
     @Override
     public final Map<HttpContext, HttpHandler> getContexts(){
-        return null;
+        final Map<HttpContext,HttpHandler> map = new HashMap<>();
+
+        server.getContexts().forEach((context, handler) -> map.put(new HttpContextUnmodifiable(context), handler));
+
+        return Collections.unmodifiableMap(map);
     }
 
     @Override
