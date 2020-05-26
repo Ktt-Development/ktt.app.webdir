@@ -83,7 +83,7 @@ public final class PluginService {
         plugins.forEach(pl -> {
             final String name = pl.getSimpleName();
             try{
-                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(null); // args should be interface
+                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(null); // args should be interface // must init server first
 
                 plugin.onEnable();
 

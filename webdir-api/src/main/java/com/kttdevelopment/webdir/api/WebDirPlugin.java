@@ -57,11 +57,4 @@ public class WebDirPlugin {
 
     public void onDisable(){}
 
-    // static methods
-
-    private static final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    public static Logger getLogger(){
-        return logger;
-    }
-
 }
