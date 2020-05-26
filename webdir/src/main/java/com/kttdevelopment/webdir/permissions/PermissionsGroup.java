@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.permissions;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("rawtypes")
 public final class PermissionsGroup {
 
     private final String group;
@@ -11,7 +12,7 @@ public final class PermissionsGroup {
     private final Map options;
     private final List<String> permissions;
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public PermissionsGroup(final String group, final Map value){
         this.group = group;
 

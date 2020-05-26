@@ -3,13 +3,11 @@ package com.kttdevelopment.webdir.permissions;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.function.Consumer;
 
 public final class Permissions {
 
     private final List<PermissionsGroup> groups = new ArrayList<>();
     private final List<PermissionsUser>  users = new ArrayList<>();
-    private final List<String> defaultPermissions = new ArrayList<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Permissions(final Map obj){
@@ -28,8 +26,6 @@ public final class Permissions {
                 }catch(final ClassCastException | UnknownHostException ignored){ }
             });
         }catch(final ClassCastException | NullPointerException ignored){ }
-
-        // get def permissions and loop through inheritance
     }
 
     public final boolean hasPermission(final InetAddress address, final String permission){
@@ -41,17 +37,17 @@ public final class Permissions {
             }
         }
 
-        final List<PermissionsGroup> allowedGroups = new ArrayList<>();
-        final List<PermissionsGroup> defaultGroups = new ArrayList<>();
-
-        final PermissionsUser finalUser = user;
-        groups.forEach(group -> {
-            try{
-                if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()), false))
-                    defaultGroups.add(group);
-            }catch(final ClassCastException ignored){ }
-        });
-        // todo
+        for(final PermissionsGroup group : groups)
+            if(
+                (
+                    Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()), false) ||
+                    (
+                        user != null &&
+                        user.getGroups().contains(group.getGroup())
+                    )
+                ) && hasPermission(group,permission)
+            )
+                return true;
         return false;
     }
 
@@ -62,11 +58,12 @@ public final class Permissions {
                 return true;
 
         // check inherited permissions
-
         return hasPermission(List.of(group), group, permission);
     }
 
     private boolean hasPermission(final List<PermissionsGroup> read, final PermissionsGroup group, final String permission){
+        final List<PermissionsGroup> r2 = new ArrayList<>(read);
+
         // populate direct inheritance
         final List<PermissionsGroup> groups = new ArrayList<>();
         for(final PermissionsGroup g : this.groups){
@@ -77,18 +74,14 @@ public final class Permissions {
                 for(final String perm : g.getPermissions())
                     if(perm.equalsIgnoreCase(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
                         return true;
+                r2.add(g);
+
+                // check inherited
+                if(hasPermission(Collections.unmodifiableList(r2),g,permission))
+                    return true;
             }
         }
-
-        if(groups.size() == 0)
-            return false;
-        else
-            //for(final Permissions g : groups){
-
-           // }
-            return hasPermission(Collections.unmodifiableList(read),group,permission);
+        return false;
     }
-
-
 
 }

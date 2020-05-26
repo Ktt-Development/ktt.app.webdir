@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("rawtypes")
 public final class PermissionsUser {
 
     private final InetAddress user;
