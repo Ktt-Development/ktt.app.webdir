@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
+@SuppressWarnings("rawtypes")
 public final class Permissions {
 
     private final Map obj;
@@ -11,7 +12,7 @@ public final class Permissions {
     private final List<PermissionsGroup> groups = new ArrayList<>();
     private final List<PermissionsUser>  users = new ArrayList<>();
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public Permissions(final Map obj){
         this.obj = obj;
 
@@ -69,10 +70,8 @@ public final class Permissions {
         final List<PermissionsGroup> r2 = new ArrayList<>(read);
 
         // populate direct inheritance
-        final List<PermissionsGroup> groups = new ArrayList<>();
-        for(final PermissionsGroup g : this.groups){
+        for(final PermissionsGroup g : groups){
             if(!read.contains(g) && group.getInheritance().contains(g.getGroup())){
-                groups.add(g);
 
                 // check direct permissions
                 for(final String perm : g.getPermissions())

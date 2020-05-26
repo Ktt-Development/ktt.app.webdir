@@ -39,6 +39,18 @@ public class WebDirPlugin {
         pages.add(page);
     }
 
+    // instance +pluginService
+
+    private final PluginServiceProvider provider;
+
+    public WebDirPlugin(final PluginServiceProvider provider){
+        this.provider = provider;
+    }
+
+    protected final PluginServiceProvider getPluginService(){
+        return provider;
+    }
+
     // override methods
 
     public void onEnable(){}

@@ -70,7 +70,7 @@ public final class Logger {
         }
     }
 
-    public static String getStackTraceAsString(final Exception e){
+    public static String getStackTraceAsString(final Throwable e){
         final StringWriter err = new StringWriter();
         e.printStackTrace(new PrintWriter(err));
         return err.toString();

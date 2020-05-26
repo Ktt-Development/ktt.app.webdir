@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
+import com.kttdevelopment.webdir.api.PluginServiceProvider;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
@@ -79,53 +80,31 @@ public final class PluginService {
         }
 
         // start plugins
-        plugins.forEach(plugin -> {
-            final String pluginName = plugin.getCanonicalName();
+        plugins.forEach(pl -> {
+            final String name = pl.getSimpleName();
             try{
-                plugin.getMethod("onEnable").invoke(null);
+                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(null); // args should be interface
+
+                plugin.onEnable();
 
                 // load get methods
-                try{
-                    extensions.addAll((List<Extension>) plugin.getMethod("getExtensions").invoke(null));
-                }catch(final Exception e){
-                    handleException(pluginName,"getExtensions()",e);
-                }
+                extensions.addAll(plugin.getExtensions());
+                formatters.addAll(plugin.getFormatters());
+                pages.addAll(plugin.getPages());
 
-                try{
-                    formatters.addAll((List<Formatter>) plugin.getMethod("getFormatters").invoke(null));
-                }catch(final Exception e){
-                    handleException(pluginName,"getFormatters()",e);
-                }
-
-                try{
-                    pages.addAll((List<Page>) plugin.getMethod("getPages").invoke(null));
-                }catch(final Exception e){
-                    handleException(pluginName,"getPages()",e);
-                }
-
-                logger.info(prefix + locale.getString("pluginService.internal.loaded"));
-            }catch(final Exception e){
-                handleException(pluginName,"onEnable()",e);
+                logger.info(prefix + locale.getString("pluginService.internal.loaded",name));
+            }catch(final NullPointerException |  NoSuchMethodException e){
+                logger.severe(prefix + locale.getString("pluginService.internal.notFound",name) + '\n' + Logger.getStackTraceAsString(e));
+            }catch(final IllegalAccessException | SecurityException e){
+                logger.severe(prefix + locale.getString("pluginService.internal.scope",name) + '\n' + Logger.getStackTraceAsString(e));
+            }catch(final IllegalArgumentException e){
+                logger.severe(prefix + locale.getString("pluginService.internal.params",name) + '\n' + Logger.getStackTraceAsString(e));
+            }catch(final ExceptionInInitializerError |  InstantiationException | InvocationTargetException e){
+                logger.severe(prefix + locale.getString("pluginService.internal.methodException",name) + '\n' + Logger.getStackTraceAsString(e));
             }
         });
 
         logger.info(prefix + locale.getString("pluginService.init.finished"));
-    }
-
-    private void handleException(final String plugin, final String method, final Exception e){
-        final String prefix = '[' + locale.getString("pluginService") + ']' + ' ';
-        final String err;
-        if(e instanceof IllegalAccessException)
-            err = "pluginService.internal.loaded";
-        else if(e instanceof IllegalArgumentException)
-            err = "pluginService.internal.scope";
-        else if(e instanceof NullPointerException || e instanceof NoSuchMethodException)
-            err = "pluginService.internal.notFound";
-        else if(e instanceof InvocationTargetException)
-            err = "pluginService.internal.methodException";
-        else
-            err = "pluginService.internal.exception";
-        logger.warning(prefix + locale.getString(err,plugin,method) + '\n' + Logger.getStackTraceAsString(e));
     }
 
 }
