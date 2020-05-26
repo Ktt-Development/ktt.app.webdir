@@ -7,7 +7,6 @@ import com.kttdevelopment.webdir.api.PluginServiceProvider;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
-import com.kttdevelopment.webdir.api.page.Page;
 import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
 
 import java.io.*;
@@ -22,7 +21,6 @@ public final class PluginService {
 
     private final List<Extension> extensions = new ArrayList<>();
     private final List<Formatter> formatters = new ArrayList<>();
-    private final List<Page> pages = new ArrayList<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginService(final File pluginsFolder){
