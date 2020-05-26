@@ -4,7 +4,7 @@ import com.sun.net.httpserver.*;
 
 import java.util.*;
 
-public class HttpContextUnmodifiable extends HttpContext {
+public final class HttpContextUnmodifiable extends HttpContext {
 
     private final HttpContext context;
 
