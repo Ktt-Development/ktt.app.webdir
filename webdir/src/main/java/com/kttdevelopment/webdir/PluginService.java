@@ -102,7 +102,6 @@ public final class PluginService {
                 // load get methods
                 extensions.addAll(plugin.getExtensions());
                 formatters.addAll(plugin.getFormatters());
-                pages.addAll(plugin.getPages());
 
                 logger.info(prefix + locale.getString("pluginService.internal.loaded",name));
             }catch(final NullPointerException |  NoSuchMethodException e){
