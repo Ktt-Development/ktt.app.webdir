@@ -30,11 +30,6 @@ public class HttpContextUnmodifiable extends HttpContext {
     }
 
     @Override
-    public final HttpServer getServer(){
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public final Map<String, Object> getAttributes(){
         return Collections.unmodifiableMap(context.getAttributes());
     }
@@ -52,6 +47,12 @@ public class HttpContextUnmodifiable extends HttpContext {
     @Override
     public final Authenticator getAuthenticator(){
         return context.getAuthenticator();
+    }
+
+    // unsupported
+    @Override
+    public final HttpServer getServer(){
+        throw new UnsupportedOperationException();
     }
 
 }

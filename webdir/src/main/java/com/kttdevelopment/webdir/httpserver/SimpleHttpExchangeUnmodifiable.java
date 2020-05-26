@@ -23,16 +23,6 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
     //
 
     @Override
-    public final HttpServer getHttpServer(){
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final HttpExchange getHttpExchange(){
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public final URI getURI(){
         return exchange.getURI();
     }
@@ -103,6 +93,28 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
     }
 
     @Override
+    public final HashMap<String, String> getCookies(){
+        return (HashMap<String, String>) Collections.unmodifiableMap(exchange.getCookies());
+    }
+
+        @Override
+    public final Object getAttribute(final String name){
+        return exchange.getAttribute(name);
+    }
+
+    // region unsupported
+
+    @Override
+    public final HttpServer getHttpServer(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final HttpExchange getHttpExchange(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public final Headers getResponseHeaders(){
         throw new UnsupportedOperationException();
     }
@@ -110,11 +122,6 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
     @Override
     public final int getResponseCode(){
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final HashMap<String, String> getCookies(){
-        return (HashMap<String, String>) Collections.unmodifiableMap(exchange.getCookies());
     }
 
     @Override
@@ -188,13 +195,10 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
     }
 
     @Override
-    public final Object getAttribute(final String name){
-        return exchange.getAttribute(name);
-    }
-
-    @Override
     public final void setAttribute(final String name, final Object value){
         throw new UnsupportedOperationException();
     }
+
+    // endregion
 
 }

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
 
 public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
@@ -18,6 +17,99 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
     }
     
     //
+
+    private final Map<HttpContext,HttpHandler> contexts = new HashMap<>();
+
+    //
+
+    @Override
+    public final InetSocketAddress getAddress(){
+        return server.getAddress();
+    }
+
+    @Override
+    public final Executor getExecutor(){
+        return server.getExecutor();
+    }
+
+    // only allow operations to plugin added contexts
+    @Override
+    public final HttpContext createContext(final String context){
+        return createContext(context, (HttpExchange exchange) -> {},null);
+    }
+
+    @Override
+    public final HttpContext createContext(final String context, final HttpHandler handler){
+        return createContext(context,handler,null);
+    }
+
+    @Override
+    public final HttpContext createContext(final String context, final Authenticator authenticator){
+        return createContext(context,(HttpExchange exchange) -> {},null);
+    }
+
+    @Override
+    public final HttpContext createContext(final String context, final HttpHandler handler, final Authenticator authenticator){
+        final HttpContext hc = new HttpContextUnmodifiable(server.createContext(context,handler));
+        contexts.put(hc,hc.getHandler());
+        if(authenticator != null)
+            hc.setAuthenticator(authenticator);
+        return hc;
+    }
+
+    @Override
+    public final void removeContext(final String context){
+        for(final HttpContext hc : new HashSet<>(contexts.keySet())){
+            if(hc.getPath().equalsIgnoreCase(context)){
+                removeContext(hc);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public final void removeContext(final HttpContext context){
+        for(final HttpContext hc : new HashSet<>(contexts.keySet())){
+            if(context == hc){
+                contexts.remove(hc);
+                server.removeContext(hc);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public final HttpHandler getContextHandler(final String context){
+        for(final Map.Entry<HttpContext, HttpHandler> entry : new HashSet<>(contexts.entrySet()))
+            if(entry.getKey().getPath().equalsIgnoreCase(context))
+                return entry.getValue();
+        return null;
+    }
+
+    @Override
+    public final HttpHandler getContextHandler(final HttpContext context){
+        for(final Map.Entry<HttpContext, HttpHandler> entry : new HashSet<>(contexts.entrySet()))
+            if(context == entry.getKey())
+                return entry.getValue();
+        return null;
+    }
+
+    @Override
+    public final Map<HttpContext,HttpHandler> getContexts(){
+        return Collections.unmodifiableMap(contexts);
+    }
+
+    @Override
+    public final String getRandomContext(){
+        return server.getRandomContext();
+    }
+
+    @Override
+    public final String getRandomContext(final String context){
+        return server.getRandomContext(context);
+    }
+
+    // region unsupported
 
     @Override
     public final HttpServer getHttpServer(){
@@ -45,18 +137,8 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
     }
 
     @Override
-    public final InetSocketAddress getAddress(){
-        return server.getAddress();
-    }
-
-    @Override
     public final void setExecutor(final Executor executor){
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final Executor getExecutor(){
-        return server.getExecutor();
     }
 
     @Override
@@ -66,76 +148,17 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
     @Override
     public final HttpSessionHandler getHttpSessionHandler(){
-        return server.getHttpSessionHandler();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public final HttpSession getHttpSession(final HttpExchange exchange){
-        return server.getHttpSession(exchange);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public final HttpSession getHttpSession(final SimpleHttpExchange exchange){
-        return server.getHttpSession(exchange);
-    }
-    // only allow operations to plugin added contexts
-    @Override
-    public final HttpContext createContext(final String context){
-        return null;
-    }
-
-    @Override
-    public final HttpContext createContext(final String context, final HttpHandler handler){
-        return null;
-    }
-
-    @Override
-    public final HttpContext createContext(final String context, final Authenticator authenticator){
-        return null;
-    }
-
-    @Override
-    public final HttpContext createContext(final String context, final HttpHandler handler, final Authenticator authenticator){
-        return null;
-    }
-
-    @Override
-    public final void removeContext(final String context){
-
-    }
-
-    @Override
-    public final void removeContext(final HttpContext context){
-
-    }
-
-    @Override
-    public final HttpHandler getContextHandler(final String context){
-        return server.getContextHandler(context);
-    }
-
-    @Override
-    public final HttpHandler getContextHandler(final HttpContext context){
-        return server.getContextHandler(context);
-    }
-
-    @Override
-    public final Map<HttpContext, HttpHandler> getContexts(){
-        final Map<HttpContext,HttpHandler> map = new HashMap<>();
-
-        server.getContexts().forEach((context, handler) -> map.put(new HttpContextUnmodifiable(context), handler));
-
-        return Collections.unmodifiableMap(map);
-    }
-
-    @Override
-    public final String getRandomContext(){
-        return server.getRandomContext();
-    }
-
-    @Override
-    public final String getRandomContext(final String context){
-        return server.getRandomContext(context);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -152,5 +175,7 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
     public final void stop(final int delay){
         throw new UnsupportedOperationException();
     }
+
+    // endregion
 
 }
