@@ -2,11 +2,12 @@ package com.kttdevelopment.webdir;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.PluginServiceProvider;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
-import com.kttdevelopment.webdir.api.page.Page;
+import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -20,7 +21,6 @@ public final class PluginService {
 
     private final List<Extension> extensions = new ArrayList<>();
     private final List<Formatter> formatters = new ArrayList<>();
-    private final List<Page> pages = new ArrayList<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginService(final File pluginsFolder){
@@ -83,14 +83,23 @@ public final class PluginService {
         plugins.forEach(pl -> {
             final String name = pl.getSimpleName();
             try{
-                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(null); // args should be interface // must init server first
+                // each plugin only has permission to use its own provider
+                final PluginServiceProvider provider = new PluginServiceProvider() {
+
+                    @Override
+                    public final SimpleHttpServer getHttpServer(){
+                        return new SimpleHttpServerUnmodifiable(server.getServer());
+                    }
+
+                };
+
+                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(provider);
 
                 plugin.onEnable();
 
                 // load get methods
                 extensions.addAll(plugin.getExtensions());
                 formatters.addAll(plugin.getFormatters());
-                pages.addAll(plugin.getPages());
 
                 logger.info(prefix + locale.getString("pluginService.internal.loaded",name));
             }catch(final NullPointerException |  NoSuchMethodException e){

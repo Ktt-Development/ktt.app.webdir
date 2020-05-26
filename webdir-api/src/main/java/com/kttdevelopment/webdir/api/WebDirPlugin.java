@@ -2,7 +2,6 @@ package com.kttdevelopment.webdir.api;
 
 import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
-import com.kttdevelopment.webdir.api.page.Page;
 
 import java.util.*;
 
@@ -26,16 +25,6 @@ public class WebDirPlugin {
 
     public final void addFormatter(final Formatter formatter){
         formatters.add(formatter);
-    }
-
-    private final List<Page> pages = new ArrayList<>();
-
-    public final List<Page> getPages(){
-        return Collections.unmodifiableList(pages);
-    }
-
-    public final void addPage(final Page page){
-        pages.add(page);
     }
 
     // instance +pluginService

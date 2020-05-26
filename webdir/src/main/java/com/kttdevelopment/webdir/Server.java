@@ -11,11 +11,17 @@ import static com.kttdevelopment.webdir.Logger.logger;
 
 public final class Server {
 
+    private final SimpleHttpServer server;
+
+    public final SimpleHttpServer getServer(){
+        return server;
+    }
+
+    //
+
     Server(){
         final String prefix = '[' + locale.getString("server") + ']' + ' ';
         logger.info(prefix + locale.getString("server.init.start"));
-
-        final SimpleHttpServer server;
 
         // port bind
         final String port = config.get("port").toString();
@@ -40,7 +46,6 @@ public final class Server {
         // start
 
         logger.info(prefix + locale.getString("server.init.finished"));
-        server.start();
     }
 
 }
