@@ -6,11 +6,15 @@ import java.util.*;
 
 public final class Permissions {
 
+    private final Map obj;
+
     private final List<PermissionsGroup> groups = new ArrayList<>();
     private final List<PermissionsUser>  users = new ArrayList<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Permissions(final Map obj){
+        this.obj = obj;
+
         try{
             final Map g = (Map) Objects.requireNonNull(obj.get("groups"));
             g.forEach((k, v) -> {
@@ -82,6 +86,10 @@ public final class Permissions {
             }
         }
         return false;
+    }
+
+    public final Map toMap(){
+        return Collections.unmodifiableMap(obj);
     }
 
 }

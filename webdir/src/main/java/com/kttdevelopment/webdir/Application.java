@@ -19,7 +19,7 @@ public abstract class Application {
     public static final Locale locale = new Locale("lang/bundle");
 
     @SuppressWarnings("ConstantConditions")
-    public static final Permissions permissions = new Permissions(
+    public static final PermissionsService permissions = new PermissionsService(
         new File(parent + '\\' + "permissions.yml"),
         new File(Application.class.getClassLoader().getResource("permissions/permissions.yml").getFile())
     );

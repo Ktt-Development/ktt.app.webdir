@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir;
 
 import com.esotericsoftware.yamlbeans.*;
+import com.kttdevelopment.webdir.permissions.Permissions;
 
 import java.io.*;
 import java.util.Map;
@@ -8,18 +9,23 @@ import java.util.Map;
 import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
 
-public final class Permissions {
+@SuppressWarnings("rawtypes")
+public final class PermissionsService {
 
     private final File permissionsFile;
-    private Map permissions;
+    private Permissions permissions;
 
-    private final Map defaultPermissions;
-
-    //
+    private final Permissions defaultPermissions;
 
     //
 
-    Permissions(final File permissionsFile, final File defaultPermissionsFile){
+    public final Permissions getPermissions(){
+        return permissions;
+    }
+
+    //
+
+    PermissionsService(final File permissionsFile, final File defaultPermissionsFile){
         this.permissionsFile = permissionsFile;
 
         final String prefix = '[' + locale.getString("permissions") + ']' + ' ';
@@ -29,7 +35,7 @@ public final class Permissions {
         YamlReader IN = null;
         try{ // default
             IN = new YamlReader(new FileReader(defaultPermissionsFile));
-            defaultPermissions = (Map) IN.read();
+            defaultPermissions = new Permissions((Map) IN.read());
         }catch(final ClassCastException | FileNotFoundException | YamlException e){
             logger.severe(prefix + locale.getString("permissions.init.notFound"));
             throw new RuntimeException(e);
@@ -54,7 +60,7 @@ public final class Permissions {
         YamlReader IN = null;
         try{
             IN = new YamlReader(new FileReader(permissionsFile));
-            permissions = (Map) IN.read();
+            permissions = new Permissions((Map) IN.read());
             logger.info(prefix + locale.getString("permissions.read.finished"));
             return true;
         }catch(final FileNotFoundException ignored){
@@ -84,7 +90,7 @@ public final class Permissions {
         YamlWriter OUT = null;
         try{
             OUT = new YamlWriter(new FileWriter(permissionsFile));
-            OUT.write(permissions);
+            OUT.write(permissions.toMap());
             logger.info(prefix + locale.getString("permissions.write.finished"));
             return true;
         }catch(final IOException e){
