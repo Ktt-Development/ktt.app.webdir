@@ -5,7 +5,6 @@ import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.page.Page;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class WebDirPlugin {
 

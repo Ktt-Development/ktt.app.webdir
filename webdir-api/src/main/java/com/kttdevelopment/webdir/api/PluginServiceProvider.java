@@ -11,8 +11,12 @@ public abstract class PluginServiceProvider {
             return logger;
         }
 
-    //
+    // application reference
 
     public abstract SimpleHttpServer getHttpServer();
+
+    // local config
+
+    // local locale
 
 }

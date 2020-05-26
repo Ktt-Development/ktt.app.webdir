@@ -11,7 +11,7 @@ public abstract class Application {
     public static final Logger logger = new Logger();
 
     @SuppressWarnings("ConstantConditions")
-    public static final Config config = new Config(
+    public static final ConfigService config = new ConfigService(
         new File(parent + '\\' + "config.yml"),
         new File(Application.class.getClassLoader().getResource("config/config.yml").getFile())
     );

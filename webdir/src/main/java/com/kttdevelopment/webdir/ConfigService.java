@@ -9,7 +9,7 @@ import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public final class Config {
+public final class ConfigService {
 
     private final File configFile;
     private Map config;
@@ -29,7 +29,7 @@ public final class Config {
 
     //
 
-    Config(final File configFile, final File defaultConfigFile){
+    ConfigService(final File configFile, final File defaultConfigFile){
         this.configFile = configFile;
 
         final String prefix = "[Config]" + ' ';
