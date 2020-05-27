@@ -35,7 +35,7 @@ public class WebDirPlugin {
         this.provider = provider;
     }
 
-    protected final PluginServiceProvider getPluginService(){
+    public final PluginServiceProvider getPluginService(){
         return provider;
     }
 

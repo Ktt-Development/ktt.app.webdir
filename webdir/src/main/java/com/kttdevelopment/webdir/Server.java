@@ -1,7 +1,10 @@
 package com.kttdevelopment.webdir;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.webdir.server.DefaultFileHandler;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 
@@ -40,7 +43,11 @@ public final class Server {
         }
         // init
 
+        final FileHandler fileHandler = new DefaultFileHandler();
+        for(final File file : File.listRoots())
+            fileHandler.addDirectory(file);
 
+        server.createContext(config.getConfig().getString("head"),fileHandler);
 
         // start
 
