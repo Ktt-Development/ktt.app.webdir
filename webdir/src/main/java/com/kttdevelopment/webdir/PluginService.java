@@ -8,8 +8,10 @@ import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
+import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -89,6 +91,7 @@ public final class PluginService {
                 final PluginServiceProvider provider = new PluginServiceProvider() {
 
                     private final ConfigurationFile config = new ConfigurationFileImpl();
+                    private final LocaleBundle locale = new LocaleBundleImpl();
 
                     @Override
                     public final SimpleHttpServer getHttpServer(){
@@ -100,6 +103,13 @@ public final class PluginService {
                     @Override
                     public final ConfigurationFile getConfiguration(){
                         return config;
+                    }
+
+                    // locale locale
+
+                    @Override
+                    public final LocaleBundle getLocale(){
+                        return locale;
                     }
 
                     // local permission // todo: change so only has access to local permissions

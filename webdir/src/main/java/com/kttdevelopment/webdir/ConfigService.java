@@ -11,7 +11,7 @@ import static com.kttdevelopment.webdir.Logger.logger;
 
 public final class ConfigService {
 
-    private ConfigurationFile config = new ConfigurationFileImpl();
+    private final ConfigurationFile config = new ConfigurationFileImpl();
 
     private final File configFile;
 

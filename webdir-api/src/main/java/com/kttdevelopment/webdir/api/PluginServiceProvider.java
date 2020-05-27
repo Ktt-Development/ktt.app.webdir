@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.api;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
 import java.net.InetAddress;
 import java.util.logging.Logger;
@@ -22,6 +23,8 @@ public abstract class PluginServiceProvider {
     public abstract ConfigurationFile getConfiguration();
 
     // local locale
+
+    public abstract LocaleBundle getLocale();
 
     // local permissions
 

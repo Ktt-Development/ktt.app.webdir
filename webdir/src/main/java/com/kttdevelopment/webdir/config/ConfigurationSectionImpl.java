@@ -5,7 +5,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ConfigurationSectionImpl implements ConfigurationSection {
+public final class ConfigurationSectionImpl implements ConfigurationSection {
 
     private final ConfigurationSection root;
     private final ConfigurationSection parent;

@@ -16,7 +16,7 @@ public abstract class Application {
         new File(Application.class.getClassLoader().getResource("config/config.yml").getFile())
     );
 
-    public static final Locale locale = new Locale("lang/bundle");
+    public static final LocaleService locale = new LocaleService("lang/bundle");
 
     @SuppressWarnings("ConstantConditions")
     public static final PermissionsService permissions = new PermissionsService(
