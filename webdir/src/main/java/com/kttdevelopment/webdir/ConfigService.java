@@ -1,30 +1,24 @@
 package com.kttdevelopment.webdir;
 
-import com.esotericsoftware.yamlbeans.*;
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.kttdevelopment.webdir.config.ConfigurationFile;
+import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 
 import java.io.*;
-import java.util.Map;
 
 import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
 public final class ConfigService {
 
-    private final File configFile;
-    private Map config;
+    private ConfigurationFile config = new ConfigurationFileImpl();
 
-    private final Map defaultConfig;
+    private final File configFile;
 
     //
 
-    public final Object get(final String key){
-        return config.getOrDefault(key,defaultConfig.get(key));
-    }
-
-    public synchronized final void set(final String key, final Object value){
-        config.put(key,value);
-        write();
+    public final ConfigurationFile getConfig(){
+        return config;
     }
 
     //
@@ -36,22 +30,25 @@ public final class ConfigService {
 
         logger.info(prefix + "Started config initialization");
 
-        YamlReader IN = null;
-        try{ // default
-            IN = new YamlReader(new FileReader(defaultConfigFile));
-            defaultConfig = (Map) IN.read();
-        }catch(final ClassCastException | FileNotFoundException | YamlException e){
+        try{
+            final ConfigurationFile def = new ConfigurationFileImpl();
+            def.load(defaultConfigFile);
+            config.setDefault(def);
+        }catch(final FileNotFoundException e){
             logger.severe(
-                prefix + "Failed to load default config file" +
-                (e instanceof YamlException ? ' ' + "(invalid syntax)" + '\n' + Logger.getStackTraceAsString(e) : "")
+                prefix + "Failed to load default configuration file (not found)" + '\n' + Logger.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
-        }finally{
-            if(IN != null)
-                try{ IN.close();
-                }catch(final IOException e){
-                    logger.warning(prefix + "Failed to close default config input stream" + '\n' + Logger.getStackTraceAsString(e));
-                }
+        }catch(final ClassCastException | YamlException e){
+            logger.severe(
+                prefix + "Failed to load default configuration file (invalid syntax)" + '\n' + Logger.getStackTraceAsString(e)
+            );
+            throw new RuntimeException(e);
+        }catch(final IOException e){
+            logger.severe(
+                prefix + "Failed to load default configuration file" + '\n' + Logger.getStackTraceAsString(e)
+            );
+            throw new RuntimeException(e);
         }
 
         read();
@@ -63,7 +60,6 @@ public final class ConfigService {
     @SuppressWarnings("UnusedReturnValue")
     public synchronized final boolean read(){
         final boolean hasLocale = locale.getLocale() != null;
-
         final String prefix = hasLocale ? '[' + locale.getString("config") + ']' + ' ' : "[Config]" + ' ';
 
         logger.info(
@@ -71,20 +67,18 @@ public final class ConfigService {
             (
                 hasLocale ?
                 locale.getString("config.read.start") :
-                "Loading config from file"
+                "Loading configuration file"
             )
         );
 
-        YamlReader IN = null;
         try{
-            IN = new YamlReader(new FileReader(configFile));
-            config = (Map) IN.read();
+            config.load(configFile);
             logger.info(
                 prefix +
                 (
                     hasLocale ?
                     locale.getString("config.read.finished") :
-                    "Finished loading config from file"
+                    "Finished loading configuration file"
                 )
             );
             return true;
@@ -94,26 +88,26 @@ public final class ConfigService {
                 (
                     hasLocale ?
                     locale.getString("config.read.notFound") :
-                    "Config file not found, creating a new config file"
+                    "Configuration file not found, creating a new configuration file"
                 )
             );
-            config = defaultConfig;
-            if(!write())
-                logger.severe(
-                    prefix +
-                    (
-                        hasLocale ?
-                        locale.getString("config.read.notCreate") :
-                        "Failed to create config file, using default config"
-                    )
-                );
-            else
+
+            if(write())
                 logger.info(
                     prefix +
                     (
                         hasLocale ?
                         locale.getString("config.read.created") :
-                        "New config file created"
+                        "New configuration file created"
+                    )
+                );
+            else
+                logger.severe(
+                    prefix +
+                    (
+                        hasLocale ?
+                        locale.getString("config.read.notCreate") :
+                        "Failed to create configuration file, using default configuration"
                     )
                 );
         }catch(final ClassCastException | YamlException e){
@@ -122,24 +116,20 @@ public final class ConfigService {
                 (
                     hasLocale ?
                     locale.getString("config.read.badSyntax")  :
-                    "Failed to read config file (invalid syntax)"
+                    "Failed to read configuration file (invalid syntax), using default configuration"
                 ) +
                 '\n' + Logger.getStackTraceAsString(e)
             );
-        }finally{
-            if(IN != null)
-                try{ IN.close();
-                }catch(final IOException e){
-                    logger.warning(
-                        prefix +
-                        (
-                            hasLocale ?
-                            locale.getString("config.read.stream") :
-                            "Failed to close config input stream"
-                        ) +
-                        '\n' + Logger.getStackTraceAsString(e)
-                    );
-                }
+        }catch(final IOException e){
+            logger.severe(
+                prefix +
+                (
+                    hasLocale ?
+                    locale.getString("config.read.failed") :
+                    "Failed to read configuration file, using default configuration"
+                ) +
+                '\n' + Logger.getStackTraceAsString(e)
+            );
         }
         return false;
     }
@@ -152,46 +142,40 @@ public final class ConfigService {
             prefix + (
                 hasLocale ?
                 locale.getString("config.write.start") :
-                "Writing config to file"
+                "Writing to configuration file"
             )
         );
 
-        YamlWriter OUT = null;
         try{
-            OUT = new YamlWriter(new FileWriter(configFile));
-            OUT.write(config);
+            config.save(configFile);
             logger.info(
                 prefix + (
                     hasLocale ?
                     locale.getString("config.write.finished") :
-                    "Finished writing config to file"
+                    "Finished writing to configuration file"
                 )
             );
             return true;
-        }catch(final IOException e){
+        }catch(final YamlException e){
             logger.severe(
                 prefix +
                 (
                     hasLocale ?
-                    locale.getString("config.write.failed") :
-                    "Failed to write config to file"
+                    locale.getString("config.write.badSyntax")  :
+                    "Failed to write to configuration file (invalid syntax)"
                 ) +
                 '\n' + Logger.getStackTraceAsString(e)
             );
-        }finally{
-            if(OUT != null)
-                try{ OUT.close();
-                }catch(final IOException e){
-                    logger.severe(
-                        prefix +
-                        (
-                            hasLocale ?
-                            locale.getString("config.write.stream") :
-                            "Failed to close config output stream"
-                        ) +
-                        '\n' + Logger.getStackTraceAsString(e)
-                    );
-                }
+        }catch(IOException e){
+           logger.severe(
+                prefix +
+                (
+                    hasLocale ?
+                    locale.getString("config.write.failed") :
+                    "Failed to write to configuration file"
+                ) +
+                '\n' + Logger.getStackTraceAsString(e)
+            );
         }
         return false;
     }

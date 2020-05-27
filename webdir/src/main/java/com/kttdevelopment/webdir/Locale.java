@@ -109,7 +109,7 @@ public final class Locale {
             );
             logger.finest(prefix + '+' + code);
 
-            setLocale(Application.config.get("locale").toString());
+            setLocale(Application.config.getConfig().getString("locale","en"));
 
             logger.info('[' + getString("locale") + ']' + ' ' + getString("locale.init.finished"));
         }

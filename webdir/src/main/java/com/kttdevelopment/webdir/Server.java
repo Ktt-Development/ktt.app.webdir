@@ -24,11 +24,10 @@ public final class Server {
         logger.info(prefix + locale.getString("server.init.start"));
 
         // port bind
-        final String port = config.get("port").toString();
+        final int port = config.getConfig().getInteger("key");
         try{
             server = SimpleHttpServer.create();
-
-            server.bind(Integer.parseInt(port));
+            server.bind(port);
         }catch(final IllegalArgumentException e){
             logger.severe(prefix + locale.getString("server.init.badPort",port));
             throw new RuntimeException(e);
