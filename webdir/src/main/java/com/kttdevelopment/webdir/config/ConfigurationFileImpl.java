@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public final class ConfigurationFileImpl extends ConfigurationSectionImpl implements ConfigurationFile {
+public class ConfigurationFileImpl extends ConfigurationSectionImpl implements ConfigurationFile {
 
     @Override
     public final void setDefault(final ConfigurationFile def){

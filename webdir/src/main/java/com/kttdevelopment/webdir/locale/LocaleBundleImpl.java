@@ -4,7 +4,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
 import java.util.*;
 
-public final class LocaleBundleImpl implements LocaleBundle {
+public class LocaleBundleImpl implements LocaleBundle {
 
     private final Map<Locale,ResourceBundle> locales = new HashMap<>();
     private ResourceBundle loadedBundle;

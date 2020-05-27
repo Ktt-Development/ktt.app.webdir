@@ -112,7 +112,7 @@ public final class PluginService {
                         return locale;
                     }
 
-                    // local permission // todo: change so only has access to local permissions
+                    // permissions
 
                     @Override
                     public final boolean hasPermission(final String permission){
