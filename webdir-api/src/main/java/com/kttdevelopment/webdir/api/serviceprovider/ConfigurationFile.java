@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.config;
+package com.kttdevelopment.webdir.api.serviceprovider;
 
 import java.io.*;
 

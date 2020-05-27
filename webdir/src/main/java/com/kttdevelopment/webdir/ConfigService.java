@@ -1,7 +1,7 @@
 package com.kttdevelopment.webdir;
 
 import com.esotericsoftware.yamlbeans.YamlException;
-import com.kttdevelopment.webdir.config.ConfigurationFile;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 
 import java.io.*;

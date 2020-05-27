@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.config;
+package com.kttdevelopment.webdir.api.serviceprovider;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public interface ConfigurationSection {
 
-    ConfigurationSection getRoot(); // top most level
+    ConfigurationSection getRoot();
     
     ConfigurationSection getParent();
     

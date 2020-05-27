@@ -1,7 +1,9 @@
 package com.kttdevelopment.webdir.api;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 public abstract class PluginServiceProvider {
@@ -17,6 +19,14 @@ public abstract class PluginServiceProvider {
 
     // local config
 
+    public abstract ConfigurationFile getConfiguration();
+
     // local locale
+
+    // local permissions
+
+    public abstract boolean hasPermission(final String permission);
+
+    public abstract boolean hasPermission(final InetAddress address, final String permission);
 
 }

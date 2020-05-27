@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.config;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 
 import java.io.*;
 import java.util.HashMap;

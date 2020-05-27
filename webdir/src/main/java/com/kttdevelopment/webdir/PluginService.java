@@ -7,6 +7,8 @@ import com.kttdevelopment.webdir.api.PluginServiceProvider;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
+import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
 
 import java.io.*;
@@ -86,11 +88,32 @@ public final class PluginService {
                 // each plugin only has permission to use its own provider
                 final PluginServiceProvider provider = new PluginServiceProvider() {
 
+                    private final ConfigurationFile config = new ConfigurationFileImpl();
+
                     @Override
                     public final SimpleHttpServer getHttpServer(){
                         return new SimpleHttpServerUnmodifiable(server.getServer());
                     }
 
+                    // local config
+
+                    @Override
+                    public final ConfigurationFile getConfiguration(){
+                        return config;
+                    }
+
+                    // local permission // todo: change so only has access to local permissions
+
+                    @Override
+                    public final boolean hasPermission(final String permission){
+                        return hasPermission(null,permission);
+                    }
+
+
+                    @Override
+                    public final boolean hasPermission(final InetAddress address, final String permission){
+                        return permissions.getPermissions().hasPermission(address,permission);
+                    }
                 };
 
                 final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(provider);

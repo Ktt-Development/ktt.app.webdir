@@ -1,6 +1,6 @@
 package com.kttdevelopment.webdir.config;
 
-import com.kttdevelopment.webdir.ConfigService;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.util.*;
 
