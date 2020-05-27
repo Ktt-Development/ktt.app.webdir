@@ -1,7 +1,5 @@
 package com.kttdevelopment.webdir.config;
 
-import com.kttdevelopment.webdir.ConfigService;
-
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +20,9 @@ public interface ConfigurationSection {
 
     //
     
-    void contains(final String key);
+    boolean contains(final String key);
 
-    void contains(final String key, final boolean ignoreDefault);
+    boolean contains(final String key, final boolean ignoreDefault);
 
     //
 
@@ -36,13 +34,13 @@ public interface ConfigurationSection {
 
     char getCharacter(final String key, final char def);
 
-    float getFloat(final String key);
-
-    float getFloat(final String key, final float def);
-
     String getString(final String key);
 
     String getString(final String key, final String def);
+
+    float getFloat(final String key);
+
+    float getFloat(final String key, final float def);
 
     int getInteger(final String key);
 
@@ -68,11 +66,11 @@ public interface ConfigurationSection {
 
     Map getMap(final String key);
 
-    Map getMap(final String key, final Object def);
+    Map getMap(String key, Map def);
 
     <K,V> Map<K,V> getMap(final String key, final Class<K> keyType, final Class<V> valueType);
 
-    <K,V> Map<K,V> getMap(final String key, final Map<K,V> type, final Class<K> keyType, final Class<V> valueType);
+    <K,V> Map<K,V> getMap(final String key, final Map<K,V> def, final Class<K> keyType, final Class<V> valueType);
 
     List getList(final String key);
 
@@ -85,5 +83,9 @@ public interface ConfigurationSection {
     //
 
     void set(final String key, final Object value);
+
+    //
+
+    Map toMap();
 
 }

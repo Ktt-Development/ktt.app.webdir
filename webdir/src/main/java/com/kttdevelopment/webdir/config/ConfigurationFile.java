@@ -4,16 +4,20 @@ import java.io.*;
 
 public interface ConfigurationFile extends ConfigurationSection {
 
-    void load(final String filename);
+    void setDefault(final ConfigurationFile def);
 
-    void load(final File file);
+    //
 
-    void load(final Reader reader);
+    void load(final String filename) throws IOException;
 
-    void load(final InputStream stream);
+    void load(final File file) throws IOException;
 
-    void loadFromString(final String yaml);
+    void load(final Reader reader) throws IOException;
 
-    void save(final File file);
+    void load(final InputStream stream) throws IOException;
+
+    void loadFromString(final String yaml) throws IOException;
+
+    void save(final File file) throws IOException;
 
 }
