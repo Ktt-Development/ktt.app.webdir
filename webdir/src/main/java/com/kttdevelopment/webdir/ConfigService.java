@@ -5,6 +5,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 
 import java.io.*;
+import java.nio.file.*;
 
 import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
@@ -14,6 +15,7 @@ public final class ConfigService {
     private final ConfigurationFile config = new ConfigurationFileImpl();
 
     private final File configFile;
+    private final File defaultConfigFile;
 
     //
 
@@ -25,6 +27,7 @@ public final class ConfigService {
 
     ConfigService(final File configFile, final File defaultConfigFile){
         this.configFile = configFile;
+        this.defaultConfigFile = defaultConfigFile;
 
         final String prefix = "[Config]" + ' ';
 
@@ -92,7 +95,8 @@ public final class ConfigService {
                 )
             );
 
-            if(write())
+            try{ // this will allow preservation of comments
+                Files.copy(new FileInputStream(defaultConfigFile), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.info(
                     prefix +
                     (
@@ -101,15 +105,17 @@ public final class ConfigService {
                         "New configuration file created"
                     )
                 );
-            else
+            }catch(final IOException e){
                 logger.severe(
                     prefix +
                     (
                         hasLocale ?
                         locale.getString("config.read.notCreate") :
                         "Failed to create configuration file, using default configuration"
-                    )
+                    ) +
+                    '\n' + Logger.getStackTraceAsString(e)
                 );
+            }
         }catch(final ClassCastException | YamlException e){
             logger.severe(
                 prefix +
