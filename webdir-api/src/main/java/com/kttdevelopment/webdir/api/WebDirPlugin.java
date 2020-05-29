@@ -1,21 +1,10 @@
 package com.kttdevelopment.webdir.api;
 
-import com.kttdevelopment.webdir.api.extension.Extension;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
 
 import java.util.*;
 
 public class WebDirPlugin {
-
-    private final List<Extension> extensions = new ArrayList<>();
-
-    public final List<Extension> getExtensions(){
-        return Collections.unmodifiableList(extensions);
-    }
-
-    public final void addExtension(final Extension extension){
-        extensions.add(extension);
-    }
 
     private final List<Formatter> formatters = new ArrayList<>();
 
