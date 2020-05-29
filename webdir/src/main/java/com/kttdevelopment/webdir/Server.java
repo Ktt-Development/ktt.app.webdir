@@ -10,7 +10,7 @@ import java.net.BindException;
 
 import static com.kttdevelopment.webdir.Application.config;
 import static com.kttdevelopment.webdir.Application.locale;
-import static com.kttdevelopment.webdir.Logger.logger;
+import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class Server {
 
@@ -38,7 +38,7 @@ public final class Server {
             logger.severe(prefix + locale.getString("server.init.portTaken",port));
             throw new RuntimeException(e);
         }catch(final IOException e){
-            logger.severe(prefix + locale.getString("server.init.failed") + '\n' + Logger.getStackTraceAsString(e));
+            logger.severe(prefix + locale.getString("server.init.failed") + '\n' + LoggerService.getStackTraceAsString(e));
             throw new RuntimeException(e);
         }
         // init

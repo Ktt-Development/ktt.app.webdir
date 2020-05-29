@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.Map;
 
 import static com.kttdevelopment.webdir.Application.*;
-import static com.kttdevelopment.webdir.Logger.logger;
+import static com.kttdevelopment.webdir.LoggerService.logger;
 
 @SuppressWarnings("rawtypes")
 public final class PermissionsService {
@@ -43,7 +43,7 @@ public final class PermissionsService {
             if(IN != null)
                 try{ IN.close();
                 }catch(final IOException e){
-                    logger.warning(prefix + locale.getString("permissions.init.stream") + '\n' + Logger.getStackTraceAsString(e));
+                    logger.warning(prefix + locale.getString("permissions.init.stream") + '\n' + LoggerService.getStackTraceAsString(e));
                 }
         }
 
@@ -71,7 +71,7 @@ public final class PermissionsService {
             else
                 logger.info(prefix + locale.getString("permissions.read.created"));
         }catch(final ClassCastException | YamlException e){
-            logger.severe(prefix + locale.getString("permissions.read.badSyntax") + '\n' + Logger.getStackTraceAsString(e));
+            logger.severe(prefix + locale.getString("permissions.read.badSyntax") + '\n' + LoggerService.getStackTraceAsString(e));
         }finally{
             if(IN != null)
                 try{ IN.close();
@@ -94,12 +94,12 @@ public final class PermissionsService {
             logger.info(prefix + locale.getString("permissions.write.finished"));
             return true;
         }catch(final IOException e){
-            logger.severe(prefix + locale.getString("permissions.write.failed") + '\n' + Logger.getStackTraceAsString(e));
+            logger.severe(prefix + locale.getString("permissions.write.failed") + '\n' + LoggerService.getStackTraceAsString(e));
         }finally{
             if(OUT != null)
                 try{ OUT.close();
                 }catch(final IOException e){
-                    logger.severe(prefix + locale.getString("permissions.write.stream") + '\n' + Logger.getStackTraceAsString(e));
+                    logger.severe(prefix + locale.getString("permissions.write.stream") + '\n' + LoggerService.getStackTraceAsString(e));
                 }
         }
         return false;

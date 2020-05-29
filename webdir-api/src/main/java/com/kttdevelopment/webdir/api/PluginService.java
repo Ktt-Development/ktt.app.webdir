@@ -10,11 +10,8 @@ import java.util.logging.Logger;
 
 public abstract class PluginService {
 
-    private static final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    public static Logger getLogger(){
-            return logger;
-        }
-
+    public abstract Logger getLogger();
+    
     // server reference
 
     public abstract SimpleHttpServer getHttpServer();

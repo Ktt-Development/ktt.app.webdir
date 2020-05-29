@@ -5,7 +5,7 @@ import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.util.*;
 
-import static com.kttdevelopment.webdir.Logger.logger;
+import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class LocaleService {
 

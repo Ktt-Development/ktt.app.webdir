@@ -8,7 +8,7 @@ public abstract class Application {
 
     //
 
-    public static final Logger logger = new Logger();
+    public static final LoggerService logger = new LoggerService();
 
     @SuppressWarnings("ConstantConditions")
     public static final ConfigService config = new ConfigService(

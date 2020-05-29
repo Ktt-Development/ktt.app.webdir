@@ -8,7 +8,7 @@ import java.io.*;
 import java.nio.file.*;
 
 import static com.kttdevelopment.webdir.Application.*;
-import static com.kttdevelopment.webdir.Logger.logger;
+import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class ConfigService {
 
@@ -39,17 +39,17 @@ public final class ConfigService {
             config.setDefault(def);
         }catch(final FileNotFoundException e){
             logger.severe(
-                prefix + "Failed to load default configuration file (not found)" + '\n' + Logger.getStackTraceAsString(e)
+                    prefix + "Failed to load default configuration file (not found)" + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
         }catch(final ClassCastException | YamlException e){
             logger.severe(
-                prefix + "Failed to load default configuration file (invalid syntax)" + '\n' + Logger.getStackTraceAsString(e)
+                    prefix + "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
         }catch(final IOException e){
             logger.severe(
-                prefix + "Failed to load default configuration file" + '\n' + Logger.getStackTraceAsString(e)
+                    prefix + "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
         }
@@ -107,34 +107,34 @@ public final class ConfigService {
                 );
             }catch(final IOException e){
                 logger.severe(
-                    prefix +
-                    (
+                        prefix +
+                        (
                         hasLocale ?
                         locale.getString("config.read.notCreate") :
                         "Failed to create configuration file, using default configuration"
                     ) +
-                    '\n' + Logger.getStackTraceAsString(e)
+                        '\n' + LoggerService.getStackTraceAsString(e)
                 );
             }
         }catch(final ClassCastException | YamlException e){
             logger.severe(
-                prefix +
-                (
+                    prefix +
+                    (
                     hasLocale ?
                     locale.getString("config.read.badSyntax")  :
                     "Failed to read configuration file (invalid syntax), using default configuration"
                 ) +
-                '\n' + Logger.getStackTraceAsString(e)
+                    '\n' + LoggerService.getStackTraceAsString(e)
             );
         }catch(final IOException e){
             logger.severe(
-                prefix +
-                (
+                    prefix +
+                    (
                     hasLocale ?
                     locale.getString("config.read.failed") :
                     "Failed to read configuration file, using default configuration"
                 ) +
-                '\n' + Logger.getStackTraceAsString(e)
+                    '\n' + LoggerService.getStackTraceAsString(e)
             );
         }
         return false;
@@ -164,23 +164,23 @@ public final class ConfigService {
             return true;
         }catch(final YamlException e){
             logger.severe(
-                prefix +
-                (
+                    prefix +
+                    (
                     hasLocale ?
                     locale.getString("config.write.badSyntax")  :
                     "Failed to write to configuration file (invalid syntax)"
                 ) +
-                '\n' + Logger.getStackTraceAsString(e)
+                    '\n' + LoggerService.getStackTraceAsString(e)
             );
         }catch(IOException e){
            logger.severe(
-                prefix +
-                (
+                   prefix +
+                   (
                     hasLocale ?
                     locale.getString("config.write.failed") :
                     "Failed to write to configuration file"
                 ) +
-                '\n' + Logger.getStackTraceAsString(e)
+                   '\n' + LoggerService.getStackTraceAsString(e)
             );
         }
         return false;

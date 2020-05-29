@@ -1,16 +1,18 @@
 package com.kttdevelopment.webdir;
 
+import com.kttdevelopment.webdir.logger.LoggerFormatter;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.logging.*;
 
-public final class Logger {
+public final class LoggerService {
 
-    public static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
+    public static final Logger logger = Logger.getGlobal();
 
-    private final Formatter formatter = new Formatter();
+    private final Formatter formatter = new LoggerFormatter();
 
-    Logger(){
+    LoggerService(){
         final String prefix = "[Logger]" + ' ';
 
         logger.setLevel(Level.ALL);
@@ -22,7 +24,6 @@ public final class Logger {
                 setFormatter(formatter);
             }}
         );
-
         try{ // log
             logger.addHandler(
                 new FileHandler(System.currentTimeMillis() + ".log"){{
@@ -57,17 +58,6 @@ public final class Logger {
         }
 
         logger.info(prefix + "Finished initialization");
-    }
-
-    private static final class Formatter extends java.util.logging.Formatter {
-
-        @SuppressWarnings("SpellCheckingInspection")
-        private static final SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSSaa zzz");
-
-        @Override
-        public final String format(final LogRecord record){
-            return String.format("[%s] [%s] [%s#%s@%s] %s \n",time.format(record.getMillis()),record.getLevel(),record.getSourceClassName(),record.getSourceMethodName(),record.getThreadID(), record.getMessage());
-        }
     }
 
     public static String getStackTraceAsString(final Throwable e){
