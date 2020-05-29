@@ -21,7 +21,8 @@ public class DefaultFileHandler extends FileHandler {
         if(frontMatter.hasFrontMatter()){
             final ConfigurationSection config = frontMatter.getFrontMatter();
 
-            final List<String> imports = config.getList("import",String.class);
+            final List<String> imports = config.getList("import",String.class); // import relative file 
+            final List<String> formatter = config.getList("formatter",String.class);
 
             // handle formatters & send finished content w/o front matter
         }else{
