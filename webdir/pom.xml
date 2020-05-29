@@ -57,12 +57,6 @@
             <artifactId>yamlbeans</artifactId>
             <version>1.14</version>
         </dependency>
-        <!-- markdown -->
-        <dependency>
-            <groupId>com.vladsch.flexmark</groupId>
-            <artifactId>flexmark-ext-yaml-front-matter</artifactId>
-            <version>0.62.0</version>
-        </dependency>
     </dependencies>
 
 </project>
