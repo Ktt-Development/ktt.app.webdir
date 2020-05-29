@@ -18,14 +18,14 @@ public class WebDirPlugin {
 
     // instance +pluginService
 
-    private final PluginServiceProvider provider;
+    private final PluginService pluginService;
 
-    public WebDirPlugin(final PluginServiceProvider provider){
-        this.provider = provider;
+    public WebDirPlugin(final PluginService pluginService){
+        this.pluginService = pluginService;
     }
 
-    public final PluginServiceProvider getPluginService(){
-        return provider;
+    public final PluginService getPluginService(){
+        return pluginService;
     }
 
     // override methods

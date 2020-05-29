@@ -28,7 +28,7 @@ public class LocaleBundleImpl implements LocaleBundle {
     }
 
     @Override
-    public final void setLocale(final Locale locale){
+    public final synchronized void setLocale(final Locale locale){
         loadedLocale = locale;
         loadedBundle = locales.get(locale);
     }

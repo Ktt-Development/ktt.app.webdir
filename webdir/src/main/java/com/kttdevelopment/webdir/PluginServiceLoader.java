@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
-import com.kttdevelopment.webdir.api.PluginServiceProvider;
+import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
@@ -20,12 +20,12 @@ import java.util.*;
 import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.Logger.logger;
 
-public final class PluginService {
+public final class PluginServiceLoader {
 
     private final List<Formatter> formatters = new ArrayList<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    PluginService(final File pluginsFolder){
+    PluginServiceLoader(final File pluginsFolder){
         final String prefix = '[' + locale.getString("pluginService") + ']' + ' ';
 
         logger.info(prefix + locale.getString("pluginService.init.start"));
@@ -86,7 +86,9 @@ public final class PluginService {
             final String name = pl.getSimpleName();
             try{
                 // each plugin only has permission to use its own provider
-                final PluginServiceProvider provider = new PluginServiceProvider() {
+                final PluginService provider = null; // todo
+                /*
+                final PluginService provider = new PluginService() {
 
                     private final ConfigurationFile config = new ConfigurationFileImpl();
                     private final LocaleBundle locale = new LocaleBundleImpl();
@@ -123,8 +125,8 @@ public final class PluginService {
                         return permissions.getPermissions().hasPermission(address,permission);
                     }
                 };
-
-                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginServiceProvider.class).newInstance(provider);
+                */
+                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginService.class).newInstance(provider);
 
                 plugin.onEnable();
 
