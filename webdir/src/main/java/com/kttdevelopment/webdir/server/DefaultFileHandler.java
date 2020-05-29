@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.formatter.YamlFrontMatterReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class DefaultFileHandler extends FileHandler {
 
@@ -20,7 +21,9 @@ public class DefaultFileHandler extends FileHandler {
         if(frontMatter.hasFrontMatter()){
             final ConfigurationSection config = frontMatter.getFrontMatter();
 
-            // use formatter & send finished content w/o front matter
+            final List<String> imports = config.getList("import",String.class);
+
+            // handle formatters & send finished content w/o front matter
         }else{
             // send literal
             super.handle(exchange, source, bytes);

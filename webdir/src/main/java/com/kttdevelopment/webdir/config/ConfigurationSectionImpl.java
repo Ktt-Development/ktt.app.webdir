@@ -259,13 +259,15 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public final List getList(final String key){
-        return (List) config.getOrDefault(key,def.get(key));
+        final Object v = config.getOrDefault(key,def.get(key));
+        return v instanceof String ? Collections.singletonList(v) : (List) v;
     }
 
     @Override
     public final List getList(final String key, final List def){
         try{
-            return (List) config.getOrDefault(key, def);
+            final Object v = config.getOrDefault(key,def);
+            return v instanceof String ? Collections.singletonList(v) : (List) v;
         }catch(final ClassCastException ignored){
             return def;
         }
