@@ -1,16 +1,16 @@
 package com.kttdevelopment.webdir;
 
-import com.kttdevelopment.webdir.logger.LoggerFormatter;
+import com.kttdevelopment.webdir.logger.ConsoleLoggerFormatter;
+import com.kttdevelopment.webdir.logger.TimestampLoggerFormatter;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.logging.*;
 
 public final class LoggerService {
 
     public static final Logger logger = Logger.getGlobal();
 
-    private final Formatter formatter = new LoggerFormatter();
+    private final Formatter formatter = new TimestampLoggerFormatter();
 
     LoggerService(){
         final String prefix = "[Logger]" + ' ';
@@ -21,7 +21,7 @@ public final class LoggerService {
         logger.addHandler(
             new ConsoleHandler(){{
                 setLevel(Level.INFO);
-                setFormatter(formatter);
+                setFormatter(new ConsoleLoggerFormatter());
             }}
         );
         try{ // log

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 public abstract class PluginService {
 
     public abstract Logger getLogger();
-    
+
     // server reference
 
     public abstract SimpleHttpServer getHttpServer();
