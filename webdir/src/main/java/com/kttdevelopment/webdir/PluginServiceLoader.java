@@ -2,24 +2,30 @@ package com.kttdevelopment.webdir;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
+import com.kttdevelopment.webdir.api.serviceprovider.*;
+import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
+import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
+import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static com.kttdevelopment.webdir.Application.*;
-import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class PluginServiceLoader {
 
     private static final Logger logger = Logger.getLogger("WebDir / PluginService");
 
-    private final List<Formatter> formatters = new ArrayList<>();
+    private final Map<WebDirPlugin,List<Formatter>> formatters = new HashMap<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginServiceLoader(final File pluginsFolder){
@@ -48,15 +54,15 @@ public final class PluginServiceLoader {
         }
 
         // load plugins
-        final List<Class<WebDirPlugin>> plugins = new ArrayList<>();
+        final Map<Class<WebDirPlugin>, ConfigurationSection> plugins = new LinkedHashMap<>();
         while(resources.hasMoreElements()){
             final URL resource = resources.nextElement();
-            final Map yml;
+            final ConfigurationSection yml;
 
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new InputStreamReader(resource.openStream()));
-                yml = (Map) IN.read();
+                yml = new ConfigurationSectionImpl((Map) IN.read());
             }catch(final ClassCastException | IOException e){
                 logger.warning(prefix + locale.getString((e instanceof YamlException) ? "pluginService.init.badSyntax" : "pluginService.init.badStream", resource.toString()) + '\n' + LoggerService.getStackTraceAsString(e));
                 continue;
@@ -70,7 +76,7 @@ public final class PluginServiceLoader {
 
             final String main = yml.get("main").toString();
             try{
-                plugins.add((Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(main)));
+                plugins.put((Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(main)),yml);
             }catch(final ClassNotFoundException | NullPointerException ignored){
                 logger.warning(prefix + locale.getString("pluginService.init.missingMain",main));
             }catch(final ClassCastException ignored){
@@ -78,67 +84,107 @@ public final class PluginServiceLoader {
             }
         }
 
-        // start plugins
-        plugins.forEach(pl -> {
-            final String name = pl.getSimpleName();
+        plugins.forEach((pluginClass, yml) -> {
+
+            final PluginService provider = new PluginService() {
+
+                private final Logger logger;
+                private final SimpleHttpServer server;
+                private final ConfigurationFile config;
+                private final LocaleBundle locale;
+                private final String pluginName, version;
+                private final List<String> authors, dependencies;
+                private final Class<WebDirPlugin> main;
+
+                {
+                    server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
+                    config = new ConfigurationFileImpl();
+                    locale = new LocaleBundleImpl();
+                    pluginName = yml.getString("name");
+                    version = yml.getString("version");
+                    authors = yml.getList("authors");
+                    dependencies = yml.getList("dependencies");
+                    main = pluginClass;
+
+                    logger = Logger.getLogger(pluginName);
+                }
+
+                @Override
+                public final Logger getLogger(){
+                    return logger;
+                }
+
+                @Override
+                public final SimpleHttpServer getHttpServer(){
+                    return server;
+                }
+
+                @Override
+                public final ConfigurationFile getConfiguration(){
+                    return config;
+                }
+
+                @Override
+                public final LocaleBundle getLocale(){
+                    return locale;
+                }
+
+                @Override
+                public final boolean hasPermission(final String permission){
+                    return permissions.getPermissions().hasPermission((InetAddress) null,permission);
+                }
+
+                @Override
+                public final boolean hasPermission(final InetAddress address, final String permission){
+                    return permissions.getPermissions().hasPermission(address,permission);
+                }
+
+                @Override
+                public final String getPluginName(){
+                    return pluginName;
+                }
+
+                @Override
+                public final String getVersion(){
+                    return version;
+                }
+
+                @Override
+                public final String getAuthor(){
+                    return authors.size() >= 1 ? authors.get(0) : null;
+                }
+
+                @Override
+                public final List<String> getAuthors(){
+                    return authors;
+                }
+
+                @Override
+                public final Class<WebDirPlugin> getMainClass(){
+                    return main;
+                }
+
+                @Override
+                public final List<String> getDependencies(){
+                    return dependencies;
+                }
+            };
+
             try{
-                // each plugin only has permission to use its own provider
-                final PluginService provider = null; // todo
-                /*
-                final PluginService provider = new PluginService() {
-
-                    private final ConfigurationFile config = new ConfigurationFileImpl();
-                    private final LocaleBundle locale = new LocaleBundleImpl();
-
-                    @Override
-                    public final SimpleHttpServer getHttpServer(){
-                        return new SimpleHttpServerUnmodifiable(server.getServer());
-                    }
-
-                    // local config
-
-                    @Override
-                    public final ConfigurationFile getConfiguration(){
-                        return config;
-                    }
-
-                    // locale locale
-
-                    @Override
-                    public final LocaleBundle getLocale(){
-                        return locale;
-                    }
-
-                    // permissions
-
-                    @Override
-                    public final boolean hasPermission(final String permission){
-                        return hasPermission(null,permission);
-                    }
-
-
-                    @Override
-                    public final boolean hasPermission(final InetAddress address, final String permission){
-                        return permissions.getPermissions().hasPermission(address,permission);
-                    }
-                };
-                */
-                final WebDirPlugin plugin = pl.getDeclaredConstructor(PluginService.class).newInstance(provider);
-
+                final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
                 plugin.onEnable();
 
-                // load get methods
-                formatters.addAll(plugin.getFormatters());
+                // load methods
+                formatters.put(plugin,plugin.getFormatters());
 
-                logger.info(prefix + locale.getString("pluginService.internal.loaded",name));
             }catch(final NullPointerException |  NoSuchMethodException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.notFound",name) + '\n' + LoggerService.getStackTraceAsString(e));
+                logger.severe(prefix + locale.getString("pluginService.internal.notFound",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
             }catch(final IllegalAccessException | SecurityException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.scope",name) + '\n' + LoggerService.getStackTraceAsString(e));
+                logger.severe(prefix + locale.getString("pluginService.internal.scope",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
             }catch(final IllegalArgumentException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.params",name) + '\n' + LoggerService.getStackTraceAsString(e));
+                logger.severe(prefix + locale.getString("pluginService.internal.params",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
             }catch(final ExceptionInInitializerError |  InstantiationException | InvocationTargetException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.methodException",name) + '\n' + LoggerService.getStackTraceAsString(e));
+                logger.severe(prefix + locale.getString("pluginService.internal.methodException",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
             }
         });
 
