@@ -5,12 +5,14 @@ import com.kttdevelopment.webdir.permissions.Permissions;
 
 import java.io.*;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
-import static com.kttdevelopment.webdir.LoggerService.logger;
 
 @SuppressWarnings("rawtypes")
 public final class PermissionsService {
+
+    private static final Logger logger = Logger.getLogger("WebDir / PermissionsService");
 
     private final File permissionsFile;
     private Permissions permissions;

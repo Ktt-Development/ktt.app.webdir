@@ -1,20 +1,15 @@
 package com.kttdevelopment.webdir;
 
-import com.kttdevelopment.webdir.logger.ConsoleLoggerFormatter;
-import com.kttdevelopment.webdir.logger.TimestampLoggerFormatter;
+import com.kttdevelopment.webdir.logger.*;
 
 import java.io.*;
 import java.util.logging.*;
 
 public final class LoggerService {
 
-    public static final Logger logger = Logger.getGlobal();
-
-    private final Formatter formatter = new TimestampLoggerFormatter();
+    private static final Logger logger = Logger.getLogger("WebDir / LoggerService");
 
     LoggerService(){
-        final String prefix = "[Logger]" + ' ';
-
         logger.setLevel(Level.ALL);
         logger.setUseParentHandlers(false);
 
@@ -28,36 +23,36 @@ public final class LoggerService {
             logger.addHandler(
                 new FileHandler(System.currentTimeMillis() + ".log"){{
                     setLevel(Level.INFO);
-                    setFormatter(formatter);
+                    setFormatter(new TimestampLoggerFormatter());
                 }}
             );
         }catch(final IOException e){
-            logger.severe(prefix + "Failed to start log log: " + '\n' + getStackTraceAsString(e));
+            logger.severe("Failed to start log log: " + '\n' + getStackTraceAsString(e));
         }
 
         try{ // latest
             logger.addHandler(
                 new FileHandler("latest.log"){{
                     setLevel(Level.INFO);
-                    setFormatter(formatter);
+                    setFormatter(new TimestampLoggerFormatter());
                 }}
             );
         }catch(final IOException e){
-            logger.severe(prefix + "Failed to start latest log: " + '\n' + getStackTraceAsString(e));
+            logger.severe("Failed to start latest log: " + '\n' + getStackTraceAsString(e));
         }
 
         try{ // debug
             logger.addHandler(
                 new FileHandler("debug.log"){{
                     setLevel(Level.ALL);
-                    setFormatter(formatter);
+                    setFormatter(new TimestampDebugLoggerFormatter());
                 }}
             );
         }catch(final IOException e){
-            logger.severe(prefix + "Failed to start debug log: " + '\n' + getStackTraceAsString(e));
+            logger.severe("Failed to start debug log: " + '\n' + getStackTraceAsString(e));
         }
 
-        logger.info(prefix + "Finished initialization");
+        logger.info("Finished initialization");
     }
 
     public static String getStackTraceAsString(final Throwable e){

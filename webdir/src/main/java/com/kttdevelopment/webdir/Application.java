@@ -8,6 +8,7 @@ public abstract class Application {
 
     //
 
+    @SuppressWarnings("InstantiationOfUtilityClass")
     public static final LoggerService logger = new LoggerService();
 
     @SuppressWarnings("ConstantConditions")

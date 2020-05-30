@@ -10,11 +10,14 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
 import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class PluginServiceLoader {
+
+    private static final Logger logger = Logger.getLogger("WebDir / PluginService");
 
     private final List<Formatter> formatters = new ArrayList<>();
 
@@ -26,7 +29,7 @@ public final class PluginServiceLoader {
 
         // load jars
         final List<URL> pluginUrls = new ArrayList<>();
-        for(final File file : pluginsFolder.listFiles((dir, name) -> !dir.isDirectory() && name.endsWith(".jar"))){
+        for(final File file : Objects.requireNonNullElse(pluginsFolder.listFiles((dir, name) -> !dir.isDirectory() && name.endsWith(".jar")),new File[0])){
             try{
                 pluginUrls.add(file.toURI().toURL());
             }catch(final MalformedURLException e){

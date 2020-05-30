@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir.logger;
 import java.text.SimpleDateFormat;
 import java.util.logging.LogRecord;
 
-public class TimestampLoggerFormatter extends ConsoleLoggerFormatter {
+public class TimestampDebugLoggerFormatter extends DebugLoggerFormatter {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSSaa zzz");

@@ -7,12 +7,15 @@ import com.kttdevelopment.webdir.server.DefaultFileHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
+import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.config;
 import static com.kttdevelopment.webdir.Application.locale;
 import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class Server {
+
+    private static final Logger logger = Logger.getLogger("WebDir / Server");
 
     private final SimpleHttpServer server;
 

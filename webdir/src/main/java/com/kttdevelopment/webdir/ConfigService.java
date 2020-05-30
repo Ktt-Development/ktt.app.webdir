@@ -5,12 +5,15 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
-import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class ConfigService {
+
+    private static final Logger logger = Logger.getLogger("WebDir / ConfigService");
 
     private final ConfigurationFile config = new ConfigurationFileImpl();
 

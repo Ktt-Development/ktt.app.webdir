@@ -4,10 +4,11 @@ import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.util.*;
-
-import static com.kttdevelopment.webdir.LoggerService.logger;
+import java.util.logging.Logger;
 
 public final class LocaleService {
+
+    private static final Logger logger = Logger.getLogger("WebDir / LocaleService");
 
     private final LocaleBundle localeBundle = new LocaleBundleImpl();
 
