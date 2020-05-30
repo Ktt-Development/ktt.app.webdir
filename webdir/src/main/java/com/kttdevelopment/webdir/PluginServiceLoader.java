@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import static com.kttdevelopment.webdir.Application.*;
 
@@ -26,6 +25,10 @@ public final class PluginServiceLoader {
     private static final Logger logger = Logger.getLogger("WebDir / PluginService");
 
     private final Map<WebDirPlugin,List<Formatter>> formatters = new HashMap<>();
+
+    public final Map<WebDirPlugin, List<Formatter>> getFormatters(){
+        return Collections.unmodifiableMap(formatters);
+    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginServiceLoader(final File pluginsFolder){
@@ -85,106 +88,111 @@ public final class PluginServiceLoader {
         }
 
         plugins.forEach((pluginClass, yml) -> {
-
-            final PluginService provider = new PluginService() {
-
-                private final Logger logger;
-                private final SimpleHttpServer server;
-                private final ConfigurationFile config;
-                private final LocaleBundle locale;
-                private final String pluginName, version;
-                private final List<String> authors, dependencies;
-                private final Class<WebDirPlugin> main;
-
-                {
-                    server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
-                    config = new ConfigurationFileImpl();
-                    locale = new LocaleBundleImpl();
-                    pluginName = yml.getString("name");
-                    version = yml.getString("version");
-                    authors = yml.getList("authors");
-                    dependencies = yml.getList("dependencies");
-                    main = pluginClass;
-
-                    logger = Logger.getLogger(pluginName);
-                }
-
-                @Override
-                public final Logger getLogger(){
-                    return logger;
-                }
-
-                @Override
-                public final SimpleHttpServer getHttpServer(){
-                    return server;
-                }
-
-                @Override
-                public final ConfigurationFile getConfiguration(){
-                    return config;
-                }
-
-                @Override
-                public final LocaleBundle getLocale(){
-                    return locale;
-                }
-
-                @Override
-                public final boolean hasPermission(final String permission){
-                    return permissions.getPermissions().hasPermission((InetAddress) null,permission);
-                }
-
-                @Override
-                public final boolean hasPermission(final InetAddress address, final String permission){
-                    return permissions.getPermissions().hasPermission(address,permission);
-                }
-
-                @Override
-                public final String getPluginName(){
-                    return pluginName;
-                }
-
-                @Override
-                public final String getVersion(){
-                    return version;
-                }
-
-                @Override
-                public final String getAuthor(){
-                    return authors.size() >= 1 ? authors.get(0) : null;
-                }
-
-                @Override
-                public final List<String> getAuthors(){
-                    return authors;
-                }
-
-                @Override
-                public final Class<WebDirPlugin> getMainClass(){
-                    return main;
-                }
-
-                @Override
-                public final List<String> getDependencies(){
-                    return dependencies;
-                }
-            };
-
             try{
-                final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
-                plugin.onEnable();
 
-                // load methods
-                formatters.put(plugin,plugin.getFormatters());
+                final PluginService provider = new PluginService() {
 
-            }catch(final NullPointerException |  NoSuchMethodException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.notFound",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
-            }catch(final IllegalAccessException | SecurityException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.scope",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
-            }catch(final IllegalArgumentException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.params",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
-            }catch(final ExceptionInInitializerError |  InstantiationException | InvocationTargetException e){
-                logger.severe(prefix + locale.getString("pluginService.internal.methodException",provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                    private final Logger logger;
+                    private final SimpleHttpServer server;
+                    private final ConfigurationFile config;
+                    private final LocaleBundle locale;
+                    private final String pluginName, version;
+                    private final List<String> authors, dependencies;
+                    private final Class<WebDirPlugin> main;
+
+                    {
+                        server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
+                        config = new ConfigurationFileImpl();
+                        locale = new LocaleBundleImpl();
+                        pluginName = Objects.requireNonNull(yml.getString("name"));
+                        version = yml.getString("version");
+                        authors = yml.getList("authors");
+                        dependencies = yml.getList("dependencies");
+                        main = pluginClass;
+
+                        logger = Logger.getLogger(pluginName);
+                    }
+
+                    @Override
+                    public final Logger getLogger(){
+                        return logger;
+                    }
+
+                    @Override
+                    public final SimpleHttpServer getHttpServer(){
+                        return server;
+                    }
+
+                    @Override
+                    public final ConfigurationFile getConfiguration(){
+                        return config;
+                    }
+
+                    @Override
+                    public final LocaleBundle getLocale(){
+                        return locale;
+                    }
+
+                    @Override
+                    public final boolean hasPermission(final String permission){
+                        return permissions.getPermissions().hasPermission((InetAddress) null, permission);
+                    }
+
+                    @Override
+                    public final boolean hasPermission(final InetAddress address, final String permission){
+                        return permissions.getPermissions().hasPermission(address, permission);
+                    }
+
+                    @Override
+                    public final String getPluginName(){
+                        return pluginName;
+                    }
+
+                    @Override
+                    public final String getVersion(){
+                        return version;
+                    }
+
+                    @Override
+                    public final String getAuthor(){
+                        return authors.size() >= 1 ? authors.get(0) : null;
+                    }
+
+                    @Override
+                    public final List<String> getAuthors(){
+                        return authors;
+                    }
+
+                    @Override
+                    public final Class<WebDirPlugin> getMainClass(){
+                        return main;
+                    }
+
+                    @Override
+                    public final List<String> getDependencies(){
+                        return dependencies;
+                    }
+                };
+
+                try{
+                    final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
+                    plugin.onEnable();
+
+                    // load methods
+                    formatters.put(plugin, plugin.getFormatters());
+
+                    logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
+                }catch(final NullPointerException | NoSuchMethodException e){
+                    logger.severe(prefix + locale.getString("pluginService.internal.notFound", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                }catch(final IllegalAccessException | SecurityException e){
+                    logger.severe(prefix + locale.getString("pluginService.internal.scope", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                }catch(final IllegalArgumentException e){
+                    logger.severe(prefix + locale.getString("pluginService.internal.params", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                }catch(final ExceptionInInitializerError | InstantiationException | InvocationTargetException e){
+                    logger.severe(prefix + locale.getString("pluginService.internal.methodException", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                }
+            }catch(final NullPointerException ignored){
+                logger.severe(locale.getString("pluginService.internal.missingRequired", pluginClass.getSimpleName()));
             }
         });
 
