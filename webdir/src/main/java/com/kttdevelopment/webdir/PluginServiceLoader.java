@@ -97,7 +97,7 @@ public final class PluginServiceLoader {
                     private final ConfigurationFile config;
                     private final LocaleBundle locale;
                     private final String pluginName, version;
-                    private final List<String> authors, dependencies;
+                    private final List<String> authors;
                     private final Class<WebDirPlugin> main;
 
                     {
@@ -107,7 +107,6 @@ public final class PluginServiceLoader {
                         pluginName = Objects.requireNonNull(yml.getString("name"));
                         version = yml.getString("version");
                         authors = yml.getList("authors");
-                        dependencies = yml.getList("dependencies");
                         main = pluginClass;
 
                         logger = Logger.getLogger(pluginName);
@@ -166,11 +165,6 @@ public final class PluginServiceLoader {
                     @Override
                     public final Class<WebDirPlugin> getMainClass(){
                         return main;
-                    }
-
-                    @Override
-                    public final List<String> getDependencies(){
-                        return dependencies;
                     }
                 };
 

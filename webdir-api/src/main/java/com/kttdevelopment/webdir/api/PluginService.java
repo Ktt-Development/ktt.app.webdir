@@ -42,6 +42,4 @@ public abstract class PluginService {
 
     public abstract Class<WebDirPlugin> getMainClass();
 
-    public abstract List<String> getDependencies();
-
 }
