@@ -14,7 +14,7 @@ public abstract class Application {
     @SuppressWarnings("ConstantConditions")
     public static final ConfigService config = new ConfigService(
         new File(parent + '\\' + "config.yml"),
-        new File(Application.class.getClassLoader().getResource("config.yml").getFile())
+        Application.class.getClassLoader().getResourceAsStream("config.yml")
     );
 
     public static final LocaleService locale = new LocaleService("lang/bundle");

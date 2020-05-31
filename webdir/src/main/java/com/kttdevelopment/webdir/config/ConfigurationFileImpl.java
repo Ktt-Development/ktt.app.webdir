@@ -16,15 +16,18 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         configFile = null;
     }
 
-    public ConfigurationFileImpl(final File configFile){
+    public ConfigurationFileImpl(final File configFile, boolean skipRead){
+        super();
+        this.configFile = skipRead ? configFile : null;
+    }
+
+    public ConfigurationFileImpl(final File configFile) throws FileNotFoundException, YamlException{
         super();
         this.configFile = configFile;
         YamlReader IN = null;
         try{
             IN = new YamlReader(new FileReader(configFile));
             config = (Map) IN.read();
-        }catch(final FileNotFoundException | YamlException ignored){
-            // the file is a reference, load is only necessary if it is found
         }finally{
             if(IN != null)
                 try{ IN.close();

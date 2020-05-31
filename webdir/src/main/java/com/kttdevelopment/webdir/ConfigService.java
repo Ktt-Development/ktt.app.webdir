@@ -1,9 +1,13 @@
 package com.kttdevelopment.webdir;
 
+import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
@@ -22,42 +26,70 @@ public final class ConfigService {
 
     //
 
-    ConfigService(final File configFile, final File defaultConfigFile){
+    ConfigService(final File configFile, final InputStream defaultConfig){
         logger.info("Started config initialization");
 
+        final InputStream configStream, cloneStream;
+
+        try(final ByteArrayOutputStream OUT = new ByteArrayOutputStream()){
+            Objects.requireNonNull(defaultConfig).transferTo(OUT);
+            configStream = new ByteArrayInputStream(OUT.toByteArray());
+            cloneStream = new ByteArrayInputStream(OUT.toByteArray());
+        }catch(final NullPointerException e){
+            logger.severe(
+                "Failed to load default configuration file (not found)"
+            );
+            throw new RuntimeException(e);
+        }catch(final IOException e){
+            logger.severe("Failed to read default configuration file (I/O error)" + '\n' + LoggerService.getStackTraceAsString(e));
+            throw new RuntimeException(e);
+        }
+
+        // load default
+
         final ConfigurationFile def;
-        def = new ConfigurationFileImpl(defaultConfigFile);
+        try(defaultConfig){
+            def = new ConfigurationFileImpl(configStream);
+        }catch(final ClassCastException | YamlException e){
+            logger.severe(
+                "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
+            );
+            throw new RuntimeException(e);
+        }catch(final IOException e){
+            logger.severe(
+                "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
+            );
+            throw new RuntimeException(e);
+        }
 
-        config = new ConfigurationFileImpl(configFile); // use file exists for err
-        config.setDefault(def);
-        config.saveDefault();
+        // load config
+        ConfigurationFile tConfig = new ConfigurationFileImpl(configFile,true);
+        tConfig.setDefault(def);
+        try{
+            tConfig = new ConfigurationFileImpl(configFile);
+            logger.info("Finished loading configuration file");
+        }catch(final FileNotFoundException ignored){
+            logger.warning("Configuration file not found, creating a new configuration file");
 
-        logger.info("Loading configuration file");
-        config.reload();
-        logger.info("Finished loading configuration file");
-
+            try(cloneStream){ // this will allow preservation of comments
+                Files.copy(cloneStream, configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                logger.info("New configuration file created");
+            }catch(final IOException e){
+                logger.severe(
+                    "Failed to create configuration file, using default configuration" +
+                    '\n' + LoggerService.getStackTraceAsString(e)
+                );
+            }
+        }catch(final ClassCastException | YamlException e){
+            logger.severe(
+                "Failed to read configuration file (invalid syntax), using default configuration" +
+                '\n' + LoggerService.getStackTraceAsString(e)
+            );
+        }
+        config = tConfig;
 
         logger.info("Finished config initialization");
     }
 
-    //
 
-    public synchronized final void read(){ // replace with reload
-        final boolean hasLocale = locale.getLocale() != null;
-        logger.info(
-            hasLocale ?
-            locale.getString("config.read.start") :
-            "Loading configuration file"
-        );
-        config.reload();
-        logger.info(
-            hasLocale ?
-            locale.getString("config.read.finished") :
-            "Finished loading configuration file"
-        );
-    }
-
-    public synchronized final void save(){
-        config.save();
-    }
 }

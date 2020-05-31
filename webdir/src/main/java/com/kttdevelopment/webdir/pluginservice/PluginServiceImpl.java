@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.pluginservice;
 
+import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.Application;
 import com.kttdevelopment.webdir.api.PluginService;
@@ -11,6 +12,7 @@ import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -57,7 +59,14 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public final ConfigurationFile createConfiguration(final File configFile){
-        return new ConfigurationFileImpl(configFile);
+        if(!configFile.getAbsolutePath().startsWith(folder.getAbsolutePath()))
+            throw new SecurityException("Plugin can not create configuration files outside of the plugin's folder");
+        else
+            try{
+                return new ConfigurationFileImpl(configFile);
+            }catch(final FileNotFoundException | YamlException ignored){
+                return null;
+            }
     }
 
     @Override
