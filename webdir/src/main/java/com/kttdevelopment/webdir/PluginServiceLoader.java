@@ -98,6 +98,7 @@ public final class PluginServiceLoader {
                     private final String pluginName, version;
                     private final List<String> authors;
                     private final Class<WebDirPlugin> main;
+                    private final File folder;
 
                     {
                         server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
@@ -105,6 +106,7 @@ public final class PluginServiceLoader {
                         locale = new LocaleBundleImpl();
                         pluginName = Objects.requireNonNull(yml.getString("name"));
                         version = yml.getString("version");
+                        folder = new File(Application.parent + '\\' + "plugins" + '\\' + pluginName.replaceAll("[\\\\/:*?\"<>|]","_"));
                         authors = yml.getList("authors");
                         main = pluginClass;
 
@@ -139,6 +141,11 @@ public final class PluginServiceLoader {
                     @Override
                     public final boolean hasPermission(final InetAddress address, final String permission){
                         return permissions.getPermissions().hasPermission(address, permission);
+                    }
+
+                    @Override
+                    public final File getPluginFolder(){
+                        return (!folder.exists() && !folder.mkdir()) ? null : folder;
                     }
 
                     @Override

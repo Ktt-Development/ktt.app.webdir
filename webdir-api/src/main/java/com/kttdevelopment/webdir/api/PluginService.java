@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.api;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.serviceprovider.*;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,6 +29,10 @@ public abstract class PluginService {
     public abstract boolean hasPermission(final String permission);
 
     public abstract boolean hasPermission(final InetAddress address, final String permission);
+
+    // local folder
+
+    public abstract File getPluginFolder();
 
     // internal
 
