@@ -1,0 +1,23 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                 WebDir Configuration                 | #
+# +------------------------------------------------------+ #
+############################################################
+
+# The language that the application will use.
+# Supported languages:
+#  - English: en
+locale: en
+
+# The port that the server will run on
+# Allowed values: 1 - 65535
+# Default port is 80.
+port: 80
+
+# Where static files on the server will be loaded.
+# Default: _site
+source: _site
+
+# The context that files will be hosted at.
+# Default: files
+files: files

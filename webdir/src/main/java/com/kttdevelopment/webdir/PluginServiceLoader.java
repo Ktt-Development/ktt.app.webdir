@@ -35,7 +35,7 @@ public final class PluginServiceLoader {
     PluginServiceLoader(final File pluginsFolder){
         final String prefix = '[' + locale.getString("pluginService") + ']' + ' ';
 
-        logger.info(prefix + locale.getString("pluginService.init.start"));
+        logger.info(locale.getString("pluginService.init.start"));
 
         // load jars
         final List<URL> pluginUrls = new ArrayList<>();
@@ -43,7 +43,7 @@ public final class PluginServiceLoader {
             try{
                 pluginUrls.add(file.toURI().toURL());
             }catch(final MalformedURLException e){
-                logger.severe(prefix + locale.getString("pluginService.init.badURL") + '\n' + LoggerService.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginService.init.badURL") + '\n' + LoggerService.getStackTraceAsString(e));
             }
         }
 
@@ -53,7 +53,7 @@ public final class PluginServiceLoader {
         try{
             resources = loader.findResources("plugin.yml");
         }catch(IOException e){
-            logger.severe(prefix + locale.getString("pluginService.init.failedYml") + '\n' + LoggerService.getStackTraceAsString(e));
+            logger.severe(locale.getString("pluginService.init.failedYml") + '\n' + LoggerService.getStackTraceAsString(e));
             return;
         }
 
@@ -68,13 +68,13 @@ public final class PluginServiceLoader {
                 IN = new YamlReader(new InputStreamReader(resource.openStream()));
                 yml = new ConfigurationSectionImpl((Map) IN.read());
             }catch(final ClassCastException | IOException e){
-                logger.warning(prefix + locale.getString((e instanceof YamlException) ? "pluginService.init.badSyntax" : "pluginService.init.badStream", resource.toString()) + '\n' + LoggerService.getStackTraceAsString(e));
+                logger.warning(locale.getString((e instanceof YamlException) ? "pluginService.init.badSyntax" : "pluginService.init.badStream", resource.toString()) + '\n' + LoggerService.getStackTraceAsString(e));
                 continue;
             }finally{
                 if(IN != null)
                     try{ IN.close();
                     }catch(final IOException e){
-                        logger.warning(prefix + locale.getString("pluginService.init.stream",resource.toString()) + '\n' + LoggerService.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pluginService.init.stream",resource.toString()) + '\n' + LoggerService.getStackTraceAsString(e));
                     }
             }
 
@@ -82,9 +82,9 @@ public final class PluginServiceLoader {
             try{
                 plugins.put((Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(main)),yml);
             }catch(final ClassNotFoundException | NullPointerException ignored){
-                logger.warning(prefix + locale.getString("pluginService.init.missingMain",main));
+                logger.warning(locale.getString("pluginService.init.missingMain",main));
             }catch(final ClassCastException ignored){
-                logger.warning(prefix + locale.getString("pluginService.init.badCast"));
+                logger.warning(locale.getString("pluginService.init.badCast"));
             }
         }
 
@@ -178,20 +178,20 @@ public final class PluginServiceLoader {
 
                     logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
                 }catch(final NullPointerException | NoSuchMethodException e){
-                    logger.severe(prefix + locale.getString("pluginService.internal.notFound", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("pluginService.internal.notFound", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
                 }catch(final IllegalAccessException | SecurityException e){
-                    logger.severe(prefix + locale.getString("pluginService.internal.scope", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("pluginService.internal.scope", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
                 }catch(final IllegalArgumentException e){
-                    logger.severe(prefix + locale.getString("pluginService.internal.params", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("pluginService.internal.params", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
                 }catch(final ExceptionInInitializerError | InstantiationException | InvocationTargetException e){
-                    logger.severe(prefix + locale.getString("pluginService.internal.methodException", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("pluginService.internal.methodException", provider.getPluginName()) + '\n' + LoggerService.getStackTraceAsString(e));
                 }
             }catch(final NullPointerException ignored){
                 logger.severe(locale.getString("pluginService.internal.missingRequired", pluginClass.getSimpleName()));
             }
         });
 
-        logger.info(prefix + locale.getString("pluginService.init.finished"));
+        logger.info(locale.getString("pluginService.init.finished"));
     }
 
 }

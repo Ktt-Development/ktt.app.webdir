@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.webdir.server.DefaultFileHandler;
 import com.kttdevelopment.webdir.server.StaticFileHandler;
 
 import java.io.File;
@@ -25,8 +26,7 @@ public final class Server {
     //
 
     Server(){
-        final String prefix = '[' + locale.getString("server") + ']' + ' ';
-        logger.info(prefix + locale.getString("server.init.start"));
+        logger.info(locale.getString("server.init.start"));
 
         // port bind
         final int port = config.getConfig().getInteger("key");
@@ -34,26 +34,32 @@ public final class Server {
             server = SimpleHttpServer.create();
             server.bind(port);
         }catch(final IllegalArgumentException e){
-            logger.severe(prefix + locale.getString("server.init.badPort",port));
+            logger.severe(locale.getString("server.init.badPort",port));
             throw new RuntimeException(e);
         }catch(final BindException e){
-            logger.severe(prefix + locale.getString("server.init.portTaken",port));
+            logger.severe(locale.getString("server.init.portTaken",port));
             throw new RuntimeException(e);
         }catch(final IOException e){
-            logger.severe(prefix + locale.getString("server.init.failed") + '\n' + LoggerService.getStackTraceAsString(e));
+            logger.severe(locale.getString("server.init.failed") + '\n' + LoggerService.getStackTraceAsString(e));
             throw new RuntimeException(e);
         }
         // init
 
-        final FileHandler fileHandler = new StaticFileHandler();
+        final FileHandler staticHandler = new StaticFileHandler();
+        staticHandler.addDirectory(new File(Application.parent + '\\' + config.getConfig().getString("source")));
+        server.createContext("",staticHandler);
+
+        //
+
+        final FileHandler fileHandler = new DefaultFileHandler();
         for(final File file : File.listRoots())
             fileHandler.addDirectory(file);
 
-        server.createContext(config.getConfig().getString("head"),fileHandler);
+        server.createContext(config.getConfig().getString("files"),fileHandler);
 
         // start
 
-        logger.info(prefix + locale.getString("server.init.finished"));
+        logger.info(locale.getString("server.init.finished"));
     }
 
 }

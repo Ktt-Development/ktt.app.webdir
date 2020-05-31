@@ -34,7 +34,7 @@ public final class ConfigService {
 
         final String prefix = "[Config]" + ' ';
 
-        logger.info(prefix + "Started config initialization");
+        logger.info("Started config initialization");
 
         try{
             final ConfigurationFile def = new ConfigurationFileImpl();
@@ -42,23 +42,23 @@ public final class ConfigService {
             config.setDefault(def);
         }catch(final FileNotFoundException e){
             logger.severe(
-                    prefix + "Failed to load default configuration file (not found)" + '\n' + LoggerService.getStackTraceAsString(e)
+                    "Failed to load default configuration file (not found)" + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
         }catch(final ClassCastException | YamlException e){
             logger.severe(
-                    prefix + "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
+                    "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
         }catch(final IOException e){
             logger.severe(
-                    prefix + "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
+                    "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw new RuntimeException(e);
         }
 
         read();
-        logger.info(prefix + "Finished config initialization");
+        logger.info("Finished config initialization");
     }
 
     //
@@ -148,7 +148,7 @@ public final class ConfigService {
         final String prefix = hasLocale ? '[' + locale.getString("config") + ']' + ' ' : "[Config]" + ' ';
 
         logger.info(
-            prefix + (
+            (
                 hasLocale ?
                 locale.getString("config.write.start") :
                 "Writing to configuration file"
@@ -158,7 +158,7 @@ public final class ConfigService {
         try{
             config.save(configFile);
             logger.info(
-                prefix + (
+                (
                     hasLocale ?
                     locale.getString("config.write.finished") :
                     "Finished writing to configuration file"

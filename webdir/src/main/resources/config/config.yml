@@ -1,5 +1,0 @@
-locale: en
-port: 80
-source: _site
-
-head: files

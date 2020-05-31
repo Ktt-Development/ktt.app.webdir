@@ -79,7 +79,7 @@ public final class LocaleService {
     LocaleService(final String resource){
         final String prefix = "[Locale]" + ' ';
 
-        logger.info(prefix + "Started locale initialization");
+        logger.info("Started locale initialization");
 
         for(final String code : localeCodes){
             try{
@@ -90,10 +90,10 @@ public final class LocaleService {
                     LocaleService.class.getClassLoader(),
                     ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES)
                 ));
-                logger.finest(prefix + '+' + code);
+                logger.finest('+' + code);
             }catch(final NullPointerException | MissingResourceException | IllegalArgumentException e){
                 if(code.equalsIgnoreCase("en")){
-                    logger.severe(prefix + "Failed to load default locale");
+                    logger.severe("Failed to load default locale");
                     throw new RuntimeException(e);
                 }
             }

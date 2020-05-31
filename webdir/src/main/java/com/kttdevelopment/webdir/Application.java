@@ -14,7 +14,7 @@ public abstract class Application {
     @SuppressWarnings("ConstantConditions")
     public static final ConfigService config = new ConfigService(
         new File(parent + '\\' + "config.yml"),
-        new File(Application.class.getClassLoader().getResource("config/config.yml").getFile())
+        new File(Application.class.getClassLoader().getResource("config.yml").getFile())
     );
 
     public static final LocaleService locale = new LocaleService("lang/bundle");
@@ -22,7 +22,7 @@ public abstract class Application {
     @SuppressWarnings("ConstantConditions")
     public static final PermissionsService permissions = new PermissionsService(
         new File(parent + '\\' + "permissions.yml"),
-        new File(Application.class.getClassLoader().getResource("permissions/permissions.yml").getFile())
+        new File(Application.class.getClassLoader().getResource("permissions.yml").getFile())
     );
 
     public static final Server server = new Server();
