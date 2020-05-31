@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class StaticFileHandler extends FileHandler {
 
+    @SuppressWarnings("SpellCheckingInspection")
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
         final String str = new String(bytes);

@@ -5,12 +5,10 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.var.RequestMethod;
 import com.sun.net.httpserver.*;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
 
@@ -82,9 +80,10 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
         return exchange.getRawPost();
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public final HashMap getPostMap(){
-        return (HashMap) Collections.unmodifiableMap(exchange.getPostMap());
+    public final Map getPostMap(){
+        return Collections.unmodifiableMap(exchange.getPostMap());
     }
 
     @Override
@@ -140,52 +139,52 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
     }
 
     @Override
-    public final void sendResponseHeaders(final int code, final long length) throws IOException{
+    public final void sendResponseHeaders(final int code, final long length){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final int responseCode) throws IOException{
+    public final void send(final int responseCode){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final byte[] response) throws IOException{
+    public final void send(final byte[] response){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final byte[] response, final boolean gzip) throws IOException{
+    public final void send(final byte[] response, final boolean gzip){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final byte[] response, final int responseCode) throws IOException{
+    public final void send(final byte[] response, final int responseCode){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final byte[] response, final int responseCode, final boolean gzip) throws IOException{
+    public final void send(final byte[] response, final int responseCode, final boolean gzip){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final String response) throws IOException{
+    public final void send(final String response){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final String response, final boolean gzip) throws IOException{
+    public final void send(final String response, final boolean gzip){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final String response, final int responseCode) throws IOException{
+    public final void send(final String response, final int responseCode){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void send(final String response, final int responseCode, final boolean gzip) throws IOException{
+    public final void send(final String response, final int responseCode, final boolean gzip){
         throw new UnsupportedOperationException();
     }
 

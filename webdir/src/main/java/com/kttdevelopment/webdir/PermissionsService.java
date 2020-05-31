@@ -29,8 +29,6 @@ public final class PermissionsService {
 
     PermissionsService(final File permissionsFile, final File defaultPermissionsFile){
         this.permissionsFile = permissionsFile;
-
-        final String prefix = '[' + locale.getString("permissions") + ']' + ' ';
         
         logger.info(locale.getString("permissions.init.start"));
 
@@ -55,8 +53,6 @@ public final class PermissionsService {
 
     @SuppressWarnings("UnusedReturnValue")
     public synchronized final boolean read(){
-        final String prefix = '[' + locale.getString("prefix") + ']' + ' ';
-
         logger.info(locale.getString("permissions.read.start"));
 
         YamlReader IN = null;
@@ -85,8 +81,6 @@ public final class PermissionsService {
     }
 
     public synchronized final boolean write(){
-        final String prefix = '[' + locale.getString("prefix") + ']' + ' ';
-
         logger.info(locale.getString("permissions.write.start"));
 
         YamlWriter OUT = null;

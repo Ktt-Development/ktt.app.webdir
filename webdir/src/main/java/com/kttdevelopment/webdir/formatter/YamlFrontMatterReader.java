@@ -21,6 +21,7 @@ public class YamlFrontMatterReader {
         this.content = content;
     }
 
+    @SuppressWarnings("rawtypes")
     public final YamlFrontMatter read(){
         final Matcher matcher = pattern.matcher(content);
 
@@ -39,6 +40,7 @@ public class YamlFrontMatterReader {
                 frontMatter = new ConfigurationSectionImpl((Map) IN.read());
                 hasFrontMatter = true;
                 frontMatterStr = g2;
+                cont = ct;
             }catch(final ClassCastException | YamlException ignored){
                 // invalid yaml
             }finally{

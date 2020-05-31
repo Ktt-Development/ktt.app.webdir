@@ -31,8 +31,10 @@ public class WebDirPlugin {
 
     // override methods
 
+    @SuppressWarnings("EmptyMethod")
     public void onEnable(){}
 
+    @SuppressWarnings("EmptyMethod")
     public void onDisable(){}
 
 }

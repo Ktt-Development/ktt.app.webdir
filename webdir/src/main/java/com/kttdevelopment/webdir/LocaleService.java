@@ -20,10 +20,14 @@ public final class LocaleService {
 
     public final String getString(final String key){
         try{
-            return localeBundle.getString(key);
+            return Objects.requireNonNull(localeBundle.getString(key));
         }catch(final ClassCastException | NullPointerException | MissingResourceException ignored){
-            logger.warning('[' + getString("locale") + ']' + ' ' + getString("locale.getString.notFound"));
-            return null;
+            logger.warning(getString("locale.getString.notFound"));
+            try{
+                return localeBundle.getString(Locale.ENGLISH, key); // use english as fallback value
+            }catch(final ClassCastException | NullPointerException | MissingResourceException ignored2){
+                return null;
+            }
         }
     }
 
@@ -35,7 +39,7 @@ public final class LocaleService {
         }catch(final NullPointerException ignored){
             // logger handled in above
         }catch(final IllegalFormatException ignored){
-            logger.warning('[' + getString("locale") + ']' + ' ' + getString("locale.getString.param"));
+            logger.warning( getString("locale.getString.param"));
         }
         return value;
     }
@@ -48,10 +52,7 @@ public final class LocaleService {
     public synchronized final void setLocale(final Locale locale){
         final LocaleBundle bundle = localeBundle;
 
-        final String prefix = '[' + getString("locale") + ']' + ' ';
-
         logger.info(
-            prefix +
             getString(
                 "locale.setLocale.initial",
                 bundle.getLocale().getDisplayName(),
@@ -62,12 +63,10 @@ public final class LocaleService {
         if(localeBundle.hasLocale(locale)){
             setLocale(locale);
             logger.info(
-                prefix +
                 getString("locale.setLocale.finished",bundle.getLocale().getDisplayName(),locale.getDisplayName())
             );
         }else{
             logger.warning(
-                prefix +
                 getString("locale.setLocale.notFound",locale.getDisplayName())
             );
         }
@@ -76,9 +75,8 @@ public final class LocaleService {
     //
     @SuppressWarnings("FieldCanBeLocal")
     private final String[] localeCodes = {"en"};
+    @SuppressWarnings("SameParameterValue")
     LocaleService(final String resource){
-        final String prefix = "[Locale]" + ' ';
-
         logger.info("Started locale initialization");
 
         for(final String code : localeCodes){
@@ -101,7 +99,7 @@ public final class LocaleService {
 
         setLocale(Application.config.getConfig().getString("locale","en"));
 
-        logger.info('[' + getString("locale") + ']' + ' ' + getString("locale.init.finished"));
+        logger.info(getString("locale.init.finished"));
     }
 
 }

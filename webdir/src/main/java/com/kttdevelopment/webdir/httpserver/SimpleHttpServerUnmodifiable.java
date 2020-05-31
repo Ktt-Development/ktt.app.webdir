@@ -3,7 +3,6 @@ package com.kttdevelopment.webdir.httpserver;
 import com.kttdevelopment.simplehttpserver.*;
 import com.sun.net.httpserver.*;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -117,22 +116,22 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
     }
 
     @Override
-    public final InetSocketAddress bind(final int port) throws IOException{
+    public final InetSocketAddress bind(final int port){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final InetSocketAddress bind(final int port, final int backlog) throws IOException{
+    public final InetSocketAddress bind(final int port, final int backlog){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void bind(final InetSocketAddress addr) throws IOException{
+    public final void bind(final InetSocketAddress address){
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void bind(final InetSocketAddress addr, final int backlog) throws IOException{
+    public final void bind(final InetSocketAddress address, final int backlog){
         throw new UnsupportedOperationException();
     }
 

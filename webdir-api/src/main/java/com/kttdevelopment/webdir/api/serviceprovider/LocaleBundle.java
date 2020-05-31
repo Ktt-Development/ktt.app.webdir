@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.api.serviceprovider;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public interface LocaleBundle {
@@ -17,5 +18,9 @@ public interface LocaleBundle {
     String getString(final String key);
 
     String getString(final String key, final Object... params);
+
+    String getString(final Locale locale, final String key);
+
+    String getString(final Locale locale, final String key, final Object... params);
 
 }

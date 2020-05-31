@@ -45,4 +45,14 @@ public class LocaleBundleImpl implements LocaleBundle {
         return String.format(loadedBundle.getString(key),params);
     }
 
+    @Override
+    public String getString(final Locale locale, final String key){
+        return locales.get(locale).getString(key);
+    }
+
+    @Override
+    public String getString(final Locale locale, final String key, final Object... params){
+        return String.format(locales.get(locale).getString(key),params);
+    }
+
 }

@@ -33,8 +33,6 @@ public final class PluginServiceLoader {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginServiceLoader(final File pluginsFolder){
-        final String prefix = '[' + locale.getString("pluginService") + ']' + ' ';
-
         logger.info(locale.getString("pluginService.init.start"));
 
         // load jars
@@ -174,7 +172,7 @@ public final class PluginServiceLoader {
                     plugin.onEnable();
 
                     // load methods
-                    formatters.put(plugin,plugin.getFormatters());
+                    formatters.putIfAbsent(plugin,plugin.getFormatters());
 
                     logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
                 }catch(final NullPointerException | NoSuchMethodException e){

@@ -29,6 +29,7 @@ public abstract class Application {
 
     public static final PluginServiceLoader pluginService = new PluginServiceLoader(new File(parent + '\\' + "plugins"));
 
+
     //
 
     public synchronized static void main(String[] args){
