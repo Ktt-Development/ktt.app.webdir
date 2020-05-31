@@ -11,8 +11,7 @@ import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
 import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.io.*;
-import java.net.*;
-import java.nio.file.Files;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
 public class PluginServiceImpl extends PluginService {
 
     private final Class<WebDirPlugin> mainClass;
-    private final ConfigurationSection yml;
 
     private final Logger logger;
     private final SimpleHttpServer server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
@@ -29,9 +27,10 @@ public class PluginServiceImpl extends PluginService {
     private final List<String> authors;
     private final File folder;
 
+    private final String folderPath;
+
     public PluginServiceImpl(final Class<WebDirPlugin> mainClass, final ConfigurationSection yml){
         this.mainClass = mainClass;
-        this.yml = yml;
 
         locale = new LocaleBundleImpl();
         pluginName = Objects.requireNonNull(yml.getString("name"));
@@ -40,6 +39,8 @@ public class PluginServiceImpl extends PluginService {
         authors = yml.getList("authors",String.class);
 
         logger = Logger.getLogger(pluginName);
+
+        folderPath = folder.getAbsolutePath();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public final ConfigurationFile createConfiguration(final File configFile){
-        if(!configFile.getAbsolutePath().startsWith(folder.getAbsolutePath()))
+        if(!configFile.getAbsolutePath().startsWith(folderPath))
             throw new SecurityException("Plugin can not create configuration files outside of the plugin's folder");
         else
             try{

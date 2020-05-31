@@ -10,8 +10,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static com.kttdevelopment.webdir.Application.*;
-
 public final class ConfigService {
 
     private static final Logger logger = Logger.getLogger("WebDir / ConfigService");

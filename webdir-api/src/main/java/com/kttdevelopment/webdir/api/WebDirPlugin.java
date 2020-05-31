@@ -8,13 +8,23 @@ import java.util.*;
 public class WebDirPlugin {
 
     private final Map<String,Formatter> formatters = new HashMap<>();
+    private final Map<Formatter,String> permissions = new HashMap<>();
 
     public final Map<String,Formatter> getFormatters(){
         return Collections.unmodifiableMap(formatters);
     }
 
+    public final Map<Formatter,String> getPermissions(){
+        return Collections.unmodifiableMap(permissions);
+    }
+
     public final void addFormatter(final String name, final Formatter formatter){
         formatters.put(name,formatter);
+    }
+
+    public final void addFormatter(final String name, final Formatter formatter, final String permission){
+        formatters.put(name,formatter);
+        permissions.put(formatter,permission);
     }
 
     // instance +pluginService

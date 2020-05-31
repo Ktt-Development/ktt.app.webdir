@@ -34,7 +34,6 @@ public class YamlFrontMatterReader {
             final String g2 = matcher.group(2);
             final String ct = content.substring(matcher.group(0).length() + 1);
 
-
             final YamlReader IN = new YamlReader(g2);
             try{
                 frontMatter = new ConfigurationSectionImpl((Map) IN.read());
