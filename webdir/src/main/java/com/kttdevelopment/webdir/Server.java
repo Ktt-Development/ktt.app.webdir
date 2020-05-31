@@ -2,7 +2,7 @@ package com.kttdevelopment.webdir;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
-import com.kttdevelopment.webdir.server.DefaultFileHandler;
+import com.kttdevelopment.webdir.server.StaticFileHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.config;
 import static com.kttdevelopment.webdir.Application.locale;
-import static com.kttdevelopment.webdir.LoggerService.logger;
 
 public final class Server {
 
@@ -46,7 +45,7 @@ public final class Server {
         }
         // init
 
-        final FileHandler fileHandler = new DefaultFileHandler();
+        final FileHandler fileHandler = new StaticFileHandler();
         for(final File file : File.listRoots())
             fileHandler.addDirectory(file);
 

@@ -4,16 +4,17 @@ import com.kttdevelopment.webdir.api.formatter.Formatter;
 
 import java.util.*;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class WebDirPlugin {
 
-    private final List<Formatter> formatters = new ArrayList<>();
+    private final Map<String,Formatter> formatters = new HashMap<>();
 
-    public final List<Formatter> getFormatters(){
-        return Collections.unmodifiableList(formatters);
+    public final Map<String,Formatter> getFormatters(){
+        return Collections.unmodifiableMap(formatters);
     }
 
-    public final void addFormatter(final Formatter formatter){
-        formatters.add(formatter);
+    public final void addFormatter(final String name, final Formatter formatter){
+        formatters.put(name,formatter);
     }
 
     // instance +pluginService

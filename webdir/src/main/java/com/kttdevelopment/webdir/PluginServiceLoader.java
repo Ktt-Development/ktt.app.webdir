@@ -20,13 +20,14 @@ import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
 
+@SuppressWarnings("SpellCheckingInspection")
 public final class PluginServiceLoader {
 
     private static final Logger logger = Logger.getLogger("WebDir / PluginService");
 
-    private final Map<WebDirPlugin,List<Formatter>> formatters = new HashMap<>();
+    private final Map<WebDirPlugin,Map<String,Formatter>> formatters = new HashMap<>();
 
-    public final Map<WebDirPlugin, List<Formatter>> getFormatters(){
+    public final Map<WebDirPlugin,Map<String,Formatter>> getFormatters(){
         return Collections.unmodifiableMap(formatters);
     }
 
@@ -173,7 +174,7 @@ public final class PluginServiceLoader {
                     plugin.onEnable();
 
                     // load methods
-                    formatters.put(plugin, plugin.getFormatters());
+                    formatters.put(plugin,plugin.getFormatters());
 
                     logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
                 }catch(final NullPointerException | NoSuchMethodException e){

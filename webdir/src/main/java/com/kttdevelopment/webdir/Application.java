@@ -27,7 +27,7 @@ public abstract class Application {
 
     public static final Server server = new Server();
 
-    public static final PluginServiceLoader apiLoader = new PluginServiceLoader(new File(parent + '\\' + "plugins"));
+    public static final PluginServiceLoader pluginService = new PluginServiceLoader(new File(parent + '\\' + "plugins"));
 
     //
 
