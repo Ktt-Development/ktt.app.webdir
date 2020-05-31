@@ -11,6 +11,7 @@ import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
 import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
+import com.kttdevelopment.webdir.pluginservice.PluginServiceImpl;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -89,90 +90,7 @@ public final class PluginServiceLoader {
         plugins.forEach((pluginClass, yml) -> {
             try{
 
-                final PluginService provider = new PluginService() {
-
-                    private final Logger logger;
-                    private final SimpleHttpServer server;
-                    private final ConfigurationFile config;
-                    private final LocaleBundle locale;
-                    private final String pluginName, version;
-                    private final List<String> authors;
-                    private final Class<WebDirPlugin> main;
-                    private final File folder;
-
-                    {
-                        server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
-                        config = new ConfigurationFileImpl();
-                        locale = new LocaleBundleImpl();
-                        pluginName = Objects.requireNonNull(yml.getString("name"));
-                        version = yml.getString("version");
-                        folder = new File(Application.parent + '\\' + "plugins" + '\\' + pluginName.replaceAll("[\\\\/:*?\"<>|]","_"));
-                        authors = yml.getList("authors");
-                        main = pluginClass;
-
-                        logger = Logger.getLogger(pluginName);
-                    }
-
-                    @Override
-                    public final Logger getLogger(){
-                        return logger;
-                    }
-
-                    @Override
-                    public final SimpleHttpServer getHttpServer(){
-                        return server;
-                    }
-
-                    @Override
-                    public final ConfigurationFile getConfiguration(){
-                        return config;
-                    }
-
-                    @Override
-                    public final LocaleBundle getLocale(){
-                        return locale;
-                    }
-
-                    @Override
-                    public final boolean hasPermission(final String permission){
-                        return permissions.getPermissions().hasPermission((InetAddress) null, permission);
-                    }
-
-                    @Override
-                    public final boolean hasPermission(final InetAddress address, final String permission){
-                        return permissions.getPermissions().hasPermission(address, permission);
-                    }
-
-                    @Override
-                    public final File getPluginFolder(){
-                        return (!folder.exists() && !folder.mkdir()) ? null : folder;
-                    }
-
-                    @Override
-                    public final String getPluginName(){
-                        return pluginName;
-                    }
-
-                    @Override
-                    public final String getVersion(){
-                        return version;
-                    }
-
-                    @Override
-                    public final String getAuthor(){
-                        return authors.size() >= 1 ? authors.get(0) : null;
-                    }
-
-                    @Override
-                    public final List<String> getAuthors(){
-                        return authors;
-                    }
-
-                    @Override
-                    public final Class<WebDirPlugin> getMainClass(){
-                        return main;
-                    }
-                };
+                final PluginService provider = new PluginServiceImpl(pluginClass,yml);
 
                 try{
                     final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);

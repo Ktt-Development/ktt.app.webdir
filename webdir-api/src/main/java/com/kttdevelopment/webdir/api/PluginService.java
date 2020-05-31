@@ -1,9 +1,10 @@
 package com.kttdevelopment.webdir.api;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
-import com.kttdevelopment.webdir.api.serviceprovider.*;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
-import java.io.File;
+import java.io.*;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.logging.Logger;
@@ -18,7 +19,13 @@ public abstract class PluginService {
 
     // local config
 
-    public abstract ConfigurationFile getConfiguration();
+    public abstract ConfigurationFile createConfiguration();
+
+    public abstract ConfigurationFile createConfiguration(final File configFile);
+
+    public abstract ConfigurationFile createConfiguration(final Reader reader);
+
+    public abstract ConfigurationFile createConfiguration(final InputStream stream);
 
     // local locale
 
@@ -45,5 +52,9 @@ public abstract class PluginService {
     public abstract List<String> getAuthors();
 
     public abstract Class<WebDirPlugin> getMainClass();
+
+    //
+
+    public abstract InputStream getResource(final String path);
 
 }

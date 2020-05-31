@@ -2,22 +2,56 @@ package com.kttdevelopment.webdir.api.serviceprovider;
 
 import java.io.*;
 
+/**
+ * A configuration file used to store settings from a yaml file. Represents the root level {@link ConfigurationSection}.
+ *
+ * @see ConfigurationSection
+ * @since 01.00.00
+ * @version 01.00.00
+ * @author Ktt Development
+ */
 public interface ConfigurationFile extends ConfigurationSection {
 
+    /**
+     * Sets the default configuration. Used when configuration file has no no value for the key requested.
+     *
+     * @param def Default configuration
+     *
+     * @see ConfigurationFile
+     * @since 01.00.00
+     * @author Ktt Development
+     */
     void setDefault(final ConfigurationFile def);
 
     //
 
-    void load(final String filename) throws IOException;
+    /**
+     * Clears loaded configuration data from memory and re-reads the configuration file.
+     *
+     * @throws UnsupportedOperationException if configuration was not associated with a file
+     *
+     * @since 01.00.00
+     */
+    void reload();
 
-    void load(final File file) throws IOException;
+    /**
+     * Saves the configuration to file.
+     *
+     * @throws UnsupportedOperationException if configuration was not associated with a file
+     *
+     * @see #saveDefault()
+     * @since 01.00.00
+     */
+    void save();
 
-    void load(final Reader reader) throws IOException;
-
-    void load(final InputStream stream) throws IOException;
-
-    void loadFromString(final String yaml) throws IOException;
-
-    void save(final File file) throws IOException;
+    /**
+     * Saves the default configuration to file only if it does not exist.
+     *
+     * @throws UnsupportedOperationException if configuration was not associated with a file
+     *
+     * @see #save()
+     * @since 01.00.00
+     */
+    void saveDefault();
 
 }

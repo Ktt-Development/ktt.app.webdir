@@ -14,10 +14,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     protected Map config; // todo: convert this to ConfigurationSection & constructor params as well
 
     public ConfigurationSectionImpl(){
-        this.root = this;
-        this.parent = null;
-        this.config = new HashMap();
-        this.def = new ConfigurationSectionImpl(this,null,new HashMap(),null);
+        this(new HashMap());
     }
 
     public ConfigurationSectionImpl(final Map config){
