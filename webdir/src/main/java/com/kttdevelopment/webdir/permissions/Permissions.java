@@ -60,8 +60,8 @@ public final class Permissions {
                 return user.getOptions().get(option);
 
         Object def = null;
-        for(final PermissionsGroup group : groups){ // find options by group
-            if(user != null && user.getGroups().contains(group.getGroup()))
+        for(final PermissionsGroup group : groups) // find options by group
+            if(user != null && user.getGroups().contains(group.getGroup())) // check group options
                 if(group.getOptions().containsKey(option))
                     return group.getOptions().get(option);
             else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false)) // use default if none found
