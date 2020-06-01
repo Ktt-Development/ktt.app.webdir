@@ -1,7 +1,5 @@
 package com.kttdevelopment.webdir.server;
 
-import com.kttdevelopment.webdir.api.formatter.Formatter;
-
 import java.util.Objects;
 
 class AbstractFormatterEntry {

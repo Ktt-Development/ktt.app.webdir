@@ -1,17 +1,19 @@
 package com.kttdevelopment.webdir.server;
 
+import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.Application;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.formatter.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.formatter.YamlFrontMatterReader;
 import com.kttdevelopment.webdir.permissions.Permissions;
 import com.kttdevelopment.webdir.pluginservice.PluginFormatter;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StaticFileHandler extends FileHandler {
 
     @SuppressWarnings({"SpellCheckingInspection", "rawtypes", "unchecked"})
-    @Override
+    @Override // todo: fine logging
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
         final String str = new String(bytes);
 
@@ -28,7 +30,17 @@ public class StaticFileHandler extends FileHandler {
         if(frontMatter.hasFrontMatter()){
             final ConfigurationSection config = frontMatter.getFrontMatter();
 
-            final List<String> imports = config.getList("import",String.class); // import relative file || todo
+            final List<String> imports = config.getList("import",String.class);
+            final Map OUT = new HashMap();
+            imports.forEach(s -> {
+                final File IN = new File(Application.parent + '\\' + s);
+                try{ OUT.putAll(new ConfigurationFileImpl(IN).toMap());
+                }catch(final FileNotFoundException | YamlException ignored){ } // skip if not valid
+            });
+
+            OUT.putAll(frontMatter.getFrontMatter().toMap());
+            final ConfigurationSection finalMatter = new ConfigurationSectionImpl(OUT);
+
             final List formattersSrc = config.getList("formatters");
 
             final List<AbstractFormatterEntry> formattersHead = new LinkedList<>();
@@ -71,7 +83,7 @@ public class StaticFileHandler extends FileHandler {
                     queue.add(formatter);
 
             final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
-            queue.forEach(formatter -> content.set(formatter.format(exchange, source, frontMatter, content.get()))); // execute formatters in order
+            queue.forEach(formatter -> content.set(formatter.format(exchange, source, finalMatter, content.get()))); // execute formatters in order
 
             exchange.send(content.get());
         }else{

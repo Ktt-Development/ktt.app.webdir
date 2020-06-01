@@ -11,7 +11,6 @@ public abstract class Application {
     @SuppressWarnings("InstantiationOfUtilityClass")
     public static final LoggerService logger = new LoggerService();
 
-    @SuppressWarnings("ConstantConditions")
     public static final ConfigService config = new ConfigService(
         new File(parent + '\\' + "config.yml"),
         Application.class.getClassLoader().getResourceAsStream("config.yml")

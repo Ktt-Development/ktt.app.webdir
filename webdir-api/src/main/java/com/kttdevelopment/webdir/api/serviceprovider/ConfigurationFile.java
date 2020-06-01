@@ -1,7 +1,5 @@
 package com.kttdevelopment.webdir.api.serviceprovider;
 
-import java.io.*;
-
 /**
  * A configuration file used to store settings from a yaml file. Represents the root level {@link ConfigurationSection}.
  *
