@@ -33,14 +33,52 @@ public final class Permissions {
         }catch(final ClassCastException | NullPointerException ignored){ }
     }
 
-    public final boolean hasPermission(final InetAddress address, final String permission){
-        PermissionsUser user = null;
-        for(final PermissionsUser u : users){
-            if(u.getUser().equals(address)){
-                user = u;
-                break;
+    //
+
+    public final List<PermissionsGroup> getGroups(){
+        return Collections.unmodifiableList(groups);
+    }
+
+    public final List<PermissionsUser> getUsers(){
+        return Collections.unmodifiableList(users);
+    }
+
+    public final PermissionsUser getUser(final InetAddress address){
+        for(final PermissionsUser u : users)
+            if(u.getUser().equals(address))
+                return u;
+        return null;
+    }
+
+    //
+
+    public final Object getOption(final InetAddress address, final String option){
+        final PermissionsUser user = getUser(address);
+
+        if(user != null)
+            if(user.getOptions().containsKey(option))
+                return user.getOptions().get(option);
+
+        for(final PermissionsGroup group : groups){
+            if(
+                Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false) ||
+                (
+                    user != null &&
+                    user.getGroups().contains(group.getGroup())
+                )
+            ){
+
             }
         }
+    }
+
+    public final boolean hasPermission(final InetAddress address, final String permission){
+        final PermissionsUser user = getUser(address);
+
+        if(user != null)
+            for(final String perm : user.getPermissions())
+                if(perm.equals(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
+                    return true;
 
         for(final PermissionsGroup group : groups)
             if(
@@ -57,38 +95,37 @@ public final class Permissions {
     }
 
     public final boolean hasPermission(final PermissionsGroup group, final String permission){
-        // check direct permissions
-        for(final String perm : group.getPermissions())
-            if(perm.equalsIgnoreCase(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
-                return true;
-
-        // check inherited permissions
-        return hasPermission(List.of(group), group, permission);
-    }
-
-    private boolean hasPermission(final List<PermissionsGroup> read, final PermissionsGroup group, final String permission){
-        final List<PermissionsGroup> r2 = new ArrayList<>(read);
-
-        // populate direct inheritance
-        for(final PermissionsGroup g : groups){
-            if(!read.contains(g) && group.getInheritance().contains(g.getGroup())){
-
-                // check direct permissions
-                for(final String perm : g.getPermissions())
-                    if(perm.equalsIgnoreCase(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
-                        return true;
-                r2.add(g);
-
-                // check inherited
-                if(hasPermission(Collections.unmodifiableList(r2),g,permission))
+        for(final PermissionsGroup g : getInheritedGroups(group))
+            for(final String perm : g.getPermissions())
+                if(perm.equals(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
                     return true;
-            }
-        }
         return false;
     }
 
     public final Map toMap(){
         return Collections.unmodifiableMap(obj);
+    }
+
+    //
+
+    public final List<PermissionsGroup> getInheritedGroups(final PermissionsGroup group){
+        return getInheritedGroups(Collections.singletonList(group));
+    }
+
+    public final List<PermissionsGroup> getInheritedGroups(final List<PermissionsGroup> groups){
+        final List<PermissionsGroup> OUT = new LinkedList<>();
+        groups.forEach(permissionsGroup -> OUT.addAll(getInheritedGroups(permissionsGroup, OUT)));
+        return OUT;
+    }
+
+    private List<PermissionsGroup> getInheritedGroups(final PermissionsGroup group, final List<PermissionsGroup> read){
+        final List<PermissionsGroup> OUT = new LinkedList<>(read);
+        OUT.add(group);
+        final List<String> inheritance = group.getInheritance();
+        for(final PermissionsGroup g : this.groups)
+            if(!read.contains(g) && inheritance.contains(g.getGroup()))
+                OUT.addAll(getInheritedGroups(g, Collections.unmodifiableList(OUT)));
+        return Collections.unmodifiableList(OUT);
     }
 
 }
