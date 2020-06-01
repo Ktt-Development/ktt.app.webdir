@@ -55,21 +55,19 @@ public final class Permissions {
     public final Object getOption(final InetAddress address, final String option){
         final PermissionsUser user = getUser(address);
 
-        if(user != null)
+        if(user != null) // test options directly assigned to user
             if(user.getOptions().containsKey(option))
                 return user.getOptions().get(option);
 
-        for(final PermissionsGroup group : groups){
-            if(
-                Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false) ||
-                (
-                    user != null &&
-                    user.getGroups().contains(group.getGroup())
-                )
-            ){
-
-            }
-        }
+        Object def = null;
+        for(final PermissionsGroup group : groups){ // find options by group
+            if(user != null && user.getGroups().contains(group.getGroup()))
+                if(group.getOptions().containsKey(option))
+                    return group.getOptions().get(option);
+            else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false)) // use default if none found
+                if(group.getOptions().containsKey(option))
+                    def = group.getOptions().get(option);
+        return def;
     }
 
     public final boolean hasPermission(final InetAddress address, final String permission){
@@ -122,9 +120,14 @@ public final class Permissions {
         final List<PermissionsGroup> OUT = new LinkedList<>(read);
         OUT.add(group);
         final List<String> inheritance = group.getInheritance();
+        final List<PermissionsGroup> queue = new LinkedList<>();
         for(final PermissionsGroup g : this.groups)
             if(!read.contains(g) && inheritance.contains(g.getGroup()))
-                OUT.addAll(getInheritedGroups(g, Collections.unmodifiableList(OUT)));
+                queue.add(g);
+
+        for(final PermissionsGroup g : queue)
+            OUT.addAll(getInheritedGroups(g,Collections.unmodifiableList(OUT)));
+
         return Collections.unmodifiableList(OUT);
     }
 
