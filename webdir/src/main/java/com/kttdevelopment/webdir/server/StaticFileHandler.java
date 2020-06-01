@@ -3,9 +3,8 @@ package com.kttdevelopment.webdir.server;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.Application;
-import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.formatter.*;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
+import com.kttdevelopment.webdir.api.formatter.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.formatter.YamlFrontMatterReader;
 import com.kttdevelopment.webdir.permissions.Permissions;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.*;
 
 public class StaticFileHandler extends FileHandler {
 

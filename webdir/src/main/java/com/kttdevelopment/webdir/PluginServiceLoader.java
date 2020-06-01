@@ -32,6 +32,11 @@ public final class PluginServiceLoader {
     PluginServiceLoader(final File pluginsFolder){
         logger.info(locale.getString("pluginService.init.start"));
 
+        if(config.getConfig().getBoolean("safemode", false)){
+            logger.info(locale.getString("pluginService.init.skip"));
+            return;
+        }
+
         // load jars
         final List<URL> pluginUrls = new ArrayList<>();
         for(final File file : Objects.requireNonNullElse(pluginsFolder.listFiles((dir, name) -> !dir.isDirectory() && name.endsWith(".jar")),new File[0])){

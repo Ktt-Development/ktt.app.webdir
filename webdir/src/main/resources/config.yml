@@ -4,6 +4,9 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+# Safemode will skip plugin loading
+safemode: false
+
 # The language that the application will use.
 # Supported languages:
 #  - English: en
