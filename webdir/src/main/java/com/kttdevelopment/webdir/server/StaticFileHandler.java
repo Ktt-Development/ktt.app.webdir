@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.function.*;
 
 public class StaticFileHandler extends FileHandler {
 
@@ -31,24 +30,87 @@ public class StaticFileHandler extends FileHandler {
             final ConfigurationSection config = frontMatter.getFrontMatter();
 
             final List<String> imports = config.getList("import",String.class); // import relative file || todo
-            final List formatters = config.getList("formatter");
+            final List formattersSrc = config.getList("formatters");
 
-            final List<String> headlessFormatters = new ArrayList<>();
-            final Map<String,String> headedFormatters = new LinkedHashMap<>();
+            final List<FormatterEntry> formattersHead = new LinkedList<>();
 
-            formatters.forEach(o -> {
-                if(o instanceof String)
-                    headlessFormatters.add(o.toString());
-                else if(o instanceof Map){
+            for(int index = 0; index < formattersSrc.size(); index++){
+                final Object o = formattersSrc.get(index);
+                if(o instanceof String){
+                    formattersHead.add(new FormatterEntry(index,null,o.toString()));
+                }else if(o instanceof Map){
                     final Map obj = (Map) o;
-                    if(obj.containsKey("pluginName") && obj.containsKey("formatter"))
-                        headedFormatters.put(obj.get("pluginName").toString(),obj.get("formatter").toString());
+                    if(obj.containsKey("plugin") && obj.containsKey("formatter"))
+                        formattersHead.add(new FormatterEntry(index,obj.get("plugin").toString(),obj.get("formatter").toString()));
+                }
+            }
+
+            final Map<WebDirPlugin, Map<String, Formatter>> Formatters = Application.pluginService.getFormatters();
+            final Permissions Permissions = Application.permissions.getPermissions();
+
+            // change how plugins are stored
+
+            Formatters.forEach(new BiConsumer<WebDirPlugin, Map<String, Formatter>>() {
+                @Override
+                public void accept(final WebDirPlugin plugin, final Map<String, Formatter> stringFormatterMap){
+                    final String pluginName = plugin.getPluginService().getPluginName();
+
+
+                    FormatterEntry match = formattersHead.stream().filter(formatterEntry -> formatterEntry.getPluginName().equals(pluginName) && stringFormatterMap.containsKey(formatterEntry.getFormatterName())).findFirst().orElse(null);
+                    if(match != null)
+                        match.setAssociatedFormatter(stringFormatterMap.get());
+
                 }
             });
 
-            final Permissions perms = Application.permissions.getPermissions();
+            formattersSrc.forEach(o -> { // no perms access
+                if(o instanceof String){
+                    final String formatter = (String) o;
+                    for(final Map<String,Formatter> entry : Formatters.values()){
+                        if(entry.containsKey(formatter)){
+                            formattersUnsorted.add(entry.get(formatter));
+                            return;
+                        }
+                    }
+                }else if(o instanceof Map){
+                    final Map obj = (Map) o;
+                    if(obj.containsKey("plugin") && obj.containsKey("formatter")){
+                        for(final Map.Entry<WebDirPlugin, Map<String, Formatter>> entry : Formatters.entrySet()){
+                            if(entry.getKey().getPluginService().getPluginName().equals(obj.get("plugin"))){
+                                final String target = obj.get("formatter").toString();
+                                if(entry.getValue().containsKey(target)){
+                                    formattersUnsorted.add(entry.getValue().get(target));
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+
+            formattersSrc.forEach(o -> {
+                if(o instanceof String){
+                    formattersUnsorted.put(null,o.toString());
+                }else if(o instanceof Map){
+                    final Map obj = (Map) o;
+                    if(obj.containsKey("pluginName") && obj.containsKey("formatter"))
+                        formattersUnsorted.put(obj.get("pluginName").toString(),obj.get("formatter").toString());
+                }
+            });
+
+            final Map<WebDirPlugin, Map<String, Formatter>> Formatters = Application.pluginService.getFormatters();
+            final Permissions Permissions = Application.permissions.getPermissions();
             final InetAddress addr = exchange.getPublicAddress().getAddress();
-            final List<Formatter> queue = new LinkedList<>();
+
+            final List<Map.Entry<Integer,Formatter>> queueUnsorted = new ArrayList<>();
+
+            Application.pluginService.getFormatters().forEach(new BiConsumer<WebDirPlugin, Map<String, Formatter>>() {
+                @Override
+                public void accept(final WebDirPlugin webDirPlugin, final Map<String, Formatter> stringFormatterMap){
+
+                }
+            });
 
             Application.pluginService.getFormatters().forEach(new BiConsumer<WebDirPlugin, Map<String, Formatter>>() {
                 @Override
@@ -56,8 +118,16 @@ public class StaticFileHandler extends FileHandler {
                     final Map<Formatter,String> pluginPerm = webDirPlugin.getPermissions();
                     stringFormatterMap.forEach(new BiConsumer<String, Formatter>() {
                         @Override
-                        public void accept(final String s, final Formatter formatter){
-                            if(headlessFormatters.contains(s) && perms.hasPermission(addr,pluginperm.get(formatter)));
+                        public void accept(final String formatterName, final Formatter formatter){
+                            if(
+                                !queue.contains(formatter) &&
+                                (
+                                    headlessFormatters.contains(formatterName) &&
+                                    !pluginPerm.containsKey(formatter) ||
+                                    Permissions.hasPermission(addr,pluginPerm.get(formatter))
+                                )
+                            )
+                                queue.add(formatter);
                         }
                     });
                 }
@@ -67,7 +137,7 @@ public class StaticFileHandler extends FileHandler {
 
             Application.pluginService.getFormatters().values().forEach(
                 map -> map.forEach((name, formatter) -> {
-                if(formatters.contains(name))
+                if(formattersUnsorted.contains(name))
                     queue.add(formatter);
             }));
 

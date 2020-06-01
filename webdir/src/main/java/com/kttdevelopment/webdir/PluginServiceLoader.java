@@ -7,12 +7,14 @@ import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
+import com.kttdevelopment.webdir.pluginservice.FormatterEntry;
 import com.kttdevelopment.webdir.pluginservice.PluginServiceImpl;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
@@ -22,10 +24,10 @@ public final class PluginServiceLoader {
 
     private static final Logger logger = Logger.getLogger("WebDir / PluginService");
 
-    private final Map<WebDirPlugin,Map<String,Formatter>> formatters = new HashMap<>();
+    private final List<FormatterEntry> formatters = new LinkedList<>();
 
-    public final Map<WebDirPlugin,Map<String,Formatter>> getFormatters(){
-        return Collections.unmodifiableMap(formatters);
+    public final List<FormatterEntry> getFormatters(){
+        return Collections.unmodifiableList(formatters);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -85,15 +87,16 @@ public final class PluginServiceLoader {
 
         plugins.forEach((pluginClass, yml) -> {
             try{
-
                 final PluginService provider = new PluginServiceImpl(pluginClass,yml);
 
                 try{
                     final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
                     plugin.onEnable();
 
+                    final Map<Formatter,String> permissions = plugin.getPermissions();
+
                     // load methods
-                    formatters.putIfAbsent(plugin,plugin.getFormatters());
+                    plugin.getFormatters().forEach((name, formatter) -> formatters.add(new FormatterEntry(plugin, formatter, name, permissions.get(formatter))));
 
                     logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
                 }catch(final NullPointerException | NoSuchMethodException e){
