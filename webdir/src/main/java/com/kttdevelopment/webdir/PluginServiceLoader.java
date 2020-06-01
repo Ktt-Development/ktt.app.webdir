@@ -4,17 +4,15 @@ import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
-import com.kttdevelopment.webdir.pluginservice.FormatterEntry;
+import com.kttdevelopment.webdir.pluginservice.PluginFormatter;
 import com.kttdevelopment.webdir.pluginservice.PluginServiceImpl;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 import static com.kttdevelopment.webdir.Application.*;
@@ -24,9 +22,9 @@ public final class PluginServiceLoader {
 
     private static final Logger logger = Logger.getLogger("WebDir / PluginService");
 
-    private final List<FormatterEntry> formatters = new LinkedList<>();
+    private final List<PluginFormatter> formatters = new LinkedList<>();
 
-    public final List<FormatterEntry> getFormatters(){
+    public final List<PluginFormatter> getFormatters(){
         return Collections.unmodifiableList(formatters);
     }
 
@@ -93,10 +91,8 @@ public final class PluginServiceLoader {
                     final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
                     plugin.onEnable();
 
-                    final Map<Formatter,String> permissions = plugin.getPermissions();
-
                     // load methods
-                    plugin.getFormatters().forEach((name, formatter) -> formatters.add(new FormatterEntry(plugin, formatter, name, permissions.get(formatter))));
+                    plugin.getFormatters().forEach((formatter) -> formatters.add(new PluginFormatter(plugin, formatter)));
 
                     logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
                 }catch(final NullPointerException | NoSuchMethodException e){

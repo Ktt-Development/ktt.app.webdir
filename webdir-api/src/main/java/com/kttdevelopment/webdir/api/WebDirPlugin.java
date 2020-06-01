@@ -1,30 +1,77 @@
 package com.kttdevelopment.webdir.api;
 
 import com.kttdevelopment.webdir.api.formatter.Formatter;
+import com.kttdevelopment.webdir.api.formatter.FormatterEntry;
 
 import java.util.*;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class WebDirPlugin {
 
-    private final Map<String,Formatter> formatters = new HashMap<>();
-    private final Map<Formatter,String> permissions = new HashMap<>();
+    private final List<FormatterEntry> formatters = new LinkedList<>();
 
-    public final Map<String,Formatter> getFormatters(){
-        return Collections.unmodifiableMap(formatters);
-    }
-
-    public final Map<Formatter,String> getPermissions(){
-        return Collections.unmodifiableMap(permissions);
+    public final List<FormatterEntry> getFormatters(){
+        return Collections.unmodifiableList(formatters);
     }
 
     public final void addFormatter(final String name, final Formatter formatter){
-        formatters.put(name,formatter);
+        formatters.add(new FormatterEntry() {
+
+            private final String fn;
+            private final Formatter f;
+            private final String p;
+
+            {
+                this.fn = name;
+                this.f = formatter;
+                p = null;
+            }
+
+            @Override
+            public final String getFormatterName(){
+                return fn;
+            }
+
+            @Override
+            public final Formatter getFormatter(){
+                return f;
+            }
+
+            @Override
+            public final String getPermission(){
+                return p;
+            }
+        });
     }
 
     public final void addFormatter(final String name, final Formatter formatter, final String permission){
-        formatters.put(name,formatter);
-        permissions.put(formatter,permission);
+        formatters.add(new FormatterEntry() {
+
+            private final String fn;
+            private final Formatter f;
+            private final String p;
+
+            {
+                this.fn = name;
+                this.f = formatter;
+                p = permission;
+            }
+
+            @Override
+            public final String getFormatterName(){
+                return fn;
+            }
+
+            @Override
+            public final Formatter getFormatter(){
+                return f;
+            }
+
+            @Override
+            public final String getPermission(){
+                return p;
+            }
+        });
     }
 
     // instance +pluginService
