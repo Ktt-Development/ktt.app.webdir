@@ -69,7 +69,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>simplehttpserver</artifactId>
-            <version>03.04.03</version>
+            <version>03.05.00</version>
         </dependency>
     </dependencies>
          
