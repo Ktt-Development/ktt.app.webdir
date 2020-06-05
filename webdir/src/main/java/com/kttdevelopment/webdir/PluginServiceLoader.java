@@ -6,8 +6,7 @@ import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
-import com.kttdevelopment.webdir.pluginservice.PluginFormatter;
-import com.kttdevelopment.webdir.pluginservice.PluginServiceImpl;
+import com.kttdevelopment.webdir.pluginservice.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +25,12 @@ public final class PluginServiceLoader {
 
     public final List<PluginFormatter> getFormatters(){
         return Collections.unmodifiableList(formatters);
+    }
+
+    private final List<PluginHandler> handlers = new LinkedList<>();
+
+    public final List<PluginHandler> getHandlers(){
+        return Collections.unmodifiableList(handlers);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -98,6 +103,7 @@ public final class PluginServiceLoader {
 
                     // load methods
                     plugin.getFormatters().forEach((formatter) -> formatters.add(new PluginFormatter(plugin, formatter)));
+                    plugin.getHandlers().forEach((handler) -> handlers.add(new PluginHandler(plugin,handler)));
 
                     logger.info(locale.getString("pluginService.internal.loaded", provider.getPluginName()));
                 }catch(final NullPointerException | NoSuchMethodException e){
