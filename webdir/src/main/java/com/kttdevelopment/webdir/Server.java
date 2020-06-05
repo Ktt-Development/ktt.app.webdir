@@ -1,9 +1,8 @@
 package com.kttdevelopment.webdir;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
-import com.kttdevelopment.simplehttpserver.handler.FileHandler;
-import com.kttdevelopment.webdir.server.DefaultFileHandler;
-import com.kttdevelopment.webdir.server.StaticFileHandler;
+import com.kttdevelopment.simplehttpserver.handler.*;
+import com.kttdevelopment.webdir.server.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,9 +44,13 @@ public final class Server {
         }
         // init
 
+        final ServerExchangeThrottler throttler = new DefaultThrottler();
+
         final FileHandler staticHandler = new StaticFileHandler();
-        staticHandler.addDirectory(new File(Application.parent + '\\' + config.getConfig().getString("source")));
+        staticHandler.addDirectory(new File(Application.parent + '\\' + config.getConfig().getString("source")), ByteLoadingOption.WATCHLOAD);
         server.createContext("",staticHandler);
+
+        server.createContext("",new ThrottledHandler(staticHandler,throttler));
 
         //
 
@@ -55,7 +58,7 @@ public final class Server {
         for(final File file : File.listRoots())
             fileHandler.addDirectory(file);
 
-        server.createContext(config.getConfig().getString("files"),fileHandler);
+        server.createContext(config.getConfig().getString("files"),new ThrottledHandler(fileHandler,throttler));
 
         // start
 
