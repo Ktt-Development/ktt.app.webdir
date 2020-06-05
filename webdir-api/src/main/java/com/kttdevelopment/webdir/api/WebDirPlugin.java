@@ -5,12 +5,10 @@ import com.kttdevelopment.webdir.api.formatter.Formatter;
 import com.kttdevelopment.webdir.api.formatter.FormatterEntry;
 import com.kttdevelopment.webdir.api.handler.HandlerEntry;
 import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
-import com.sun.net.httpserver.HttpHandler;
 
 import java.io.File;
 import java.util.*;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class WebDirPlugin {
@@ -65,11 +63,11 @@ public class WebDirPlugin {
         return Collections.unmodifiableList(handlers);
     }
 
-    public final void addHandler(final SimpleFileHandler handler, final BiPredicate<SimpleHttpExchange,File> condition){
-        addHandler(handler,condition,null);
+    public final void addFileHandler(final SimpleFileHandler handler, final BiPredicate<SimpleHttpExchange,File> condition){
+        addFileHandler(handler, condition, null);
     }
 
-    public final void addHandler(final SimpleFileHandler handler, final BiPredicate<SimpleHttpExchange,File> condition, final String permission){
+    public final void addFileHandler(final SimpleFileHandler handler, final BiPredicate<SimpleHttpExchange,File> condition, final String permission){
         handlers.add(new HandlerEntry() {
 
             private final SimpleFileHandler h;
