@@ -12,8 +12,6 @@ import static com.kttdevelopment.webdir.Application.*;
 @SuppressWarnings("rawtypes")
 public final class PermissionsService {
 
-    private static final Logger logger = Logger.getLogger("WebDir / PermissionsService");
-
     private final File permissionsFile;
     private Permissions permissions;
 
@@ -29,6 +27,8 @@ public final class PermissionsService {
 
     PermissionsService(final File permissionsFile, final File defaultPermissionsFile){
         this.permissionsFile = permissionsFile;
+
+        Logger logger = Logger.getLogger("Permissions");
         
         logger.info(locale.getString("permissions.init.start"));
 
@@ -48,11 +48,13 @@ public final class PermissionsService {
         }
 
         read();
+        logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.init.finished"));
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public synchronized final boolean read(){
+        final Logger logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.read.start"));
 
         YamlReader IN = null;
@@ -81,6 +83,7 @@ public final class PermissionsService {
     }
 
     public synchronized final boolean write(){
+        final Logger logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.write.start"));
 
         YamlWriter OUT = null;

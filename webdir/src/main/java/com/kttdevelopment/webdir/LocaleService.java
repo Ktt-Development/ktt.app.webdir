@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 
 public final class LocaleService {
 
-    private static final Logger logger = Logger.getLogger("WebDir / LocaleService");
-
     private final LocaleBundle localeBundle = new LocaleBundleImpl();
 
     public final LocaleBundle getLocale(){
@@ -19,6 +17,7 @@ public final class LocaleService {
     //
 
     public final String getString(final String key){
+        final Logger logger = Logger.getLogger(Objects.requireNonNullElse(localeBundle.getString("locale"),"Locale"));
         try{
             return Objects.requireNonNull(localeBundle.getString(key));
         }catch(final ClassCastException | NullPointerException | MissingResourceException ignored){
@@ -32,6 +31,7 @@ public final class LocaleService {
     }
 
     public final String getString(final String key, final Object... param){
+        final Logger logger = Logger.getLogger(Objects.requireNonNullElse(localeBundle.getString("locale"),"Locale"));
         final String value = getString(key);
 
         try{
@@ -50,6 +50,7 @@ public final class LocaleService {
     }
 
     public synchronized final void setLocale(final Locale locale){
+        final Logger logger = Logger.getLogger(getString("locale"));
         final LocaleBundle bundle = localeBundle;
 
         logger.info(
@@ -77,6 +78,7 @@ public final class LocaleService {
     private final String[] localeCodes = {"en"};
     @SuppressWarnings("SameParameterValue")
     LocaleService(final String resource){
+        final Logger logger = Logger.getLogger("Locale");
         logger.info("Started locale initialization");
 
         for(final String code : localeCodes){

@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir;
 import com.kttdevelopment.webdir.logger.*;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.logging.*;
 
 public final class LoggerService {
@@ -10,6 +11,7 @@ public final class LoggerService {
     private static final Logger logger = Logger.getLogger("WebDir / LoggerService");
 
     LoggerService(){
+        final Logger logger = Logger.getLogger("Logger");
         logger.setLevel(Level.ALL);
         logger.setUseParentHandlers(false);
 

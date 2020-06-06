@@ -14,8 +14,6 @@ import static com.kttdevelopment.webdir.Application.locale;
 
 public final class Server {
 
-    private static final Logger logger = Logger.getLogger("WebDir / Server");
-
     private final SimpleHttpServer server;
 
     public final SimpleHttpServer getServer(){
@@ -25,6 +23,7 @@ public final class Server {
     //
 
     Server(){
+        final Logger logger = Logger.getLogger(locale.getString("server"));
         logger.info(locale.getString("server.init.start"));
 
         // port bind

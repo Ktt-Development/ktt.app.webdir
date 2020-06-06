@@ -19,8 +19,6 @@ import static com.kttdevelopment.webdir.Application.*;
 @SuppressWarnings("SpellCheckingInspection")
 public final class PluginServiceLoader {
 
-    private static final Logger logger = Logger.getLogger("WebDir / PluginService");
-
     private final List<PluginFormatter> formatters = new LinkedList<>();
 
     public final List<PluginFormatter> getFormatters(){
@@ -35,6 +33,7 @@ public final class PluginServiceLoader {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginServiceLoader(final File pluginsFolder){
+        final Logger logger = Logger.getLogger(locale.getString("pluginService"));
         logger.info(locale.getString("pluginService.init.start"));
 
         if(config.getConfig().getBoolean("safemode", false)){

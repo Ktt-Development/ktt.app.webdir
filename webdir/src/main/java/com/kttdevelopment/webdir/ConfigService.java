@@ -12,8 +12,6 @@ import java.util.logging.Logger;
 
 public final class ConfigService {
 
-    private static final Logger logger = Logger.getLogger("WebDir / ConfigService");
-
     private final ConfigurationFile config;
 
     //
@@ -25,6 +23,8 @@ public final class ConfigService {
     //
 
     ConfigService(final File configFile, final InputStream defaultConfig){
+        final Logger logger = Logger.getLogger("Config");
+
         logger.info("Started config initialization");
 
         final InputStream configStream, cloneStream;
