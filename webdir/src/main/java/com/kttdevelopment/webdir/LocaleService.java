@@ -50,25 +50,17 @@ public final class LocaleService {
 
     public synchronized final void setLocale(final Locale locale){
         final Logger logger = Logger.getLogger(getString("locale"));
-        final LocaleBundle bundle = localeBundle;
 
-        logger.info(
-            getString(
-                "locale.setLocale.initial",
-                bundle.getLocale().getDisplayName(),
-                locale.getDisplayName()
-            )
-        );
+        final String iname = localeBundle.getLocale().getDisplayName();
+        final String fname = locale.getDisplayName();
+
+        logger.info(getString("locale.setLocale.initial",iname, fname));
 
         if(localeBundle.hasLocale(locale)){
             setLocale(locale);
-            logger.info(
-                getString("locale.setLocale.finished",bundle.getLocale().getDisplayName(),locale.getDisplayName())
-            );
+            logger.info(getString("locale.setLocale.finished",iname,fname));
         }else{
-            logger.warning(
-                getString("locale.setLocale.notFound",locale.getDisplayName())
-            );
+            logger.warning(getString("locale.setLocale.notFound",fname));
         }
     }
 
@@ -77,7 +69,7 @@ public final class LocaleService {
     private final String[] localeCodes = {"en"};
     @SuppressWarnings("SameParameterValue")
     LocaleService(final String resource){
-        final Logger logger = Logger.getLogger("Locale");
+        Logger logger = Logger.getLogger("Locale");
         logger.info("Started locale initialization");
 
         for(final String code : localeCodes){
@@ -100,6 +92,7 @@ public final class LocaleService {
 
         setLocale(Application.config.getConfig().getString("locale","en"));
 
+        logger = Logger.getLogger("locale");
         logger.info(getString("locale.init.finished"));
     }
 
