@@ -46,7 +46,7 @@ public final class ConfigService {
         // load default
 
         final ConfigurationFile def;
-        try(defaultConfig){
+        try(configStream){
             def = new ConfigurationFileImpl(configStream);
         }catch(final ClassCastException | YamlException e){
             logger.severe(
