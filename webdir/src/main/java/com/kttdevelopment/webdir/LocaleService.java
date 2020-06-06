@@ -44,7 +44,6 @@ public final class LocaleService {
         return value;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public synchronized final void setLocale(final String locale){
         setLocale(new Locale(locale));
     }
