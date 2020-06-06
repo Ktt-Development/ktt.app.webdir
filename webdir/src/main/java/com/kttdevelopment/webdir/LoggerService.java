@@ -8,8 +8,6 @@ import java.util.logging.*;
 
 public final class LoggerService {
 
-    private static final Logger logger = Logger.getLogger("WebDir / LoggerService");
-
     LoggerService(){
         final Logger logger = Logger.getLogger("Logger");
         logger.setLevel(Level.ALL);
