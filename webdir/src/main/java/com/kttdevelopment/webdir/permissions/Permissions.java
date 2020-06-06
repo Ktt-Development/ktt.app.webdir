@@ -73,10 +73,14 @@ public final class Permissions {
     public final boolean hasPermission(final InetAddress address, final String permission){
         final PermissionsUser user = getUser(address);
 
-        if(user != null)
+        if(user != null){
+            for(final String perm : user.getPermissions())
+                if(perm.equals("!" + permission) || (permission.endsWith("*") && perm.startsWith("!" + permission)))
+                    return false;
             for(final String perm : user.getPermissions())
                 if(perm.equals(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
                     return true;
+        }
 
         for(final PermissionsGroup group : groups)
             if(
