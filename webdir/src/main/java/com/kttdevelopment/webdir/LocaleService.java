@@ -48,6 +48,7 @@ public final class LocaleService {
         setLocale(new Locale(locale));
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public synchronized final void setLocale(final Locale locale){
         final Logger logger = Logger.getLogger(getString("locale"));
 
@@ -90,10 +91,7 @@ public final class LocaleService {
             }
         }
 
-        setLocale(Application.config.getConfig().getString("locale","en"));
-
-        logger = Logger.getLogger("locale");
-        logger.info(getString("locale.init.finished"));
+        logger.info("Finished locale initialization");
     }
 
 }

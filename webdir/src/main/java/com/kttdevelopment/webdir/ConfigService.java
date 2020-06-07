@@ -10,9 +10,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import static com.kttdevelopment.webdir.Application.*;
+
 public final class ConfigService {
 
     private final ConfigurationFile config;
+
+    private final File configFile;
+    private final String defaultConfig;
 
     //
 
@@ -22,32 +27,19 @@ public final class ConfigService {
 
     //
 
-    ConfigService(final File configFile, final InputStream defaultConfig){
-        final Logger logger = Logger.getLogger("Config");
+    ConfigService(final File configFile, final String defaultConfig){
+        this.configFile = configFile;
+        this.defaultConfig = defaultConfig;
+
+        Logger logger = Logger.getLogger("Config");
 
         logger.info("Started config initialization");
-
-        final InputStream configStream, cloneStream;
-
-        try(final ByteArrayOutputStream OUT = new ByteArrayOutputStream()){
-            Objects.requireNonNull(defaultConfig).transferTo(OUT);
-            configStream = new ByteArrayInputStream(OUT.toByteArray());
-            cloneStream = new ByteArrayInputStream(OUT.toByteArray());
-        }catch(final NullPointerException e){
-            logger.severe(
-                "Failed to load default configuration file (not found)"
-            );
-            throw new RuntimeException(e);
-        }catch(final IOException e){
-            logger.severe("Failed to read default configuration file (I/O error)" + '\n' + LoggerService.getStackTraceAsString(e));
-            throw new RuntimeException(e);
-        }
 
         // load default
 
         final ConfigurationFile def;
-        try(configStream){
-            def = new ConfigurationFileImpl(configStream);
+        try(final InputStream IN = ConfigService.class.getResourceAsStream(defaultConfig)){
+            def = new ConfigurationFileImpl(IN);
         }catch(final ClassCastException | YamlException e){
             logger.severe(
                 "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
@@ -57,37 +49,69 @@ public final class ConfigService {
             logger.severe(
                 "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
             );
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         // load config
         ConfigurationFile tConfig = new ConfigurationFileImpl(configFile,true);
-        tConfig.setDefault(def);
+
         try{
             tConfig = new ConfigurationFileImpl(configFile);
             logger.info("Finished loading configuration file");
         }catch(final FileNotFoundException ignored){
             logger.warning("Configuration file not found, creating a new configuration file");
-
-            try(cloneStream){ // this will allow preservation of comments
-                Files.copy(cloneStream, configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                logger.info("New configuration file created");
-            }catch(final IOException e){
-                logger.severe(
-                    "Failed to create configuration file, using default configuration" +
-                    '\n' + LoggerService.getStackTraceAsString(e)
-                );
-            }
+            copyDefaultConfig();
         }catch(final ClassCastException | YamlException e){
             logger.severe(
                 "Failed to read configuration file (invalid syntax), using default configuration" +
                 '\n' + LoggerService.getStackTraceAsString(e)
             );
         }
+
+        tConfig.setDefault(def);
         config = tConfig;
 
-        logger.info("Finished config initialization");
+        locale.setLocale(config.getString("locale","en"));
+
+        logger = Logger.getLogger(locale.getString("config"));
+
+        logger.info(locale.getString("config.init.finished"));
     }
 
+    // only creates a file
+    public final synchronized void copyDefaultConfig(){
+        final Logger logger = Logger.getLogger(locale.getString("config"));
+
+        logger.info(locale.getString("config.copyDefaultConfig.start"));
+
+        if(!configFile.exists()){
+            try(final InputStream IN = ConfigService.class.getClassLoader().getResourceAsStream(defaultConfig)){
+                Files.copy(Objects.requireNonNull(IN),configFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
+                logger.info(locale.getString("config.copyDefaultConfig.finished"));
+            }catch(final NullPointerException ignored){
+                logger.severe(locale.getString("config.copyDefaultConfig.notFound"));
+            }catch(final IOException e){
+                logger.severe(locale.getString("config.copyDefaultConfig.io") + '\n' + LoggerService.getStackTraceAsString(e));
+            }
+        }
+    }
+
+    // only reloads config
+    public final synchronized void load(){
+        final Logger logger = Logger.getLogger(locale.getString("config"));
+
+        logger.info(locale.getString("config.load.start"));
+        config.reload();
+        logger.info(locale.getString("config.load.finished"));
+    }
+
+    // only saves
+    public final synchronized void save(){
+        final Logger logger = Logger.getLogger(locale.getString("config"));
+
+        logger.info(locale.getString("config.save.start"));
+        config.save();
+        logger.info(locale.getString("config.save.finished"));
+    }
 
 }

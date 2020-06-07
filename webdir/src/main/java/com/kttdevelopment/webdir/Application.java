@@ -11,12 +11,12 @@ public abstract class Application {
     @SuppressWarnings("InstantiationOfUtilityClass")
     public static final LoggerService logger = new LoggerService();
 
+    public static final LocaleService locale = new LocaleService("lang/bundle");
+
     public static final ConfigService config = new ConfigService(
         new File(parent + '\\' + "config.yml"),
-        Application.class.getClassLoader().getResourceAsStream("config.yml")
+        "config.yml"
     );
-
-    public static final LocaleService locale = new LocaleService("lang/bundle");
 
     @SuppressWarnings("ConstantConditions")
     public static final PermissionsService permissions = new PermissionsService(
