@@ -16,14 +16,12 @@ public final class ConfigService {
 
     private final ConfigurationFile config;
 
-    private final File configFile;
-    private final String defaultConfig;
-
-    //
-
     public final ConfigurationFile getConfig(){
         return config;
     }
+    
+    private final File configFile;
+    private final String defaultConfig;
 
     //
 
