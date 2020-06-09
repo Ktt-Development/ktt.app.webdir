@@ -4,24 +4,25 @@ import com.esotericsoftware.yamlbeans.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ConfigurationFileImpl extends ConfigurationSectionImpl implements ConfigurationFile {
+public class SafeConfigurationFileImpl extends ConfigurationFileImpl {
 
     private final File configFile;
 
-    public ConfigurationFileImpl(){
+    public SafeConfigurationFileImpl(){
         super();
         configFile = null;
     }
 
-    public ConfigurationFileImpl(final File configFile, boolean skipRead){
+    public SafeConfigurationFileImpl(final File configFile, boolean skipRead){
         super();
         this.configFile = skipRead ? configFile : null;
     }
 
-    public ConfigurationFileImpl(final File configFile) throws FileNotFoundException, YamlException{
+    public SafeConfigurationFileImpl(final File configFile) throws FileNotFoundException, YamlException{
         super();
         this.configFile = configFile;
         YamlReader IN = null;
@@ -35,7 +36,7 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         }
     }
 
-    public ConfigurationFileImpl(final Reader reader) throws IOException {
+    public SafeConfigurationFileImpl(final Reader reader) throws IOException {
         super();
         configFile = null;
 
@@ -48,11 +49,11 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         }
     }
 
-    public ConfigurationFileImpl(final InputStream stream) throws IOException {
+    public SafeConfigurationFileImpl(final InputStream stream) throws IOException {
         this(new InputStreamReader(stream));
     }
 
-    public ConfigurationFileImpl(final String yaml) throws YamlException{
+    public SafeConfigurationFileImpl(final String yaml) throws YamlException{
         super();
         configFile = null;
 
@@ -83,8 +84,8 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         try{
             IN = new YamlReader(new FileReader(configFile));
             config = (Map) IN.read();
-        }catch(FileNotFoundException | YamlException e){
-            throw new UncheckedIOException(e);
+        }catch(FileNotFoundException | YamlException ignored){
+            // don't reload
         }finally{
             if(IN != null)
                 try{
@@ -107,8 +108,8 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         try{
             OUT = new YamlWriter(new FileWriter(configFile));
             OUT.write(cfg);
-        }catch(final IOException e){
-            throw new UncheckedIOException(e);
+        }catch(final IOException ignored){
+            // don't save
         }finally{
             if(OUT != null)
                 try{ OUT.close();
@@ -127,8 +128,8 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
                 OUT = new YamlWriter(new FileWriter(configFile));
                 OUT.write(def);
                 config = def.toMap();
-            }catch(final IOException e){
-                throw new UncheckedIOException(e);
+            }catch(final IOException ignored){
+                // don't save
             }finally{
                 if(OUT != null)
                     try{ OUT.close();

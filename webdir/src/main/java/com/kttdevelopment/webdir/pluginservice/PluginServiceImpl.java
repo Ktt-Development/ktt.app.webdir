@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.serviceprovider.*;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.config.SafeConfigurationFileImpl;
 import com.kttdevelopment.webdir.httpserver.SimpleHttpServerUnmodifiable;
 import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
@@ -55,7 +56,7 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public final ConfigurationFile createConfiguration(){
-        return new ConfigurationFileImpl();
+        return new SafeConfigurationFileImpl();
     }
 
     @Override
@@ -64,7 +65,7 @@ public class PluginServiceImpl extends PluginService {
             throw new SecurityException("Plugin can not create configuration files outside of the plugin's folder");
         else
             try{
-                return new ConfigurationFileImpl(configFile);
+                return new SafeConfigurationFileImpl(configFile);
             }catch(final FileNotFoundException | YamlException ignored){
                 return null;
             }
