@@ -13,8 +13,7 @@ import com.kttdevelopment.webdir.locale.LocaleBundleImpl;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class PluginServiceImpl extends PluginService {
@@ -56,19 +55,14 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public final ConfigurationFile createConfiguration(){
-        return new SafeConfigurationFileImpl();
+        try{ return new SafeConfigurationFileImpl();
+        }catch(final Exception ignored){ return null; }
     }
 
     @Override
     public final ConfigurationFile createConfiguration(final File configFile){
-        if(!configFile.getAbsolutePath().startsWith(folderPath))
-            throw new SecurityException("Plugin can not create configuration files outside of the plugin's folder");
-        else
-            try{
-                return new SafeConfigurationFileImpl(configFile);
-            }catch(final FileNotFoundException | YamlException ignored){
-                return null;
-            }
+        try{ return new SafeConfigurationFileImpl(configFile);
+        }catch(final Exception ignored){ return null; }
     }
 
     @Override

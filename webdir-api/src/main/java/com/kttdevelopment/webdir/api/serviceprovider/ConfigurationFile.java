@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.api.serviceprovider;
 
+import java.io.IOException;
+
 /**
  * A configuration file used to store settings from a yaml file. Represents the root level {@link ConfigurationSection}.
  *
@@ -26,16 +28,12 @@ public interface ConfigurationFile extends ConfigurationSection {
     /**
      * Clears loaded configuration data from memory and re-reads the configuration file.
      *
-     * @throws UnsupportedOperationException if configuration was not associated with a file
-     *
      * @since 01.00.00
      */
     void reload();
 
     /**
      * Saves the configuration to file.
-     *
-     * @throws UnsupportedOperationException if configuration was not associated with a file
      *
      * @see #saveDefault()
      * @since 01.00.00
@@ -44,8 +42,6 @@ public interface ConfigurationFile extends ConfigurationSection {
 
     /**
      * Saves the default configuration to file only if it does not exist.
-     *
-     * @throws UnsupportedOperationException if configuration was not associated with a file
      *
      * @see #save()
      * @since 01.00.00

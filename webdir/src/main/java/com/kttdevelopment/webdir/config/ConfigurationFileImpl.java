@@ -68,14 +68,14 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
     //
 
     @Override
-    public synchronized final void setDefault(final ConfigurationFile def){
+    public synchronized void setDefault(final ConfigurationFile def){
         this.def = def;
     }
 
     //
 
     @Override
-    public synchronized final void reload(){
+    public synchronized void reload(){
         if(configFile == null)
             throw new UnsupportedOperationException();
 
@@ -96,7 +96,7 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
     //
 
     @Override
-    public synchronized final void save(){
+    public synchronized void save(){
         if(configFile == null)
             throw new UnsupportedOperationException();
 
@@ -117,7 +117,7 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
     }
 
     @Override
-    public synchronized final void saveDefault(){
+    public synchronized void saveDefault(){
         if(configFile == null)
             throw new UnsupportedOperationException();
 

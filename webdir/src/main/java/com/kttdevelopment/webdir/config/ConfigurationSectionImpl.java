@@ -11,7 +11,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     private final ConfigurationSection parent;
     protected ConfigurationSection def;
 
-    protected Map config; // todo: convert this to ConfigurationSection & constructor params as well
+    protected Map config;
 
     public ConfigurationSectionImpl(){
         this(new HashMap());

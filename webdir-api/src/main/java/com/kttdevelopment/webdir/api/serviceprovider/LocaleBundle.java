@@ -7,9 +7,9 @@ public interface LocaleBundle {
 
     void addLocale(final ResourceBundle bundle);
 
-    boolean hasLocale(final java.util.Locale locale);
+    boolean hasLocale(final Locale locale);
 
-    java.util.Locale getLocale();
+    Locale getLocale();
 
     void setLocale(final java.util.Locale locale);
 
