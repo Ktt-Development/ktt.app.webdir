@@ -1,101 +1,60 @@
 package com.kttdevelopment.webdir.api;
 
-import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.webdir.api.formatter.Formatter;
-import com.kttdevelopment.webdir.api.formatter.FormatterEntry;
-import com.kttdevelopment.webdir.api.handler.HandlerEntry;
 import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
 
-import java.io.File;
 import java.util.*;
-import java.util.function.BiPredicate;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class WebDirPlugin {
 
     // formatters
 
-    private final List<FormatterEntry> formatters = new LinkedList<>();
+    private final Map<String, Map.Entry<Formatter,String>> formatters = new ConcurrentHashMap<>();
 
-    public final List<FormatterEntry> getFormatters(){
-        return Collections.unmodifiableList(formatters);
+    public final Map<String, Map.Entry<Formatter,String>> getFormatters(){
+        return Collections.unmodifiableMap(formatters);
     }
 
-    public final void addFormatter(final String name, final Formatter formatter){
-        addFormatter(name,formatter,null);
+    public synchronized final void addFormatter(final String name, final Formatter formatter){
+        addFormatter(name,formatter,"");
     }
 
-    public final void addFormatter(final String name, final Formatter formatter, final String permission){
-        formatters.add(new FormatterEntry() {
+    public synchronized final void addFormatter(final String name, final Formatter formatter, final String permission){
+        formatters.put(name, new Map.Entry<>() {
 
-            private final String fn;
-            private final Formatter f;
-            private final String p;
-
-            {
-                this.fn = name;
-                this.f = formatter;
-                p = permission;
+            @Override
+            public final Formatter getKey(){
+                return formatter;
             }
 
             @Override
-            public final String getFormatterName(){
-                return fn;
+            public final String getValue(){
+                return permission;
             }
 
             @Override
-            public final Formatter getFormatter(){
-                return f;
-            }
-
-            @Override
-            public final String getPermission(){
-                return p;
+            public String setValue(final String value){
+                throw new UnsupportedOperationException();
             }
         });
     }
 
     // handlers
 
-    private final List<HandlerEntry> handlers = new LinkedList<>();
+    private final Map<SimpleFileHandler,String> handlers = new ConcurrentHashMap<>();
 
-    public final List<HandlerEntry> getHandlers(){
-        return Collections.unmodifiableList(handlers);
+    public final Map<SimpleFileHandler,String> getHandlers(){
+        return Collections.unmodifiableMap(handlers);
     }
 
-    public final void addFileHandler(final SimpleFileHandler handler, final BiPredicate<SimpleHttpExchange,File> condition){
-        addFileHandler(handler, condition, null);
+    public synchronized final void addHandler(final SimpleFileHandler handler){
+        addHandler(handler,"");
     }
 
-    public final void addFileHandler(final SimpleFileHandler handler, final BiPredicate<SimpleHttpExchange,File> condition, final String permission){
-        handlers.add(new HandlerEntry() {
-
-            private final SimpleFileHandler h;
-            private final BiPredicate<SimpleHttpExchange,File> bp;
-            private final String p;
-
-            {
-                h = handler;
-                bp = condition;
-                p = permission;
-            }
-
-            @Override
-            public final SimpleFileHandler getHandler(){
-                return h;
-            }
-
-            @Override
-            public final BiPredicate<SimpleHttpExchange, File> getCondition(){
-                return bp;
-            }
-
-            @Override
-            public final String getPermission(){
-                return p;
-            }
-
-        });
+    public synchronized final void addHandler(final SimpleFileHandler handler, final String permission){
+        handlers.put(handler,permission);
     }
 
     // instance +pluginService

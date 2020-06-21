@@ -27,7 +27,7 @@ public class PluginServiceImpl extends PluginService {
     private final List<String> authors;
     private final File folder;
 
-    private final String folderPath;
+    private final String folderPath; // todo
 
     public PluginServiceImpl(final Class<WebDirPlugin> mainClass, final ConfigurationSection yml){
         this.mainClass = mainClass;
