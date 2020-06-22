@@ -10,8 +10,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static com.kttdevelopment.webdir.Application.*;
-
 public final class ConfigService {
 
     private final ConfigurationFile config;
@@ -69,6 +67,7 @@ public final class ConfigService {
         tConfig.setDefault(def);
         config = tConfig;
 
+        final LocaleService locale = Application.getLocaleService();
         locale.setLocale(config.getString("locale","en"));
 
         logger = Logger.getLogger(locale.getString("config"));
@@ -78,6 +77,7 @@ public final class ConfigService {
 
     // only creates a file
     public final synchronized void copyDefaultConfig(){
+        final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("config"));
 
         logger.info(locale.getString("config.copyDefaultConfig.start"));
@@ -96,6 +96,7 @@ public final class ConfigService {
 
     // only reloads config
     public final synchronized void load(){
+        final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("config"));
 
         logger.info(locale.getString("config.load.start"));
@@ -105,6 +106,7 @@ public final class ConfigService {
 
     // only saves
     public final synchronized void save(){
+        final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("config"));
 
         logger.info(locale.getString("config.save.start"));

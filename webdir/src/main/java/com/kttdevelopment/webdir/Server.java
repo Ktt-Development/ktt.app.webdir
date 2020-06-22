@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.net.BindException;
 import java.util.logging.Logger;
 
-import static com.kttdevelopment.webdir.Application.config;
-import static com.kttdevelopment.webdir.Application.locale;
-
 public final class Server {
 
     private final SimpleHttpServer server;
@@ -23,6 +20,8 @@ public final class Server {
     //
 
     Server(){
+        final LocaleService locale = Application.getLocaleService();
+        final ConfigService config = Application.getConfigService();
         final Logger logger = Logger.getLogger(locale.getString("server"));
         logger.info(locale.getString("server.init.start"));
 

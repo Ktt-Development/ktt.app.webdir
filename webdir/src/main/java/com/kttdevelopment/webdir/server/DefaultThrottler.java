@@ -9,7 +9,7 @@ public class DefaultThrottler extends ServerExchangeThrottler {
     @Override
     public final int getMaxConnections(final HttpExchange exchange){
         try{
-            return Integer.parseInt(Application.permissions.getPermissions().getOption(exchange.getRemoteAddress().getAddress(), "connection-limit").toString());
+            return Integer.parseInt(Application.getPermissionsService().getPermissions().getOption(exchange.getRemoteAddress().getAddress(), "connection-limit").toString());
         }catch(final NumberFormatException ignored){
             return 0;
         }

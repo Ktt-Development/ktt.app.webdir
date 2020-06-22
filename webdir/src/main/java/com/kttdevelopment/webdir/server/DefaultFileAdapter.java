@@ -36,10 +36,10 @@ public class DefaultFileAdapter implements FileHandlerAdapter {
 
             final List<FormatterPair> formatters = FrontMatterUtil.getFormatters(config.getList("formatters"));
 
-            final PluginLibrary lib = Application.pluginService.getLibrary();
+            final PluginLibrary lib = Application.getPluginService().getLibrary();
             final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 
-            final Permissions Permissions = Application.permissions.getPermissions();
+            final Permissions Permissions = Application.getPermissionsService().getPermissions();
 
             formatters.forEach(formatterPair -> {
                 if(formatterPair.getPluginName() == null){

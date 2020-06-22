@@ -7,8 +7,6 @@ import java.io.*;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static com.kttdevelopment.webdir.Application.*;
-
 @SuppressWarnings("rawtypes")
 public final class PermissionsService {
 
@@ -28,6 +26,7 @@ public final class PermissionsService {
     PermissionsService(final File permissionsFile, final File defaultPermissionsFile){
         this.permissionsFile = permissionsFile;
 
+        final LocaleService locale = Application.getLocaleService();
         Logger logger = Logger.getLogger("Permissions");
         
         logger.info(locale.getString("permissions.init.start"));
@@ -54,6 +53,7 @@ public final class PermissionsService {
 
     @SuppressWarnings("UnusedReturnValue")
     public synchronized final boolean read(){
+        final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.read.start"));
 
@@ -83,6 +83,7 @@ public final class PermissionsService {
     }
 
     public synchronized final boolean write(){
+        final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.write.start"));
 

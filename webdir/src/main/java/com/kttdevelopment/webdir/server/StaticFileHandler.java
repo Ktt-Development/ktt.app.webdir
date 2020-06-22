@@ -32,10 +32,10 @@ public class StaticFileHandler extends FileHandler {
 
             final List<FormatterPair> formatters = FrontMatterUtil.getFormatters(config.getList("formatters"));
 
-            final PluginLibrary lib = Application.pluginService.getLibrary();
+            final PluginLibrary lib = Application.getPluginService().getLibrary();
             final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 
-            final Permissions Permissions = Application.permissions.getPermissions();
+            final Permissions Permissions = Application.getPermissionsService().getPermissions();
             final InetAddress address = exchange.getPublicAddress().getAddress();
 
             formatters.forEach(formatterPair -> {
