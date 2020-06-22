@@ -23,7 +23,7 @@ public final class ConfigService {
 
     //
 
-    ConfigService(final File configFile, final String defaultConfig){
+    ConfigService(final File configFile, final String defaultConfig) throws IOException{
         this.configFile = configFile;
         this.defaultConfig = defaultConfig;
 
@@ -40,12 +40,12 @@ public final class ConfigService {
             logger.severe(
                 "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
             );
-            throw new RuntimeException(e);
+            throw e;
         }catch(final IOException e){
             logger.severe(
                 "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
             );
-            throw new UncheckedIOException(e);
+            throw e;
         }
 
         // load config

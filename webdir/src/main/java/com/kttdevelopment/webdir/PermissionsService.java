@@ -23,7 +23,7 @@ public final class PermissionsService {
 
     //
 
-    PermissionsService(final File permissionsFile, final File defaultPermissionsFile){
+    PermissionsService(final File permissionsFile, final File defaultPermissionsFile) throws FileNotFoundException, YamlException{
         this.permissionsFile = permissionsFile;
 
         final LocaleService locale = Application.getLocaleService();
@@ -37,7 +37,7 @@ public final class PermissionsService {
             defaultPermissions = new Permissions((Map) IN.read());
         }catch(final ClassCastException | FileNotFoundException | YamlException e){
             logger.severe(locale.getString("permissions.init.notFound"));
-            throw new RuntimeException(e);
+            throw e;
         }finally{
             if(IN != null)
                 try{ IN.close();

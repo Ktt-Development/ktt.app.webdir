@@ -86,7 +86,7 @@ public final class LocaleService {
             }catch(final NullPointerException | MissingResourceException | IllegalArgumentException e){
                 if(code.equalsIgnoreCase("en")){
                     logger.severe("Failed to load default locale");
-                    throw new RuntimeException(e);
+                    throw e;
                 }
             }
         }

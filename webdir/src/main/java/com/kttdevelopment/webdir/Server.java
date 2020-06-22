@@ -19,7 +19,7 @@ public final class Server {
 
     //
 
-    Server(){
+    Server() throws IOException{
         final LocaleService locale = Application.getLocaleService();
         final ConfigService config = Application.getConfigService();
         final Logger logger = Logger.getLogger(locale.getString("server"));
@@ -30,15 +30,15 @@ public final class Server {
         try{
             server = SimpleHttpServer.create();
             server.bind(port);
-        }catch(final IllegalArgumentException e){
-            logger.severe(locale.getString("server.init.badPort",port));
-            throw new RuntimeException(e);
-        }catch(final BindException e){
-            logger.severe(locale.getString("server.init.portTaken",port));
-            throw new RuntimeException(e);
-        }catch(final IOException e){
-            logger.severe(locale.getString("server.init.failed") + '\n' + LoggerService.getStackTraceAsString(e));
-            throw new RuntimeException(e);
+        }catch(final IllegalArgumentException | IOException e){
+            logger.severe(
+                e instanceof IllegalArgumentException
+                ? locale.getString("server.init.badPort",port)
+                : e instanceof BindException
+                  ? locale.getString("server.init.portTaken",port)
+                  : locale.getString("server.init.failed") + '\n' + LoggerService.getStackTraceAsString(e)
+            );
+            throw e;
         }
         // init
 

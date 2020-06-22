@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public abstract class Application {
@@ -19,7 +20,7 @@ public abstract class Application {
     //
 
     @SuppressWarnings("InstantiationOfUtilityClass")
-    public synchronized static void main(String[] args){ try{
+    public synchronized static void main(String[] args) throws IOException{ try{
         logger = new LoggerService();
         locale = new LocaleService("lang/bundle");
         config = new ConfigService(
