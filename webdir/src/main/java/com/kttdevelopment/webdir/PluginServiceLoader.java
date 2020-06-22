@@ -15,8 +15,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
-import static com.kttdevelopment.webdir.Application.*;
-
 @SuppressWarnings("SpellCheckingInspection")
 public final class PluginServiceLoader {
 
@@ -28,6 +26,8 @@ public final class PluginServiceLoader {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     PluginServiceLoader(final File pluginsFolder){
+        final LocaleService locale = Application.getLocaleService();
+        final ConfigService config = Application.getConfigService();
         final Logger logger = Logger.getLogger(locale.getString("pluginService"));
         logger.info(locale.getString("pluginService.init.start"));
 

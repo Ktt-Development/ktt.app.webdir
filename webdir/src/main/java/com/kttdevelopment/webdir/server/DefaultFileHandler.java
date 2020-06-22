@@ -21,10 +21,10 @@ public class DefaultFileHandler extends FileHandler {
 
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
-        final Permissions Permission = Application.permissions.getPermissions();
+        final Permissions Permission = Application.getPermissionsService().getPermissions();
 
         final InetAddress address = exchange.getPublicAddress().getAddress();
-        final PluginLibrary lib = Application.pluginService.getLibrary();
+        final PluginLibrary lib = Application.getPluginService().getLibrary();
 
         for(final SimpleFileHandler handler : lib.getHandlers()){
             if(Permission.hasPermission(address,lib.getHandlerPermission(handler)) && handler.test(exchange,source)){

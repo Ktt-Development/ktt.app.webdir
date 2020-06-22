@@ -20,7 +20,7 @@ public class PluginServiceImpl extends PluginService {
     private final Class<WebDirPlugin> mainClass;
 
     private final Logger logger;
-    private final SimpleHttpServer server = new SimpleHttpServerUnmodifiable(Application.server.getServer());
+    private final SimpleHttpServer server = new SimpleHttpServerUnmodifiable(Application.getServer().getServer());
     private final LocaleBundle locale;
     private final String pluginName, version;
     private final List<String> authors;
@@ -94,7 +94,7 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public final boolean hasPermission(final InetAddress address, final String permission){
-        return Application.permissions.getPermissions().hasPermission(address,permission);
+        return Application.getPermissionsService().getPermissions().hasPermission(address, permission);
     }
 
     @Override

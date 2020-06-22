@@ -16,7 +16,7 @@ public class ConsoleLoggerFormatter extends Formatter {
 
         return String.format(
             format,
-            Objects.requireNonNullElse(Application.locale.getString("logger.level." + level),level),
+            Objects.requireNonNullElse(Application.getLocaleService().getString("logger.level." + level), level),
             record.getSourceClassName(),
                 /* # */ record.getSourceMethodName(),
                 /* @ */ record.getThreadID(),
