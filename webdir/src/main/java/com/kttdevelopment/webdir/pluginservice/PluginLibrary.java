@@ -6,7 +6,7 @@ import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings({"rawtypes", "SpellCheckingInspection", "unchecked"})
+@SuppressWarnings("SpellCheckingInspection")
 public final class PluginLibrary {
 
     private final List<PluginFormatterEntry> formatters = new ArrayList<>();

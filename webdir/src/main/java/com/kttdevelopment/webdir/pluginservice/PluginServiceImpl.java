@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.pluginservice;
 
-import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.Application;
 import com.kttdevelopment.webdir.api.PluginService;

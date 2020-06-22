@@ -3,7 +3,6 @@ package com.kttdevelopment.webdir;
 import com.kttdevelopment.webdir.logger.*;
 
 import java.io.*;
-import java.util.Objects;
 import java.util.logging.*;
 
 public final class LoggerService {

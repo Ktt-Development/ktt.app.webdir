@@ -60,12 +60,11 @@ public final class Permissions {
                 return user.getOptions().get(option);
 
         Object def = null;
-        for(final PermissionsGroup group : groups) // find options by group
-            if(user != null && user.getGroups().contains(group.getGroup())) // check group options
-                if(group.getOptions().containsKey(option))
+        for(final PermissionsGroup group : groups)
+            if(group.getOptions().containsKey(option)) // if group contains option
+                if(user != null && user.getGroups().contains(group.getGroup())) // if user is a member of the group
                     return group.getOptions().get(option);
-            else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false)) // use default if none found
-                if(group.getOptions().containsKey(option))
+                else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false)) // if group is default use set default option
                     def = group.getOptions().get(option);
         return def;
     }
@@ -76,9 +75,9 @@ public final class Permissions {
         boolean hasPerm = false;
         if(user != null)
             for(final String perm : user.getPermissions())
-                if(perm.equals('!' + permission) || (perm.endsWith("*") && perm.startsWith('!' + permission)))
+                if(perm.equals('!' + permission) || (perm.startsWith('!' + permission) && perm.endsWith("*")))
                     return false;
-                else if(perm.equals(permission) || (perm.endsWith("*") && perm.startsWith(permission)))
+                else if(perm.equals(permission) || (perm.startsWith(permission) && perm.endsWith("*")))
                     hasPerm = true;
 
         if(hasPerm) return true;

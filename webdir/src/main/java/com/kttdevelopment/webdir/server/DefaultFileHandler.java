@@ -15,6 +15,10 @@ import java.net.InetAddress;
 // handles file reading
 public class DefaultFileHandler extends FileHandler {
 
+    public DefaultFileHandler(){
+        super(new DefaultFileAdapter());
+    }
+
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
         final Permissions Permission = Application.permissions.getPermissions();

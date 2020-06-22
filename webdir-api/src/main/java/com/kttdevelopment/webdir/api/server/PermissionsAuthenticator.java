@@ -17,10 +17,10 @@ public class PermissionsAuthenticator extends Authenticator {
 
     @Override
     public final Result authenticate(final HttpExchange exchange){
-        if(pluginService.hasPermission(exchange.getRemoteAddress().getAddress(),permission))
-            return new Authenticator.Success(exchange.getPrincipal());
-        else
-            return new Authenticator.Failure(HttpCode.HTTP_Unauthorized);
+        return
+            pluginService.hasPermission(exchange.getRemoteAddress().getAddress(),permission)
+            ? new Authenticator.Success(exchange.getPrincipal())
+            : new Authenticator.Failure(HttpCode.HTTP_Unauthorized);
     }
 
 }
