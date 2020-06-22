@@ -6,6 +6,6 @@ import java.io.File;
 
 public interface PreFormatter extends Formatter {
 
-    String format(final File source, final ConfigurationSection yamLFrontMatter, final String content);
+    String format(final File source, final ConfigurationSection yamlFrontMatter, final String content);
 
 }

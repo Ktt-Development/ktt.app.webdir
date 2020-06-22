@@ -1,8 +1,6 @@
 package com.kttdevelopment.webdir.pluginservice;
 
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.formatter.PostFormatter;
-import com.kttdevelopment.webdir.api.formatter.PreFormatter;
 import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
 
 import java.util.*;
@@ -12,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PluginLibrary {
 
     private final List<PluginFormatterEntry> formatters = new ArrayList<>();
-    private final List<PluginFormatterEntry<PreFormatter>> preFormatters = new ArrayList<>();
-    private final List<PluginFormatterEntry<PostFormatter>> postFormatters = new ArrayList<>();
+    private final List<PluginFormatterEntry> preFormatters = new ArrayList<>();
+    private final List<PluginFormatterEntry> postFormatters = new ArrayList<>();
 
     // <Handler,Permission>
     private final Map<SimpleFileHandler,String> handlerwp = new ConcurrentHashMap<>();
