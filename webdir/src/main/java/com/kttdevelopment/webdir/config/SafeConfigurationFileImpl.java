@@ -7,31 +7,9 @@ import java.io.*;
 
 public final class SafeConfigurationFileImpl extends ConfigurationFileImpl {
 
-    public SafeConfigurationFileImpl(){
-    }
-
-    public SafeConfigurationFileImpl(final File configFile, final boolean skipRead){
-        super(configFile, skipRead);
-    }
-
-    public SafeConfigurationFileImpl(final File configFile) throws FileNotFoundException, YamlException{
-        super(configFile);
-    }
-
-    public SafeConfigurationFileImpl(final Reader reader) throws IOException{
-        super(reader);
-    }
-
-    public SafeConfigurationFileImpl(final InputStream stream) throws IOException{
-        super(stream);
-    }
-
-    public SafeConfigurationFileImpl(final String yaml) throws YamlException{
-        super(yaml);
-    }
-
+    public SafeConfigurationFileImpl(){ super(); }
+    
     //
-
 
     @Override
     public synchronized final void setDefault(final ConfigurationFile def){

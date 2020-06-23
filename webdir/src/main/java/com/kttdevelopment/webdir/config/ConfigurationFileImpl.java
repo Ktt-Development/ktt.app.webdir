@@ -4,39 +4,54 @@ import com.esotericsoftware.yamlbeans.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ConfigurationFileImpl extends ConfigurationSectionImpl implements ConfigurationFile {
 
-    private final File configFile;
+    private File configFile = null;
 
     public ConfigurationFileImpl(){
         super();
+    }
+
+    //
+
+    @Override
+    public synchronized void setDefault(final ConfigurationFile def){
+        this.def = def;
+    }
+
+    //
+
+    public synchronized void load(){
         configFile = null;
+        config = new HashMap();
     }
 
-    public ConfigurationFileImpl(final File configFile, boolean skipRead){
-        super();
-        this.configFile = skipRead ? configFile : null;
-    }
+    public synchronized void load(final String yaml) throws YamlException{
+        configFile = null;
 
-    public ConfigurationFileImpl(final File configFile) throws FileNotFoundException, YamlException{
-        super();
-        this.configFile = configFile;
-        YamlReader IN = null;
+        final YamlReader IN = new YamlReader(yaml);
         try{
-            IN = new YamlReader(new FileReader(configFile));
             config = (Map) IN.read();
         }finally{
-            if(IN != null)
-                try{ IN.close();
-                }catch(final IOException ignored){ }
+            try{ IN.close();
+            }catch(final IOException ignored){ }
         }
     }
 
-    public ConfigurationFileImpl(final Reader reader) throws IOException {
-        super();
+    public synchronized void load(final File configFile) throws FileNotFoundException, YamlException{
+        load(new FileReader(configFile));
+        this.configFile = configFile;
+    }
+
+    public synchronized void load(final InputStream stream) throws YamlException{
+        load(new InputStreamReader(stream));
+    }
+
+    public synchronized void load(final Reader reader) throws YamlException{
         configFile = null;
 
         final YamlReader IN = new YamlReader(reader);
@@ -46,30 +61,6 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
             try{ IN.close();
             }catch(final IOException ignored){ }
         }
-    }
-
-    public ConfigurationFileImpl(final InputStream stream) throws IOException {
-        this(new InputStreamReader(stream));
-    }
-
-    public ConfigurationFileImpl(final String yaml) throws YamlException{
-        super();
-        configFile = null;
-
-        final YamlReader IN = new YamlReader(yaml);
-        try{
-            config = (Map) IN.read();
-        }finally{
-            try{ IN.close();
-            }catch(IOException ignored){ }
-        }
-    }
-
-    //
-
-    @Override
-    public synchronized void setDefault(final ConfigurationFile def){
-        this.def = def;
     }
 
     //
