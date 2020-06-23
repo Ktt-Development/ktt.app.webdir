@@ -32,27 +32,26 @@ public final class ConfigService {
         logger.info("Started config initialization");
 
         // load default
-
         final ConfigurationFile def;
         try(final InputStream IN = ConfigService.class.getResourceAsStream(defaultConfig)){
-            def = new ConfigurationFileImpl(IN);
-        }catch(final ClassCastException | YamlException e){
+            final ConfigurationFileImpl impl = new ConfigurationFileImpl();
+            impl.load(IN);
+            def = impl;
+        }catch(final ClassCastException | IOException e){
             logger.severe(
-                "Failed to load default configuration file (invalid syntax)" + '\n' + LoggerService.getStackTraceAsString(e)
-            );
-            throw e;
-        }catch(final IOException e){
-            logger.severe(
-                "Failed to load default configuration file" + '\n' + LoggerService.getStackTraceAsString(e)
+                (e instanceof IOException ? "Failed to load default configuration file" : "Failed to load default configuration file (invalid syntax)") + '\n' + LoggerService.getStackTraceAsString(e)
             );
             throw e;
         }
 
         // load config
-        ConfigurationFile tConfig = new ConfigurationFileImpl(configFile,true);
+        ConfigurationFile tConfig = new ConfigurationFileImpl(configFile);
 
         try{
-            tConfig = new ConfigurationFileImpl(configFile);
+            final ConfigurationFileImpl impl = new ConfigurationFileImpl();
+            impl.load(configFile);
+            tConfig = impl;
+
             logger.info("Finished loading configuration file");
         }catch(final FileNotFoundException ignored){
             logger.warning("Configuration file not found, creating a new configuration file");
@@ -63,6 +62,8 @@ public final class ConfigService {
                 '\n' + LoggerService.getStackTraceAsString(e)
             );
         }
+
+        //
 
         tConfig.setDefault(def);
         config = tConfig;
@@ -75,7 +76,7 @@ public final class ConfigService {
         logger.info(locale.getString("config.init.finished"));
     }
 
-    // only creates a file
+    // method only creates a file if it doesn't exist. It does not load the default config
     public final synchronized void copyDefaultConfig(){
         final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("config"));
@@ -94,7 +95,7 @@ public final class ConfigService {
         }
     }
 
-    // only reloads config
+    // attempts to reload the config from the file
     public final synchronized void load(){
         final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("config"));
@@ -104,7 +105,7 @@ public final class ConfigService {
         logger.info(locale.getString("config.load.finished"));
     }
 
-    // only saves
+    // saves the config to the file
     public final synchronized void save(){
         final LocaleService locale = Application.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("config"));

@@ -16,6 +16,11 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         super();
     }
 
+    public ConfigurationFileImpl(final File configFile){ // reference only
+        super();
+        this.configFile = configFile;
+    }
+
     //
 
     @Override
