@@ -27,6 +27,7 @@ public interface ConfigurationFile extends ConfigurationSection {
      * Clears loaded configuration data from memory and re-reads the configuration file.
      *
      * @since 01.00.00
+     * @author Ktt Development
      */
     void reload();
 
@@ -35,6 +36,7 @@ public interface ConfigurationFile extends ConfigurationSection {
      *
      * @see #saveDefault()
      * @since 01.00.00
+     * @author Ktt Development
      */
     void save();
 
@@ -43,6 +45,7 @@ public interface ConfigurationFile extends ConfigurationSection {
      *
      * @see #save()
      * @since 01.00.00
+     * @author Ktt Development
      */
     void saveDefault();
 

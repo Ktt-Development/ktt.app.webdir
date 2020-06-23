@@ -96,7 +96,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public final boolean contains(final String key){
-        return config.containsKey(key) || def.contains(key);
+        return config.containsKey(key) || (def != null && def.contains(key));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     public final boolean getBoolean(final String key, final boolean def){
         try{
             return Boolean.parseBoolean(Objects.requireNonNull(config.get(key)).toString());
-        }catch(final NumberFormatException | NullPointerException ignored){
+        }catch(final NullPointerException ignored){
             return def;
         }
     }
@@ -129,7 +129,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     public final char getCharacter(final String key, final char def){
         try{
             return Objects.requireNonNull(config.get(key)).toString().charAt(0);
-        }catch(final IndexOutOfBoundsException | NumberFormatException | NullPointerException ignored){
+        }catch(final IndexOutOfBoundsException | NullPointerException ignored){
             return def;
         }
     }
@@ -208,17 +208,12 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     }
 
     @Override
-    public final Object getObject(final String key, final Object def){
-        return Objects.requireNonNullElse(config.get(key),def);
-    }
-
-    @Override
     public final <T> T getObject(final String key, final Class<T> type){
         return (T) config.getOrDefault(key,def.get(key));
     }
 
     @Override
-    public final <T> T getObject(final String key, final T def, final Class<T> type){
+    public final <T> T getObject(final String key, final T def){
         try{
             return Objects.requireNonNullElse((T) config.get(key),def);
         }catch(final ClassCastException ignored){
@@ -232,23 +227,14 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     }
 
     @Override
-    public final Map getMap(final String key, final Map def){
-        try{
-            return (Map) config.getOrDefault(key, def);
-        }catch(final ClassCastException ignored){
-            return def;
-        }
-    }
-
-    @Override
-    public final <K, V> Map<K, V> getMap(final String key, final Class<K> keyType, final Class<V> valueType){
+    public final <K,V> Map<K,V> getMap(final String key, final Class<K> keyType, final Class<V> valueType){
         return (Map<K,V>) getMap(key);
     }
 
     @Override
-    public final <K, V> Map<K, V> getMap(final String key, final Map<K, V> def, final Class<K> keyType, final Class<V> valueType){
+    public final <K,V> Map<K,V> getMap(final String key, final Map<K,V> def){
         try{
-            return (Map<K,V>) getMap(key,def);
+            return getMap(key, def);
         }catch(final ClassCastException ignored){
             return def;
         }
@@ -261,24 +247,14 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     }
 
     @Override
-    public final List getList(final String key, final List def){
-        try{
-            final Object v = config.getOrDefault(key,def);
-            return v instanceof String ? Collections.singletonList(v) : (List) v;
-        }catch(final ClassCastException ignored){
-            return def;
-        }
-    }
-
-    @Override
     public final <T> List<T> getList(final String key, final Class<T> type){
         return (List<T>) getList(key);
     }
 
     @Override
-    public final <T> List<T> getList(final String key, final List<T> def, final Class<T> type){
+    public final <T> List<T> getList(final String key, final List<T> def){
         try{
-            return (List<T>) getList(key,def);
+            return getList(key, def);
         }catch(final ClassCastException ignored){
             return def;
         }

@@ -27,6 +27,7 @@ public interface PostFormatter extends Formatter {
      * @see SimpleHttpExchange
      * @see ConfigurationSection
      * @since 01.00.00
+     * @author Ktt Development
      */
     String format(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content);
 

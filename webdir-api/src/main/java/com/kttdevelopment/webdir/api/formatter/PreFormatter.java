@@ -24,6 +24,7 @@ public interface PreFormatter extends Formatter {
      *
      * @see ConfigurationSection
      * @since 01.00.00
+     * @author Ktt Development
      */
     String format(final File source, final ConfigurationSection yamlFrontMatter, final String content);
 
