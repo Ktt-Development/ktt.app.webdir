@@ -5,6 +5,7 @@ import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.Application;
 import com.kttdevelopment.webdir.api.formatter.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.formatter.YamlFrontMatter;
 import com.kttdevelopment.webdir.formatter.YamlFrontMatterReader;
 import com.kttdevelopment.webdir.permissions.Permissions;
 import com.kttdevelopment.webdir.pluginservice.*;

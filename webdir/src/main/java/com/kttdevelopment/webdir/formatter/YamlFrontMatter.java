@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.api.formatter;
+package com.kttdevelopment.webdir.formatter;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 

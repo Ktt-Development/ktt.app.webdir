@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir.server;
 import com.kttdevelopment.simplehttpserver.handler.FileHandlerAdapter;
 import com.kttdevelopment.webdir.Application;
 import com.kttdevelopment.webdir.api.formatter.PreFormatter;
-import com.kttdevelopment.webdir.api.formatter.YamlFrontMatter;
+import com.kttdevelopment.webdir.formatter.YamlFrontMatter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.formatter.YamlFrontMatterReader;
 import com.kttdevelopment.webdir.permissions.Permissions;

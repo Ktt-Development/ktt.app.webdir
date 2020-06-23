@@ -2,7 +2,7 @@ package com.kttdevelopment.webdir.pluginservice;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.Application;
-import com.kttdevelopment.webdir.api.formatter.YamlFrontMatter;
+import com.kttdevelopment.webdir.formatter.YamlFrontMatter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.config.ConfigurationFileImpl;
 import com.kttdevelopment.webdir.config.ConfigurationSectionImpl;
