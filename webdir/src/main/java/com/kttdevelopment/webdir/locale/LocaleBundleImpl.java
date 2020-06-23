@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.locale;
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class LocaleBundleImpl implements LocaleBundle {
 
@@ -37,12 +38,25 @@ public class LocaleBundleImpl implements LocaleBundle {
 
     @Override
     public final String getString(final String key){
-        return loadedBundle.getString(key);
+        try{
+            return Objects.requireNonNull(loadedBundle.getString(key));
+        }catch(final ClassCastException | NullPointerException | MissingResourceException ignored){
+            try{
+                return Objects.requireNonNull(locales.get(Locale.ENGLISH).getString(key)); // use english as fallback value
+            }catch(final NullPointerException ignored2){
+                return null;
+            }
+        }
     }
 
     @Override
     public final String getString(final String key, final Object... params){
-        return String.format(loadedBundle.getString(key),params);
+        final String value = getString(key);
+        try{
+            return String.format(Objects.requireNonNull(value), params);
+        }catch(final NullPointerException | IllegalFormatException ignored){
+            return value;
+        }
     }
 
     @Override

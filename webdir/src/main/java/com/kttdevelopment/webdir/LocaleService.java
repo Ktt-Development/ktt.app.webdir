@@ -59,6 +59,7 @@ public final class LocaleService {
 
         if(localeBundle.hasLocale(locale)){
             setLocale(locale);
+            Application.getPluginService().getLibrary().getPlugins().forEach(plugin -> plugin.getPluginService().getLocale().setLocale(locale));
             logger.info(getString("locale.setLocale.finished",iname,fname));
         }else{
             logger.warning(getString("locale.setLocale.notFound",fname));
