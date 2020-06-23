@@ -21,7 +21,11 @@ public abstract class FrontMatterUtil {
         final Map OUT = new HashMap();
         imports.forEach(s -> {
             final File IN = new File(Application.parent + '\\' + s);
-            try{ OUT.putAll(new ConfigurationFileImpl(IN).toMap());
+
+            try{
+                final ConfigurationFileImpl impl = new ConfigurationFileImpl(IN);
+                impl.load(IN);
+                OUT.putAll(impl.toMap());
             }catch(final FileNotFoundException | YamlException ignored){ } // skip if not valid
         });
 
