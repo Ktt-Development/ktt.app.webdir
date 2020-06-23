@@ -42,7 +42,6 @@ public interface ConfigurationSection {
      * @param key key
      * @return configuration section
      * @throws ClassCastException if value for key is not a map
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #getMap(String)
      * @see #getMap(String, Class, Class)
@@ -107,11 +106,10 @@ public interface ConfigurationSection {
     //
 
     /**
-     * Returns the boolean value for the key or false if the value is not a boolean.
+     * Returns the boolean value for the key or false if the value is null or not a boolean.
      *
      * @param key key
      * @return boolean
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #getBoolean(String, boolean)
      * @since 01.00.00
@@ -164,7 +162,6 @@ public interface ConfigurationSection {
      *
      * @param key key
      * @return string
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #getString(String, String)
      * @since 01.00.00
@@ -316,7 +313,6 @@ public interface ConfigurationSection {
      * @param <T> value type
      * @return value
      * @throws ClassCastException if value could not be cast to type
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #getObject(String)
      * @see #getObject(String, Object)
@@ -346,7 +342,6 @@ public interface ConfigurationSection {
      * @param key key
      * @return map
      * @throws ClassCastException if value for key is not a map
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #get(String)
      * @see #getMap(String, Class, Class)
@@ -366,7 +361,6 @@ public interface ConfigurationSection {
      * @param <V> value type
      * @return map
      * @throws ClassCastException if value for key is not a map or if key/value types were not compatible
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #get(String)
      * @see #getMap(String)
@@ -397,7 +391,6 @@ public interface ConfigurationSection {
      * @param key key
      * @return value
      * @throws ClassCastException if value for key is not a list or string
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #getList(String, Class)
      * @see #getList(String, List)
@@ -414,7 +407,6 @@ public interface ConfigurationSection {
      * @param <T> list type
      * @return list
      * @throws ClassCastException if value for key is not a list or string; or if list type is not compatible
-     * @throws NullPointerException if no value is found for the key
      *
      * @see #getList(String)
      * @see #getList(String, List)

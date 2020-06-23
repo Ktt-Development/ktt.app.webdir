@@ -26,8 +26,6 @@ public class PluginServiceImpl extends PluginService {
     private final List<String> authors;
     private final File folder;
 
-    private final String folderPath; // todo
-
     public PluginServiceImpl(final Class<WebDirPlugin> mainClass, final ConfigurationSection yml){
         this.mainClass = mainClass;
 
@@ -38,8 +36,6 @@ public class PluginServiceImpl extends PluginService {
         authors = yml.getList("authors",String.class);
 
         logger = Logger.getLogger(pluginName);
-
-        folderPath = folder.getAbsolutePath();
     }
 
     @Override
@@ -67,17 +63,6 @@ public class PluginServiceImpl extends PluginService {
     }
 
     @Override
-    public final ConfigurationFile createConfiguration(final Reader reader){
-        try{
-            final SafeConfigurationFileImpl config = new SafeConfigurationFileImpl();
-            config.load(reader);
-            return config;
-        }catch(final Exception ignored){
-            return null;
-        }
-    }
-
-    @Override
     public final ConfigurationFile createConfiguration(final InputStream stream){
         try{
             final SafeConfigurationFileImpl config = new SafeConfigurationFileImpl();
@@ -86,6 +71,17 @@ public class PluginServiceImpl extends PluginService {
         }catch(final Exception ignored){
             return null;
         }
+    }
+
+    @Override
+    public final ConfigurationFile createConfiguration(final Reader reader){
+       try{
+           final SafeConfigurationFileImpl config = new SafeConfigurationFileImpl();
+           config.load(reader);
+           return config;
+       }catch(final Exception ignored){
+           return null;
+       }
     }
 
     @Override
