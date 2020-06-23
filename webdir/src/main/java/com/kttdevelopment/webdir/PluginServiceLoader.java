@@ -130,9 +130,9 @@ public final class PluginServiceLoader {
 
             try{ // this executes the above runnable
                 future.get(30,TimeUnit.SECONDS);
-            }catch(InterruptedException | TimeoutException | ExecutionException e){
+            }catch(final Exception e){
                 future.cancel(true);
-                logger.severe(locale.getString(e instanceof TimeoutException ? "pluginService.internal.timeout" : "pluginService.internal.unknown",pluginClass.getSimpleName()));
+                logger.severe(locale.getString(e instanceof TimeoutException ? "pluginService.internal.timeout" : "pluginService.internal.unknown",pluginClass.getSimpleName()) + (e instanceof TimeoutException ? "" : '\n' + LoggerService.getStackTraceAsString(e)));
             }
         });
         executor.shutdown();

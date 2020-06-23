@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("SpellCheckingInspection")
 public final class PluginLibrary {
 
+    private final List<WebDirPlugin> plugins = new ArrayList<>();
+
     private final List<PluginFormatterEntry> formatters = new ArrayList<>();
     private final List<PluginFormatterEntry> preFormatters = new ArrayList<>();
     private final List<PluginFormatterEntry> postFormatters = new ArrayList<>();
@@ -21,6 +23,7 @@ public final class PluginLibrary {
 
     public synchronized final void addPlugin(final WebDirPlugin plugin){
         final String pluginName = plugin.getPluginService().getPluginName();
+        plugins.add(plugin);
         plugin.getFormatters().forEach((name, formatter) -> {
             final PluginFormatterEntry entry = new PluginFormatterEntry(pluginName, name, formatter.getValue(), formatter.getKey());
             formatters.add(entry);
@@ -34,6 +37,10 @@ public final class PluginLibrary {
             if(!handlers.contains(handler))
                 handlers.add(handler);
         });
+    }
+
+    public synchronized final List<WebDirPlugin> getPlugins(){
+        return Collections.unmodifiableList(plugins);
     }
 
     //

@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir;
 
+import com.kttdevelopment.webdir.pluginservice.ShutdownThread;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -34,9 +36,12 @@ public abstract class Application {
         server = new Server();
         pluginService = new PluginServiceLoader(new File(parent + '\\' + "plugins"));
 
+        Runtime.getRuntime().addShutdownHook(new ShutdownThread());
+
         server.getServer().start();
     }catch(final Exception e){
         Logger.getLogger("main").severe(LoggerService.getStackTraceAsString(e));
+        new ShutdownThread().run();
         throw e;
     } }
 
