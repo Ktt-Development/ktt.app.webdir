@@ -46,7 +46,7 @@ public final class Permissions {
     public final PermissionsUser getUser(final InetAddress address){
         for(final PermissionsUser u : users)
             if(u.getUser().equals(address) ||
-               (u.getUser().isAnyLocalAddress() || u.getUser().isLoopbackAddress()) && (address.isAnyLocalAddress() || address.isLoopbackAddress())
+               ((u.getUser().isAnyLocalAddress() || u.getUser().isLoopbackAddress()) && (address.isAnyLocalAddress() || address.isLoopbackAddress()))
             )
                 return u;
         return null;
