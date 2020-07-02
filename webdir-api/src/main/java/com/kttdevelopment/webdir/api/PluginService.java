@@ -176,7 +176,7 @@ public abstract class PluginService {
     public abstract String getAuthor();
 
     /**
-     * Returns the <code>author</code> value from the plugin.yml
+     * Returns the <code>authors</code> value from the plugin.yml
      * @return authors
      *
      * @see #getAuthor()
@@ -186,7 +186,7 @@ public abstract class PluginService {
     public abstract List<String> getAuthors();
 
     /**
-     * Returns the <code>mainClass</code> value from the plugin.yml
+     * Returns the <code>main</code> value from the plugin.yml
      * <br> <i>required</i>
      *
      * @return main class
