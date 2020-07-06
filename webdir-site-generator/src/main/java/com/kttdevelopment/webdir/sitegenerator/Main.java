@@ -14,10 +14,16 @@ public abstract class Main {
 
     public static ConfigService getConfigService(){ return configService; }
 
+    private static PluginLoader pluginLoader;
+
+    public static PluginLoader getPluginLoader(){ return pluginLoader; }
+
     public static void main(String[] args){
         loggerService = new LoggerService();
         localeService = new LocaleService("lang/bundle");
+        configService = new ConfigService(null,null);
 
+        pluginLoader = new PluginLoader();
     }
 
 }
