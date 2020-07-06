@@ -6,7 +6,7 @@ import com.kttdevelopment.webdir.sitegenerator.object.TriTuple;
 import java.io.IOException;
 import java.util.logging.*;
 
-public class LoggerService {
+public final class LoggerService {
 
     LoggerService(){
         final Logger logger = Logger.getLogger("Logger");

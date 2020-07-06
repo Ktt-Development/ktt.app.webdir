@@ -1,9 +1,11 @@
 package com.kttdevelopment.webdir.sitegenerator;
 
+import com.kttdevelopment.webdir.sitegenerator.function.Exceptions;
+
 import java.util.*;
 import java.util.logging.Logger;
 
-public class LocaleService {
+public final class LocaleService {
 
     private static final Map<Locale,ResourceBundle> bundles = new HashMap<>();
 
@@ -26,7 +28,10 @@ public class LocaleService {
         try{
             return bundles.get(locale).getString(key);
         }catch(final MissingResourceException | NullPointerException e){
-            logger.warning(getString("locale.getString.notFound",key));
+            logger.warning(Exceptions.requireNonExceptionElse(
+                () -> getString("locale.getString.notFound"),
+                String.format("Failed to get localized string for key %s (not found)", key))
+            );
             return null;
         }
     }
@@ -37,32 +42,39 @@ public class LocaleService {
             return String.format(Objects.requireNonNull(value),args);
         }catch(final NullPointerException | IllegalFormatException e){
             if(e instanceof IllegalFormatException)
-                logger.warning("locale.getString.missingParams");
+                logger.warning(Exceptions.requireNonExceptionElse(
+                    () -> getString("locale.getString.missingParams"),
+                    String.format("Failed to get localized string for key %s (insufficient parameters)", key))
+                );
         }
         return value;
     }
 
     LocaleService(String resource_prefix){
-        logger = Logger.getLogger("Locale"); // EN
+        logger = Logger.getLogger("Locale");
         logger.info("Started locale initialization");
 
-        Locale.setDefault(Locale.US);
+        Locale.setDefault(Locale.US); // default
         locale = Locale.getDefault();
 
         final ClassLoader classLoader = LocaleService.class.getClassLoader();
         final ResourceBundle.Control control = ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES);
 
         for(final Locale locale : supportedLocales){
-            bundles.put(
-                locale,
-                ResourceBundle.getBundle(
-                    resource_prefix,
-                    locale,
-                    classLoader,
-                    control
-                )
-            );
-            logger.fine("Loaded locale: " + locale.toString());
+            try{
+                bundles.put(
+                        locale,
+                        ResourceBundle.getBundle(
+                                resource_prefix,
+                                locale,
+                                classLoader,
+                                control
+                        )
+                );
+                logger.fine("Loaded locale: " + locale);
+            }catch(final MissingResourceException ignored){
+                logger.warning("No locale bundle found for " + locale);
+            }
         }
         logger.info("Finished locale initialization");
     }

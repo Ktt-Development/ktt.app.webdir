@@ -11,9 +11,11 @@ public abstract class Exceptions {
         return err.toString();
     }
 
-    public static <T> T requireNonExceptionElse(final ExceptionConsumer<T> consumer, T def){
+    public static <T> T requireNonExceptionElse(final ExceptionSupplier<T> consumer, T def){
         try{
-            consumer.consume()
+            return consumer.get();
+        }catch(Exception e){
+            return def;
         }
     }
 
