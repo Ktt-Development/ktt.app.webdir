@@ -1,7 +1,5 @@
 package com.kttdevelopment.webdir.pluginservice;
 
-import com.kttdevelopment.webdir.api.formatter.*;
-
 public final class PluginFormatterEntry {
 
     private final String pluginName, formatterName, permission;

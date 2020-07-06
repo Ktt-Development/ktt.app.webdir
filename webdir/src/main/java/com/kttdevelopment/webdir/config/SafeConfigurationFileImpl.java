@@ -1,10 +1,6 @@
 package com.kttdevelopment.webdir.config;
 
-import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
-
-import java.io.*;
-import java.util.Map;
 
 public final class SafeConfigurationFileImpl extends ConfigurationFileImpl {
 

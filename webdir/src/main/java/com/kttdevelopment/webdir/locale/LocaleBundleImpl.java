@@ -3,7 +3,6 @@ package com.kttdevelopment.webdir.locale;
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class LocaleBundleImpl implements LocaleBundle {
 
