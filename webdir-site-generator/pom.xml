@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.kttdevelopment</groupId>
-    <artifactId>webdir-offline</artifactId>
+    <artifactId>webdir-site-generator</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>simplehttpserver</artifactId>
-            <version>03.05.01</version>
+            <version>03.05.02</version>
         </dependency>
         <dependency>
             <groupId>com.esotericsoftware.yamlbeans</groupId>

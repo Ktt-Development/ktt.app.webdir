@@ -21,6 +21,7 @@
     <modules>
         <module>webdir</module>
         <module>webdir-api</module>
+        <module>webdir-site-generator</module>
     </modules>
 
     <build>
