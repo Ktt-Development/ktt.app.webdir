@@ -4,10 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.kttdevelopment</groupId>
-    <artifactId>webdir</artifactId>
-    <version>01.00.00</version>
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>com.kttdevelopment</groupId>
+        <artifactId>webdir</artifactId>
+        <version>01.00.00</version>
+    </parent>
+
+    <artifactId>webdir-server</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
 
     <url>https://github.com/Ktt-Development/webdir</url>
 
@@ -21,12 +26,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <modules>
-        <module>webdir-server</module>
-        <module>webdir-api</module>
-        <module>webdir-generator</module>
-    </modules>
 
     <build>
         <plugins>
@@ -42,18 +41,18 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
+        <!-- api -->
+        <dependency>
+            <groupId>com.esotericsoftware.yamlbeans</groupId>
+            <artifactId>yamlbeans</artifactId>
+            <version>1.14</version>
+        </dependency>
         <dependency>
             <groupId>com.kttdevelopment</groupId>
-            <artifactId>simplehttpserver</artifactId>
-            <version>03.05.02</version>
+            <artifactId>webdir-api</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
