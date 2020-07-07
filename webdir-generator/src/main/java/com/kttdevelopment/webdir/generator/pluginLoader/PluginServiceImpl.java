@@ -4,7 +4,7 @@ import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.generator.config.SafeConfigurationFileImpl;
 
 import java.io.File;
 import java.io.InputStream;
@@ -44,7 +44,7 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public ConfigurationFile createConfiguration(final File file){
-        return new ConfigurationFileImpl(file);
+        return new SafeConfigurationFileImpl(file);
     }
 
 }

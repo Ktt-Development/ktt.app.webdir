@@ -19,13 +19,17 @@ public abstract class Main {
     public static PluginLoader getPluginLoader(){ return pluginLoader; }
 
     public static void main(String[] args){
-        loggerService = new LoggerService();
-        localeService = new LocaleService("lang/bundle");
-        configService = new ConfigService(null,null);
+        try{
+            loggerService = new LoggerService();
+            localeService = new LocaleService("lang/bundle");
+            configService = new ConfigService(null, null);
 
-        pluginLoader = new PluginLoader();
-        // file generator +walk handle
-        // server only if serve
+            pluginLoader = new PluginLoader();
+            // file generator +walk handle
+            // server only if serve
+        }catch(final Exception e){
+            // handle close
+        }
     }
 
 }

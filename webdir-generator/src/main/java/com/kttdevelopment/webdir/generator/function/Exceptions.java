@@ -19,4 +19,9 @@ public abstract class Exceptions {
         }
     }
 
+    @SuppressWarnings({"unchecked", "UnusedReturnValue"})
+    public static <T extends Throwable> RuntimeException throwUnchecked(Throwable throwable) throws T {
+        throw (T) throwable;
+    }
+
 }
