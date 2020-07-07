@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-public final class PluginLoader {
+public class PluginLoader {
 
     private static final String mainClassName = "main";
 

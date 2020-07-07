@@ -24,6 +24,8 @@ public abstract class Main {
         configService = new ConfigService(null,null);
 
         pluginLoader = new PluginLoader();
+        // file generator +walk handle
+        // server only if serve
     }
 
 }
