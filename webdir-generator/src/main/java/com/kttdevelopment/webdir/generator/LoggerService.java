@@ -26,7 +26,7 @@ public final class LoggerService {
             new TriTuple<>("debug.log", Level.ALL, new LoggerFormatter(true,true))
         };
 
-        for(final TriTuple<String, Level, Formatter> tuple : loggers){
+        for(final TriTuple<String,Level,Formatter> tuple : loggers){
             try{
                 logger.addHandler( new FileHandler(tuple.getVar1()){{
                     setLevel(tuple.getVar2());

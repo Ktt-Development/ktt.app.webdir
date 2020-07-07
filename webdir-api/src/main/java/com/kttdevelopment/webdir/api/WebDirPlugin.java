@@ -1,164 +1,54 @@
 package com.kttdevelopment.webdir.api;
 
-import com.kttdevelopment.webdir.api.formatter.Formatter;
-import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.File;
+import java.io.InputStream;
+import java.util.logging.Logger;
 
-@SuppressWarnings("SpellCheckingInspection")
 public class WebDirPlugin {
 
-// formatters
+    private final PluginService service;
 
-    private final Map<String, Map.Entry<Formatter,String>> formatters = new ConcurrentHashMap<>();
-
-    /**
-     * Returns an umodifiable map of the currently added formatters. <b>Reserved for WebDir</b>
-     *
-     * @return map of formatters.
-     *
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    public final Map<String, Map.Entry<Formatter,String>> getFormatters(){
-        return Collections.unmodifiableMap(formatters);
+    public WebDirPlugin(final PluginService service){
+        this.service = service;
     }
 
-    /**
-     * Adds a formatter to the plugin.
-     *
-     * @param name name of formatter
-     * @param formatter formatter
-     *
-     * @see #addFormatter(String, Formatter, String)
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    public synchronized final void addFormatter(final String name, final Formatter formatter){
-        addFormatter(name,formatter,"");
+    public final Logger getLogger(){
+        return service.getLogger();
     }
 
-    /**
-     * Adds a formatter to the plugin.
-     *
-     * @param name name of formatter
-     * @param formatter formatter
-     * @param permission permission required to use formatter
-     *
-     * @see #addFormatter(String, Formatter)
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    public synchronized final void addFormatter(final String name, final Formatter formatter, final String permission){
-        formatters.put(name, new Map.Entry<>() {
-
-            @Override
-            public final Formatter getKey(){
-                return formatter;
-            }
-
-            @Override
-            public final String getValue(){
-                return permission;
-            }
-
-            @Override
-            public String setValue(final String value){
-                throw new UnsupportedOperationException();
-            }
-        });
+    public final SimpleHttpServer getServer(){
+        return service.getServer();
     }
 
-// handlers
+    // plugin
 
-
-    private final Map<SimpleFileHandler,String> handlers = new ConcurrentHashMap<>();
-
-    /**
-     * Returns an umodifiable map of the currently added handlers. <b>Reserved for WebDir</b>
-     *
-     * @return map of handlers
-     *
-     * @see SimpleFileHandler
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    public final Map<SimpleFileHandler,String> getHandlers(){
-        return Collections.unmodifiableMap(handlers);
+    public final File getPluginFolder(){
+        return service.getPluginFolder();
     }
 
-    /**
-     * Adds a file handler to the plugin.
-     *
-     * @param handler handler
-     *
-     * @see #addHandler(SimpleFileHandler, String)
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    public synchronized final void addHandler(final SimpleFileHandler handler){
-        addHandler(handler,"");
+    public final PluginYml getPluginYml(){
+        return service.getPluginYml();
     }
 
-    /**
-     * Adds a file handler to the plugin.
-     *
-     * @param handler handler
-     * @param permission permission required to use handler
-     *
-     * @see #addHandler(SimpleFileHandler)
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    public synchronized final void addHandler(final SimpleFileHandler handler, final String permission){
-        handlers.put(handler,permission);
+    // resources
+
+    public final InputStream getResource(final String path){
+        return service.getResource(path);
     }
 
-// instance +pluginService
-
-    private final PluginService pluginService;
-
-    /**
-     * Instantiates a plugin. <b>Reserved for WebDir</b>
-     *
-     * @param pluginService plugin service implementation
-     */
-    public WebDirPlugin(final PluginService pluginService){
-        this.pluginService = pluginService;
+    public final ConfigurationFile createConfiguration(){
+        return service.createConfiguration();
     }
 
-    /**
-     * Returns the WebDir API Implementation.
-     *
-     * @return plugin service
-     *
-     * @see PluginService
-     * @since 01.00.00
-     * @author Kt tDevelopment
-     */
-    public final PluginService getPluginService(){
-        return pluginService;
-    }
+        // todo: locale
 
-// override methods
+    // impl
 
-    /**
-     * Handles when the plugin is enabled.
-     *
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    @SuppressWarnings("EmptyMethod")
     public void onEnable(){}
 
-    /**
-     * Handles when the plugin is disabled.
-     *
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    @SuppressWarnings("EmptyMethod")
     public void onDisable(){}
 
 }

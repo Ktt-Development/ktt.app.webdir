@@ -7,8 +7,8 @@ import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.function.TriConsumer;
 import com.kttdevelopment.webdir.generator.object.TriTuple;
+import com.kttdevelopment.webdir.generator.pluginLoader.PluginServiceImpl;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -16,38 +16,15 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class PluginLoader {
 
     private static final String mainClassName = "main";
 
-    protected TriConsumer<File,Class<WebDirPlugin>,ConfigurationSection> loader = (pluginFile, pluginClass, yml) -> {
-        try{
-            final LocaleService locale = Main.getLocaleService();
-
-            final PluginService provider = null; // ← require plugin var checks in here
-            final String pluginName = provider.getPluginName();
-
-            final Logger logger = Logger.getLogger(pluginName);
-
-            try{
-                final WebDirPlugin plugin = pluginClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
-                plugin.onEnable();
-            }catch(final InstantiationException e){
-                logger.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
-            }catch(final IllegalAccessException e){
-                logger.severe(locale.getString("pluginLoader.loader.scope", pluginName));
-            }catch(final NoSuchMethodException | IllegalArgumentException ignored){
-                logger.severe(locale.getString("pluginLoader.loader.constArgs", pluginName));
-            }catch(final ExceptionInInitializerError | InvocationTargetException e){
-                logger.severe(locale.getString("pluginLoader.loader.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-            }catch(final SecurityException e){
-                logger.severe(locale.getString("pluginLoader.loader.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-            }
-        }catch(final Exception e){
-            throw new RuntimeException(e);
-        }
+    protected Consumer<WebDirPlugin> loader = plugin -> {
+        plugin.onEnable();
     };
 
     @SuppressWarnings("unchecked")
@@ -150,20 +127,44 @@ public class PluginLoader {
         final TimeUnit unit = TimeUnit.SECONDS;
 
         plugins.forEach(tuple -> {
-            final File plugin = tuple.getVar1();
+            final File pluginFile = tuple.getVar1();
             final Class<WebDirPlugin> mainClass = tuple.getVar2();
             final ConfigurationSection yml = tuple.getVar3();
 
-            final Future<?> future = executor.submit(() -> loader.consume(plugin, mainClass, yml));
+            final Future<?> future = executor.submit(() -> {
+                try{
+                    final PluginService provider = new PluginServiceImpl(yml);
+                    final String pluginName = provider.getPluginYml().getPluginName();
+                    final Logger logger1 = Logger.getLogger(pluginName);
+
+                    try{
+                        final WebDirPlugin plugin = mainClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
+                        loader.accept(plugin);
+                        loadedPlugins.incrementAndGet();
+                    }catch(final InstantiationException ignored){
+                        logger1.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
+                    }catch(final IllegalAccessException ignored){
+                        logger1.severe(locale.getString("pluginLoader.loader.scope", pluginName));
+                    }catch(final NoSuchMethodException | IllegalArgumentException ignored){
+                        logger1.severe(locale.getString("pluginLoader.loader.constArgs", pluginName));
+                    }catch(final ExceptionInInitializerError | InvocationTargetException e){
+                        logger1.severe(locale.getString("pluginLoader.loader.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                    }catch(final SecurityException e){
+                        logger1.severe(locale.getString("pluginLoader.loader.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                    }
+                }catch(final NullPointerException ignored){
+                    Logger.getLogger(pluginFile.getName()).severe(locale.getString("pluginLoader.loader.noName",pluginFile.getName()));
+                }
+            });
 
             try{
                 future.get(timeout,unit);
             }catch(final Exception e){
                 future.cancel(true);
                 if(e instanceof TimeoutException)
-                    logger.severe(locale.getString("pluginLoader.loader.timedOut",plugin.getName(),timeout + ' ' + unit.name().toLowerCase()));
+                    logger.severe(locale.getString("pluginLoader.loader.timedOut",pluginFile.getName(),timeout + ' ' + unit.name().toLowerCase()));
                 else
-                    logger.severe(locale.getString("pluginLoader.loader.unknown",plugin.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
+                    logger.severe(locale.getString("pluginLoader.loader.unknown",pluginFile.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 

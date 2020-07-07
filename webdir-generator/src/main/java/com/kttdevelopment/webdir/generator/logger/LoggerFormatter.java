@@ -16,7 +16,7 @@ public class LoggerFormatter extends Formatter {
     private final boolean hasTrace;
     private final String trace = "%s@%s#%s";
 
-    private final String name = "%s ⏵";
+    private final String name = "%s >";
 
     public LoggerFormatter(final boolean hasTimestamp, final boolean hasTrace){
         this.hasTimestamp = hasTimestamp;
