@@ -3,7 +3,6 @@ package com.kttdevelopment.webdir.server.server;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.server.Application;
-import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
 import com.kttdevelopment.webdir.server.httpserver.SimpleHttpExchangeUnmodifiable;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 import com.kttdevelopment.webdir.server.pluginservice.PluginLibrary;

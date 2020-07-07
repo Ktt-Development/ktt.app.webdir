@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.api.handler;
+package com.kttdevelopment.webdir.server.server;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 

@@ -1,7 +1,7 @@
 package com.kttdevelopment.webdir.server.pluginservice;
 
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.handler.SimpleFileHandler;
+import com.kttdevelopment.webdir.server.server.SimpleFileHandler;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

@@ -5,6 +5,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class WebDirPlugin {
@@ -17,10 +18,6 @@ public class WebDirPlugin {
 
     public final Logger getLogger(){
         return service.getLogger();
-    }
-
-    public final SimpleHttpServer getServer(){
-        return service.getServer();
     }
 
     // plugin
@@ -44,6 +41,18 @@ public class WebDirPlugin {
     }
 
         // todo: locale
+
+    // impl
+
+    private final List<Renderer> renderers = new ArrayList<>();
+
+    public synchronized final void addRenderer(final Renderer renderer){
+        renderers.add(renderer);
+    }
+
+    public final Renderer[] getRenderers(){
+        return Collections.unmodifiableList(renderers).toArray(new Renderer[0]);
+    }
 
     // impl
 
