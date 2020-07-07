@@ -1,13 +1,13 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
-import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.generator.config.ConfigurationSectionFile;
 
 import java.io.File;
 
 public final class ConfigService {
 
-    private final ConfigurationFile config = new ConfigurationFileImpl();
+    private final ConfigurationFile config = new ConfigurationSectionFile();
 
     public final ConfigurationFile getConfig(){
         return config;

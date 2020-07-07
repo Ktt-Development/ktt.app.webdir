@@ -4,6 +4,7 @@ import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
 
 import java.io.File;
 import java.io.InputStream;
@@ -11,14 +12,11 @@ import java.util.logging.Logger;
 
 public class PluginServiceImpl extends PluginService {
 
-    private final ConfigurationSection config;
-
     private final Logger logger;
     private final File pluginFolder;
     private final PluginYml pluginYml;
 
     public PluginServiceImpl(final ConfigurationSection pluginYml){
-        this.config = pluginYml;
         this.pluginYml = new PluginYmlImpl(pluginYml);
         this.pluginFolder = new File("/plugins/" + this.pluginYml.getPluginName());
         this.logger = Logger.getLogger(this.pluginYml.getPluginName());
@@ -45,8 +43,8 @@ public class PluginServiceImpl extends PluginService {
     }
 
     @Override
-    public ConfigurationFile createConfiguration(){
-        return null; // todo: conf impl
+    public ConfigurationFile createConfiguration(final File file){
+        return new ConfigurationFileImpl(file);
     }
 
 }

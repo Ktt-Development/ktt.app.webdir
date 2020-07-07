@@ -16,6 +16,6 @@ public abstract class PluginService {
 
     public abstract InputStream getResource(final String path);
 
-    public abstract ConfigurationFile createConfiguration();
+    public abstract ConfigurationFile createConfiguration(final File file);
 
 }

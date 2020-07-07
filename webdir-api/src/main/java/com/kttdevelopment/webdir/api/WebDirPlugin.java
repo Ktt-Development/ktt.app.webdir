@@ -36,8 +36,8 @@ public class WebDirPlugin {
         return service.getResource(path);
     }
 
-    public final ConfigurationFile createConfiguration(){
-        return service.createConfiguration();
+    public final ConfigurationFile createConfiguration(final File file){
+        return service.createConfiguration(file);
     }
 
         // todo: locale

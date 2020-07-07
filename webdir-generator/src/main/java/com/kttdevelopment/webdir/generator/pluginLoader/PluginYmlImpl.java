@@ -2,9 +2,9 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 public class PluginYmlImpl extends PluginYml {
 
@@ -35,13 +35,13 @@ public class PluginYmlImpl extends PluginYml {
     }
 
     @Override
-    public String[] getAuthors(){
+    public final String[] getAuthors(){
         return Arrays.copyOf(authors,authors.length);
     }
 
     @Override
-    public ConfigurationSection getConfiguration(){
-        return null; // todo: create clone
+    public final ConfigurationSection getConfiguration(){
+        return new ConfigurationSectionImpl(config.toMap());
     }
 
 }
