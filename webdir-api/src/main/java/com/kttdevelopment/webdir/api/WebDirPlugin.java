@@ -1,7 +1,7 @@
 package com.kttdevelopment.webdir.api;
 
-import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
 import java.io.File;
 import java.io.InputStream;
@@ -40,7 +40,9 @@ public class WebDirPlugin {
         return service.createConfiguration(file);
     }
 
-        // todo: locale
+    public final LocaleBundle getLocaleBundle(final String resource){
+        return service.getLocaleBundle(resource);
+    }
 
     // impl
 

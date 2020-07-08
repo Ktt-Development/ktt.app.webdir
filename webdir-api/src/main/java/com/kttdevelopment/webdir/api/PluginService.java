@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.api;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 
 import java.io.File;
 import java.io.InputStream;
@@ -17,5 +18,7 @@ public abstract class PluginService {
     public abstract InputStream getResource(final String path);
 
     public abstract ConfigurationFile createConfiguration(final File file);
+
+    public abstract LocaleBundle getLocaleBundle(String resource);
 
 }

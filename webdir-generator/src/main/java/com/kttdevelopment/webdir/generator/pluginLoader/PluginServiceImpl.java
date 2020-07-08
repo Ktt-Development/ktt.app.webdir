@@ -2,9 +2,9 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.PluginYml;
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.api.serviceprovider.*;
 import com.kttdevelopment.webdir.generator.config.SafeConfigurationFileImpl;
+import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
 import java.io.File;
 import java.io.InputStream;
@@ -23,28 +23,33 @@ public class PluginServiceImpl extends PluginService {
     }
 
     @Override
-    public Logger getLogger(){
+    public final Logger getLogger(){
         return logger;
     }
 
     @Override
-    public File getPluginFolder(){
+    public final File getPluginFolder(){
         return pluginFolder;
     }
 
     @Override
-    public PluginYml getPluginYml(){
+    public final PluginYml getPluginYml(){
         return pluginYml;
     }
 
     @Override
-    public InputStream getResource(final String path){
+    public final InputStream getResource(final String path){
         return getClass().getClassLoader().getResourceAsStream(path);
     }
 
     @Override
-    public ConfigurationFile createConfiguration(final File file){
+    public final ConfigurationFile createConfiguration(final File file){
         return new SafeConfigurationFileImpl(file);
+    }
+
+    @Override
+    public LocaleBundle getLocaleBundle(final String resource){
+        return new LocaleBundleImpl(resource);
     }
 
 }
