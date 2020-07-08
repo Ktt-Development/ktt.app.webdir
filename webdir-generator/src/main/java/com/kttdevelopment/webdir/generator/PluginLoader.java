@@ -37,7 +37,7 @@ public class PluginLoader {
     };
 
     @SuppressWarnings("unchecked")
-    PluginLoader(){
+    public PluginLoader(){
         final LocaleService locale = Main.getLocaleService();
         final ConfigService config = Main.getConfigService();
         final Logger logger = Logger.getLogger(locale.getString("pluginLoader"));

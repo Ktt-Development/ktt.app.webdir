@@ -24,7 +24,7 @@ public final class ConfigService {
     private final File configFile;
     private final String defaultConfigResource;
 
-    ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
+    public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
         this.configFile = configFile;
         this.defaultConfigResource = defaultConfigResource;
 

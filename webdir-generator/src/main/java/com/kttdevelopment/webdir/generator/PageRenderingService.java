@@ -14,7 +14,7 @@ public final class PageRenderingService {
 
     private final BiFunction<File,byte[],byte[]> render = new PageRenderer();
 
-    PageRenderingService(final File source, final File output) throws IOException{
+    public PageRenderingService(final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));

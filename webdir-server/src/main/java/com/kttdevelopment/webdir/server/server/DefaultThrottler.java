@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.server.server;
 
 import com.kttdevelopment.simplehttpserver.handler.ServerExchangeThrottler;
-import com.kttdevelopment.webdir.server.Application;
 import com.sun.net.httpserver.HttpExchange;
 
 public class DefaultThrottler extends ServerExchangeThrottler {

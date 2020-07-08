@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public final class Server {
 
-    Server(final int port, final File rendered) throws IOException{
+    public Server(final int port, final File rendered) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("server"));
         final SimpleHttpServer server;

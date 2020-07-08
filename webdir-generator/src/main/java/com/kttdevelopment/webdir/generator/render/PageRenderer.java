@@ -6,8 +6,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
+import java.util.function.*;
 
 public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
 

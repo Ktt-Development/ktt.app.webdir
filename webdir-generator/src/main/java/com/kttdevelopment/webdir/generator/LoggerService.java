@@ -9,7 +9,7 @@ import java.util.logging.*;
 
 public final class LoggerService {
 
-    LoggerService(){
+    public LoggerService(){
         final Logger logger = Logger.getLogger("Logger");
         logger.setLevel(Level.ALL);
         logger.setUseParentHandlers(false);

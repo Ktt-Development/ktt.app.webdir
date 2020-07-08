@@ -43,7 +43,7 @@ public final class LocaleService {
         return value;
     }
 
-    LocaleService(String resource_prefix){
+    public LocaleService(String resource_prefix){
         final Logger logger = Logger.getLogger("Locale");
         logger.info("Started locale initialization");
 
