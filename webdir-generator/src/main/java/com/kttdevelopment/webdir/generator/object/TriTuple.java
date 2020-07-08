@@ -19,7 +19,7 @@ public class TriTuple<X,Y,Z> extends BiTuple<X,Y> {
             "Tuple" + '{' +
             "var1"  + '=' + getVar1() + ", " +
             "var2"  + '=' + getVar2() + ", " +
-            "var3"  + '=' + var3 +
+            "var3"  + '=' + getVar3() +
             '}';
     }
 

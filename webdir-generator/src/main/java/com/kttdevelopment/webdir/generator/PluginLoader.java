@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.object.TriTuple;
+import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginServiceImpl;
 
 import java.io.*;
@@ -23,8 +24,16 @@ public class PluginLoader {
 
     private static final String mainClassName = "main";
 
+    private final List<PluginRendererEntry> renderers = new ArrayList<>();
+
+    public final List<PluginRendererEntry> getRenderers(){
+        return Collections.unmodifiableList(renderers);
+    }
+
     protected Consumer<WebDirPlugin> loader = plugin -> {
         plugin.onEnable();
+        final String pluginName = plugin.getPluginYml().getPluginName();
+        plugin.getRenderers().forEach((rendererName, renderer) -> renderers.add(new PluginRendererEntry(pluginName, rendererName, renderer)));
     };
 
     @SuppressWarnings("unchecked")

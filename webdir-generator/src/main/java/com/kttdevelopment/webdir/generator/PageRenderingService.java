@@ -1,20 +1,18 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.render.PageRenderer;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 public final class PageRenderingService {
 
-    private final Function<String,String> render = s -> {
-        // todo: handle plugin render here
-        return s;
-    };
+    private final BiFunction<File,byte[],byte[]> render = new PageRenderer();
 
     PageRenderingService(final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
@@ -31,7 +29,6 @@ public final class PageRenderingService {
                 total.incrementAndGet();
                 try{
                     final byte[] bytes = Files.readAllBytes(path);
-                    final String str = new String(bytes);
 
                     final Path rel = sourcePath.relativize(path);
                     final Path target = Paths.get(outputPath,rel.toString());
@@ -39,7 +36,7 @@ public final class PageRenderingService {
 
                     if(parent.exists() || parent.mkdirs())
                         try{
-                            Files.write(target, render.apply(str).getBytes());
+                            Files.write(target, render.apply(target.toFile(),bytes));
                             rendered.incrementAndGet();
                         }catch(final IOException e){
                             logger.warning(locale.getString("pageRenderer.const.writeIO", target) + '\n' + Exceptions.getStackTraceAsString(e));

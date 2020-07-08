@@ -46,14 +46,14 @@ public class WebDirPlugin {
 
     // impl
 
-    private final List<Renderer> renderers = new ArrayList<>();
+    private final Map<String,Renderer> renderers = new HashMap<>();
 
-    public synchronized final void addRenderer(final Renderer renderer){
-        renderers.add(renderer);
+    public synchronized final void addRenderer(final String rendererName, final Renderer renderer){
+        renderers.put(Objects.requireNonNull(rendererName),Objects.requireNonNull(renderer));
     }
 
-    public final Renderer[] getRenderers(){
-        return Collections.unmodifiableList(renderers).toArray(new Renderer[0]);
+    public final Map<String,Renderer> getRenderers(){
+        return Collections.unmodifiableMap(renderers);
     }
 
     // impl

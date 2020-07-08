@@ -22,8 +22,8 @@ public class BiTuple<X,Y> {
     public String toString(){
         return
             "Tuple" + '{' +
-            "var1"  + '=' + var1 + ", " +
-            "var2"  + '=' + var2 + ", " +
+            "var1"  + '=' + getVar1() + ", " +
+            "var2"  + '=' + getVar2() + ", " +
             '}';
     }
 
