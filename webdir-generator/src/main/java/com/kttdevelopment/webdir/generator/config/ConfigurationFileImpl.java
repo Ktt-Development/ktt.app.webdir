@@ -20,7 +20,8 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
 
     public ConfigurationFileImpl(final File file){
         super();
-        }
+        this.file = file;
+    }
 
     public synchronized void saveToFile(final File file) throws IOException{
         final Map cfg = new HashMap(def.toMap());

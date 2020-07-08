@@ -1,0 +1,37 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                 WebDir Configuration                 | #
+# +------------------------------------------------------+ #
+############################################################
+
+# The generator will skip loading plugins if running in safe mode.
+# Default: false
+safemode: false
+
+# The language that the application will use for logging and plugins.
+# Default: en_us
+# Allowed: en_us
+locale: en_us
+
+# The folder where files will be loaded from.
+# Default: .root
+source: .root
+
+# The output folder where rendered files will be saved.
+# Default: _site
+output: _site
+
+# Should the generator run a server to view files in realtime.
+# (WebDir - Generator only)
+# Default: false
+preview: false
+
+# The port that the server will run on.
+# Default: 80
+port: 80
+
+# The context to view files at.
+# (WebDir - Server only)
+# Ex: setting this to 'files' would put files from C://* at http://localhost/files/C/*    ← here
+# Default: files
+files_context: files

@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
+import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 

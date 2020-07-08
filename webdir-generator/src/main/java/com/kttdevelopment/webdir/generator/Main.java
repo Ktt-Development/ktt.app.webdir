@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginShutdownThread;
 
@@ -41,11 +42,13 @@ public abstract class Main {
             localeService = new LocaleService("lang/bundle");
             configService = new ConfigService(new File("config.yml"), "/config.yml");
 
-            pluginLoader = new PluginLoader();
-            pageRenderingService = new PageRenderingService(new File(".root"),new File("_site"));
+            final ConfigurationSection config = configService.getConfig();
 
-            // server only if serve | todo: add port
-            server = new Server(80,new File("_site"));
+            pluginLoader = new PluginLoader();
+            pageRenderingService = new PageRenderingService(new File(config.getString("source",".root")),new File(config.getString("output","_site")));
+
+            if(config.getBoolean("preview"))
+                server = new Server(config.getInteger("port",80),new File("_site"));
 
             Runtime.getRuntime().addShutdownHook(new PluginShutdownThread());
         }catch(final Exception e){
