@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator.locale;
 
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
+import com.kttdevelopment.webdir.generator.LocaleService;
 
 import java.util.*;
 
@@ -12,6 +13,12 @@ public class LocaleBundleImpl implements LocaleBundle {
     public LocaleBundleImpl(final String resource){
         this.resource = resource;
         setLocale(Locale.getDefault());
+    }
+
+    public LocaleBundleImpl(final LocaleService localeService, final String resource){
+        this.resource = resource;
+        setLocale(Locale.getDefault());
+        localeService.addWatchedLocale(this);
     }
 
     public synchronized final void setLocale(final Locale locale){

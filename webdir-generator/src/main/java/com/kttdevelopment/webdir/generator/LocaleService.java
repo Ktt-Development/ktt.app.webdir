@@ -1,6 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
-import com.kttdevelopment.webdir.api.WebDirPlugin;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
@@ -10,12 +10,21 @@ import java.util.logging.Logger;
 public final class LocaleService {
 
     private final LocaleBundleImpl locale;
+    private Locale currentLocale;
 
     //
 
+    private final List<LocaleBundle> watching = Collections.synchronizedList(new ArrayList<>());
+
     public synchronized final void setLocale(final Locale locale){
         this.locale.setLocale(locale);
-        // todo: set locale for all plugin services
+        currentLocale = locale;
+        watching.forEach(localeBundle -> ((LocaleBundleImpl) localeBundle).setLocale(locale));
+    }
+
+    public synchronized final void addWatchedLocale(final LocaleBundle localeBundle){
+        watching.add(localeBundle);
+        ((LocaleBundleImpl) localeBundle).setLocale(currentLocale);
     }
 
     //

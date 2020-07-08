@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.*;
+import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.config.SafeConfigurationFileImpl;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
@@ -49,7 +50,7 @@ public class PluginServiceImpl extends PluginService {
 
     @Override
     public LocaleBundle getLocaleBundle(final String resource){
-        return new LocaleBundleImpl(resource);
+        return new LocaleBundleImpl(Main.getLocaleService(),resource);
     }
 
 }
