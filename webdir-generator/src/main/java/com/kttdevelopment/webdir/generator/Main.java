@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.pluginLoader.PluginShutdownThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,8 @@ public abstract class Main {
 
             // server only if serve | todo: add port
             server = new Server(80,new File("_site"));
+
+            Runtime.getRuntime().addShutdownHook(new PluginShutdownThread());
         }catch(final Exception e){
             try{
                 Files.write(new File("/crash-" + System.currentTimeMillis()).toPath(), Exceptions.getStackTraceAsString(e).getBytes());

@@ -14,6 +14,7 @@ import com.kttdevelopment.webdir.generator.pluginLoader.PluginServiceImpl;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
+import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,10 +31,17 @@ public class PluginLoader {
         return Collections.unmodifiableList(renderers);
     }
 
+    private final List<WebDirPlugin> plugins = new ArrayList<>();
+
+    public final List<WebDirPlugin> getPlugins(){
+        return Collections.unmodifiableList(plugins);
+    }
+
     protected Consumer<WebDirPlugin> loader = plugin -> {
         plugin.onEnable();
         final String pluginName = plugin.getPluginYml().getPluginName();
         plugin.getRenderers().forEach((rendererName, renderer) -> renderers.add(new PluginRendererEntry(pluginName, rendererName, renderer)));
+        plugins.add(plugin);
     };
 
     @SuppressWarnings("unchecked")
@@ -170,10 +178,12 @@ public class PluginLoader {
                 future.get(timeout,unit);
             }catch(final Exception e){
                 future.cancel(true);
-                if(e instanceof TimeoutException)
-                    logger.severe(locale.getString("pluginLoader.loader.timedOut",pluginFile.getName(),timeout + ' ' + unit.name().toLowerCase()));
-                else
-                    logger.severe(locale.getString("pluginLoader.loader.unknown",pluginFile.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
+
+                logger.severe(
+                    e instanceof TimeoutException
+                    ? locale.getString("pluginLoader.loader.timedOut",pluginFile.getName(),timeout + ' ' + unit.name().toLowerCase())
+                    : locale.getString("pluginLoader.loader.unknown",pluginFile.getName()) + '\n' + Exceptions.getStackTraceAsString(e)
+                );
             }
         });
 
