@@ -58,8 +58,10 @@ public class WebDirPlugin {
 
     // impl
 
+    @SuppressWarnings("EmptyMethod")
     public void onEnable(){}
 
+    @SuppressWarnings("EmptyMethod")
     public void onDisable(){}
 
 }

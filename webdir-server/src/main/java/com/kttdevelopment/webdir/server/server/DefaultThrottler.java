@@ -7,15 +7,13 @@ public class DefaultThrottler extends ServerExchangeThrottler {
 
     @Override
     public final int getMaxConnections(final HttpExchange exchange){
-        try{
-            return Integer.parseInt(Application.getPermissionsService().getPermissions().getOption(exchange.getRemoteAddress().getAddress(), "connection-limit").toString());
-        }catch(final NumberFormatException ignored){
-            return 0;
-        }
+        // todo: add permissions option conn limit
+        return -1;
     }
 
     @Override
     public final boolean canIgnoreConnectionLimit(final HttpExchange exchange){
+        // todo: add permissions option conn limit test
         return false;
     }
 

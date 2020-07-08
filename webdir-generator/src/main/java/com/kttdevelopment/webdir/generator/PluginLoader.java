@@ -14,7 +14,6 @@ import com.kttdevelopment.webdir.generator.pluginLoader.PluginServiceImpl;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
-import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +54,7 @@ public class PluginLoader {
         // config pluginFolder
         final File pluginFolder = new File("/plugins");
 
-        // config safemode
+        // config safe-mode
 
         // load jar files
         final Map<File,URL> pluginJars = new HashMap<>();

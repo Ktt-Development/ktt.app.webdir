@@ -1,21 +1,23 @@
-package com.kttdevelopment.webdir.generator;
+package com.kttdevelopment.webdir.server;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
-import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.simplehttpserver.handler.*;
+import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
+import com.kttdevelopment.webdir.server.server.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.util.logging.Logger;
 
-public final class Server {
+public class FileServer {
 
-    Server(final int port, final File rendered) throws IOException{
+    FileServer(final int port, final File rendered) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("server"));
         final SimpleHttpServer server;
+
         try{
             server = SimpleHttpServer.create(port);
         }catch(final BindException e){
@@ -29,12 +31,22 @@ public final class Server {
             throw e;
         }
 
-        final FileHandler handler = new FileHandler(new HTMLNameAdapter());
-        handler.addDirectory(rendered,true);
+        final ServerExchangeThrottler throttler = new DefaultThrottler();
 
-        server.createContext("",handler);
+        // todo: context from config
+
+        final FileHandler staticFileHandler = new StaticFileHandler();
+        staticFileHandler.addDirectory(rendered, ByteLoadingOption.WATCHLOAD,true);
+
+        server.createContext("",new ThrottledHandler(staticFileHandler,throttler));
+
+        final FileHandler sysFileHandler = new DefaultFileHandler();
+        // todo: add drives & watch add/remove
+
+        server.createContext("",new ThrottledHandler(sysFileHandler,throttler));
 
         server.start();
+
     }
 
 }

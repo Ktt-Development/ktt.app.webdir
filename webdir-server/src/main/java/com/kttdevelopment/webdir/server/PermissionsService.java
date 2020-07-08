@@ -1,6 +1,8 @@
 package com.kttdevelopment.webdir.server;
 
 import com.esotericsoftware.yamlbeans.*;
+import com.kttdevelopment.webdir.generator.LocaleService;
+import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.*;
@@ -26,7 +28,7 @@ public final class PermissionsService {
     PermissionsService(final File permissionsFile, final File defaultPermissionsFile) throws FileNotFoundException, YamlException{
         this.permissionsFile = permissionsFile;
 
-        final LocaleService locale = Application.getLocaleService();
+        final LocaleService locale = Main.getLocaleService();
         Logger logger = Logger.getLogger("Permissions");
         
         logger.info(locale.getString("permissions.init.start"));
@@ -42,7 +44,7 @@ public final class PermissionsService {
             if(IN != null)
                 try{ IN.close();
                 }catch(final IOException e){
-                    logger.warning(locale.getString("permissions.init.stream") + '\n' + LoggerService.getStackTraceAsString(e));
+                    logger.warning(locale.getString("permissions.init.stream") + '\n' + Exceptions.getStackTraceAsString(e));
                 }
         }
 
@@ -53,7 +55,7 @@ public final class PermissionsService {
 
     @SuppressWarnings("UnusedReturnValue")
     public synchronized final boolean read(){
-        final LocaleService locale = Application.getLocaleService();
+        final LocaleService locale = Main.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.read.start"));
 
@@ -71,7 +73,7 @@ public final class PermissionsService {
             else
                 logger.info(locale.getString("permissions.read.created"));
         }catch(final ClassCastException | YamlException e){
-            logger.severe(locale.getString("permissions.read.badSyntax") + '\n' + LoggerService.getStackTraceAsString(e));
+            logger.severe(locale.getString("permissions.read.badSyntax") + '\n' + Exceptions.getStackTraceAsString(e));
         }finally{
             if(IN != null)
                 try{ IN.close();
@@ -83,7 +85,7 @@ public final class PermissionsService {
     }
 
     public synchronized final boolean write(){
-        final LocaleService locale = Application.getLocaleService();
+        final LocaleService locale = Main.getLocaleService();
         final Logger logger = Logger.getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.write.start"));
 
@@ -94,12 +96,12 @@ public final class PermissionsService {
             logger.info(locale.getString("permissions.write.finished"));
             return true;
         }catch(final IOException e){
-            logger.severe(locale.getString("permissions.write.failed") + '\n' + LoggerService.getStackTraceAsString(e));
+            logger.severe(locale.getString("permissions.write.failed") + '\n' + Exceptions.getStackTraceAsString(e));
         }finally{
             if(OUT != null)
                 try{ OUT.close();
                 }catch(final IOException e){
-                    logger.severe(locale.getString("permissions.write.stream") + '\n' + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("permissions.write.stream") + '\n' + Exceptions.getStackTraceAsString(e));
                 }
         }
         return false;

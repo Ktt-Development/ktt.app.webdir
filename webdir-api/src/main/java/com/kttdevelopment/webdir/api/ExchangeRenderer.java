@@ -5,8 +5,10 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.io.File;
 
-public interface ExchangeRender extends Renderer {
+public interface ExchangeRenderer extends Renderer {
 
     String format(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content);
+
+    default String getPermission(){ return null; }
 
 }

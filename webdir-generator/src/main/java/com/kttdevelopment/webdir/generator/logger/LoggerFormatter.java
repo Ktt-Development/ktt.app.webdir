@@ -14,9 +14,9 @@ public class LoggerFormatter extends Formatter {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSSaa zzz");
 
     private final boolean hasTrace;
-    private final String trace = "%s@%s#%s";
+    private static final String trace = "%s@%s#%s";
 
-    private final String name = "%s >";
+    private static final String name = "%s >";
 
     public LoggerFormatter(final boolean hasTimestamp, final boolean hasTrace){
         this.hasTimestamp = hasTimestamp;

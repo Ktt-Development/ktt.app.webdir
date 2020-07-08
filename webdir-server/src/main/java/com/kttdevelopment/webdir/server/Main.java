@@ -1,10 +1,6 @@
 package com.kttdevelopment.webdir.server;
 
 import com.kttdevelopment.webdir.generator.*;
-import com.kttdevelopment.webdir.generator.ConfigService;
-import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.generator.LoggerService;
-import com.kttdevelopment.webdir.generator.Server;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginShutdownThread;
 
@@ -36,9 +32,9 @@ public class Main {
 
     //
 
-    private static Server server;
+    private static FileServer server;
 
-    public static Server getServer(){ return server; }
+    public static FileServer getServer(){ return server; }
 
     public static void main(String[] args){
         try{
@@ -50,7 +46,7 @@ public class Main {
             pageRenderingService = new PageRenderingService(new File(".root"),new File("_site"));
 
             // todo: add port
-            server = new Server(80, new File("_site"));
+            server = new FileServer(80, new File("_site"));
             Runtime.getRuntime().addShutdownHook(new PluginShutdownThread());
         }catch(final Exception e){
             try{

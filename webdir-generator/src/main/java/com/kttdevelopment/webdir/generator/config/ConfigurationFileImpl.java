@@ -3,7 +3,6 @@ package com.kttdevelopment.webdir.generator.config;
 import com.esotericsoftware.yamlbeans.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.function.ExceptionSupplier;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.*;
