@@ -45,7 +45,7 @@ public abstract class Main {
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
-            pageRenderingService = new PageRenderingService(new File(config.getString("source",".root")),new File(config.getString("output","_site")));
+            pageRenderingService = new PageRenderingService(new File(config.getString("source_dir",".root")),new File(config.getString("output_dir","_site")));
 
             if(config.getBoolean("preview"))
                 server = new Server(config.getInteger("port",80),new File("_site"));

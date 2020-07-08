@@ -13,13 +13,17 @@ safemode: false
 # Allowed: en_us
 locale: en_us
 
+# The folder where plugins will be loaded from.
+# Default: .plugins
+plugins_dir: .plugins
+
 # The folder where files will be loaded from.
 # Default: .root
-source: .root
+source_dir: .root
 
 # The output folder where rendered files will be saved.
 # Default: _site
-output: _site
+output_dir: _site
 
 # Should the generator run a server to view files in realtime.
 # (WebDir - Generator only)

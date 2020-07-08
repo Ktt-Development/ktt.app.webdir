@@ -43,7 +43,7 @@ public class PluginLoader {
         plugins.add(plugin);
     };
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "SpellCheckingInspection"})
     public PluginLoader(){
         final LocaleService locale = Main.getLocaleService();
         final ConfigService config = Main.getConfigService();
@@ -51,10 +51,12 @@ public class PluginLoader {
 
         logger.info(locale.getString("pluginLoader.const"));
 
-        // config pluginFolder
-        final File pluginFolder = new File("/plugins");
+        final File pluginFolder = new File(config.getConfig().getString("plugins_dir",".plugins"));
 
-        // config safe-mode
+        if(config.getConfig().getBoolean("safemode")){
+            logger.info(locale.getString("pluginLoader.const.safemode"));
+            return;
+        }
 
         // load jar files
         final Map<File,URL> pluginJars = new HashMap<>();

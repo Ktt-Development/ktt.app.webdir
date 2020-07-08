@@ -4,7 +4,7 @@ import org.junit.Test;
 public abstract class ConfigurationSectionTests {
 
     @Test @Ignore
-    public final void testInstantiation(){
+    public final void testDefault(){
 
     }
 
