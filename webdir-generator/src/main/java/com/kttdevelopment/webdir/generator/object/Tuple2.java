@@ -1,11 +1,11 @@
 package com.kttdevelopment.webdir.generator.object;
 
-public class BiTuple<X,Y> {
+public class Tuple2<X,Y> {
 
     private final X var1;
     private final Y var2;
 
-    public BiTuple(final X var1, final Y var2){
+    public Tuple2(final X var1, final Y var2){
         this.var1 = var1;
         this.var2 = var2;
     }

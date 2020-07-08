@@ -2,7 +2,7 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.logger.LoggerFormatter;
-import com.kttdevelopment.webdir.generator.object.TriTuple;
+import com.kttdevelopment.webdir.generator.object.Tuple3;
 
 import java.io.IOException;
 import java.util.logging.*;
@@ -20,13 +20,13 @@ public final class LoggerService {
         }} );
 
         @SuppressWarnings("unchecked")
-        final TriTuple<String,Level,Formatter>[] loggers = new TriTuple[]{
-            new TriTuple<>(System.currentTimeMillis() + ".log", Level.INFO, new LoggerFormatter(true,false)),
-            new TriTuple<>("latest.log", Level.INFO, new LoggerFormatter(true,false)),
-            new TriTuple<>("debug.log", Level.ALL, new LoggerFormatter(true,true))
+        final Tuple3<String,Level,Formatter>[] loggers = new Tuple3[]{
+            new Tuple3<>(System.currentTimeMillis() + ".log", Level.INFO, new LoggerFormatter(true, false)),
+            new Tuple3<>("latest.log", Level.INFO, new LoggerFormatter(true, false)),
+            new Tuple3<>("debug.log", Level.ALL, new LoggerFormatter(true, true))
         };
 
-        for(final TriTuple<String,Level,Formatter> tuple : loggers){
+        for(final Tuple3<String,Level,Formatter> tuple : loggers){
             try{
                 logger.addHandler( new FileHandler(tuple.getVar1()){{
                     setLevel(tuple.getVar2());

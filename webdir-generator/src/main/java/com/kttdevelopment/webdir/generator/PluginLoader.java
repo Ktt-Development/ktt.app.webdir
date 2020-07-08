@@ -7,7 +7,7 @@ import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.object.TriTuple;
+import com.kttdevelopment.webdir.generator.object.Tuple3;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginServiceImpl;
 
@@ -89,7 +89,7 @@ public class PluginLoader {
         });
 
         // load plugin main
-        final List<TriTuple<File,Class<WebDirPlugin>,ConfigurationSection>> plugins = new ArrayList<>();
+        final List<Tuple3<File,Class<WebDirPlugin>,ConfigurationSection>> plugins = new ArrayList<>();
 
         pluginYMLs.entrySet().removeIf(entry -> {
             final File plugin = entry.getKey();
@@ -118,7 +118,7 @@ public class PluginLoader {
             }
 
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
-                plugins.add(new TriTuple<>(plugin,(Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)),yml));
+                plugins.add(new Tuple3<>(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)), yml));
             }catch(MalformedURLException | IllegalArgumentException e){
                 logger.severe(locale.getString("pluginLoader.const.UCLSec",pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                 return true;

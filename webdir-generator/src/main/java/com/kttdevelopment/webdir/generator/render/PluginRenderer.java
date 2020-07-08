@@ -1,8 +1,8 @@
 package com.kttdevelopment.webdir.generator.render;
 
-import com.kttdevelopment.webdir.generator.object.BiTuple;
+import com.kttdevelopment.webdir.generator.object.Tuple2;
 
-public final class PluginRenderer extends BiTuple<String,String> {
+public final class PluginRenderer extends Tuple2<String,String> {
 
     public PluginRenderer(final String pluginName, final String rendererName){
         super(pluginName,rendererName);

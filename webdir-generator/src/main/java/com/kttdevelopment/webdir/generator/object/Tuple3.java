@@ -1,10 +1,10 @@
 package com.kttdevelopment.webdir.generator.object;
 
-public class TriTuple<X,Y,Z> extends BiTuple<X,Y> {
+public class Tuple3<X,Y,Z> extends Tuple2<X,Y> {
 
     private final Z var3;
 
-    public TriTuple(final X var1, final Y var2, final Z var3){
+    public Tuple3(final X var1, final Y var2, final Z var3){
         super(var1,var2);
         this.var3 = var3;
     }
