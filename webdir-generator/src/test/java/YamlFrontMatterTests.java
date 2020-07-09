@@ -66,7 +66,19 @@ public class YamlFrontMatterTests {
         final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
 
         Assert.assertEquals("Front matter should have 2 values from import and import_relative and 3 imported values",5,config.toMap().size());
+    }
 
+    @Test
+    public void testSubImportsNoExt(){
+        final String frontMatter =
+            "import: /src/test/resources/frontMatter/import_relative_noext.yml";
+
+        final String out = String.format("---\n%s\n---",frontMatter);
+
+        final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
+        final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
+
+        Assert.assertEquals("Front matter should have 2 values from import and import_relative and 3 imported values",5,config.toMap().size());
     }
 
 }
