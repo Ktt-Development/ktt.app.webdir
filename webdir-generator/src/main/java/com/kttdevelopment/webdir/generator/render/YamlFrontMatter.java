@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 
 public abstract class YamlFrontMatter {
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean hasFrontMatter();
 
     public abstract ConfigurationSection getFrontMatter();

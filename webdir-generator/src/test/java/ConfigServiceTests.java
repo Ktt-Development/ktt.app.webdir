@@ -1,7 +1,7 @@
 import org.junit.Ignore;
 import org.junit.Test;
 
-public abstract class ConfigServiceTests {
+public class ConfigServiceTests {
 
     @Test @Ignore
     public void testValid(){
