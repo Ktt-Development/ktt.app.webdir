@@ -49,7 +49,7 @@ public abstract class YamlFrontMatter {
         imports.forEach(s -> {
             // if does not end with an extension, assume it to be a yaml file
             final String fileName = s + (pattern.matcher(s).matches() ? "" : ".yml");
-            final File IN = Paths.get(Objects.requireNonNullElse(source,new File("")).getAbsolutePath(),fileName).toFile();
+            final File IN = Paths.get((source == null ? new File("") : source.getParentFile()).getAbsolutePath(),fileName).toFile();
             try{
                 final ConfigurationFileImpl impl = new ConfigurationFileImpl(IN);
                 impl.load(IN);

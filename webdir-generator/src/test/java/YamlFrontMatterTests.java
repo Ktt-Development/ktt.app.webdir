@@ -45,7 +45,7 @@ public class YamlFrontMatterTests {
     @Test
     public void testImports(){
         final String frontMatter =
-            "import: webdir-generator/src/main/test/resources/frontMatter/import.yml";
+            "import: /src/test/resources/frontMatter/import.yml";
 
         final String out = String.format("---\n%s\n---",frontMatter);
 
@@ -53,12 +53,19 @@ public class YamlFrontMatterTests {
         final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
 
         Assert.assertEquals("Front matter should have 1 value from import and 3 imported values",4, config.toMap().size());
-
-        // todo
     }
 
-    @Test @Ignore
+    @Test
     public void testSubImports(){
+        final String frontMatter =
+            "import: /src/test/resources/frontMatter/import_relative.yml";
+
+        final String out = String.format("---\n%s\n---",frontMatter);
+
+        final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
+        final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
+
+        Assert.assertEquals("Front matter should have 2 values from import and import_relative and 3 imported values",5,config.toMap().size());
 
     }
 
