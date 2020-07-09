@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.logging.Logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ConfigurationSectionTests {
@@ -19,7 +20,7 @@ public class ConfigurationSectionTests {
         final ConfigurationSection def = new ConfigurationSectionImpl(defMap);
         final ConfigurationSection config = new ConfigurationSectionImpl(new HashMap(),def);
 
-        Assert.assertNotNull("Configuration without key should use the default value",config.getString(defKey));
+        Assert.assertEquals("Configuration without key should use the default value", config.getString(defKey), defVal);
     }
 
     @Test
@@ -50,7 +51,7 @@ public class ConfigurationSectionTests {
         Assert.assertEquals("Top level should have root be itself",config,config.getRoot());
         Assert.assertNull("Top level map did not return a null parent",config.getParent());
 
-        Assert.assertEquals("Third level map did not return second level map as the parent",config.get(iMap2Key),config.get(iMap2Key).get(iMap3Key).getParent());
+        Assert.assertEquals("Third level map did not return second level map as the parent",config.get(iMap2Key).toMap(),config.get(iMap2Key).get(iMap3Key).getParent().toMap());
         Assert.assertEquals("Third level map did not return first level map as the root",config,config.get(iMap2Key).get(iMap3Key).getRoot());
     }
 

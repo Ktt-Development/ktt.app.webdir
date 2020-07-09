@@ -9,54 +9,43 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     private final ConfigurationSection root;
     private final ConfigurationSection parent;
-    protected ConfigurationSection def;
 
+    protected Map def;
     protected Map config;
 
     public ConfigurationSectionImpl(){
-        this(new HashMap());
+        this(new HashMap(),null);
     }
 
     public ConfigurationSectionImpl(final Map config){
-        this.root = this;
-        this.parent = null;
-        this.config = config;
-        this.def = new ConfigurationSectionImpl(this,null,new HashMap(),null);
+        this(null, null, config, (Map) null);
     }
 
     public ConfigurationSectionImpl(final Map config, final ConfigurationSection def){
-        this.root = this;
-        this.parent = null;
-        this.config = config;
-        this.def = def;
+        this(null,null,config,def);
     }
 
     public ConfigurationSectionImpl(final ConfigurationSection root, final Map config, final ConfigurationSection def){
-        this.root = root;
-        this.parent = null;
-        this.config = config;
-        this.def = def;
+        this(root,null,config,def);
     }
 
     public ConfigurationSectionImpl(final ConfigurationSection root, final Map config){
-        this.root = root;
-        this.parent = null;
-        this.config = config;
-        this.def = new ConfigurationSectionImpl(this,null,new HashMap(),null);
+        this(root, null, config, (Map) null);
     }
 
     public ConfigurationSectionImpl(final ConfigurationSection root, final ConfigurationSection parent, final Map config){
-        this.root = root;
-        this.parent = parent;
-        this.config = config;
-        this. def = new ConfigurationSectionImpl(this,null,new HashMap(),null);
+        this(root, parent, config, (Map) null);
     }
 
     public ConfigurationSectionImpl(final ConfigurationSection root, final ConfigurationSection parent, final Map config, final ConfigurationSection def){
-        this.root = root;
+        this(root,parent,config,def.toMapWithDefaults());
+    }
+
+    public ConfigurationSectionImpl(final ConfigurationSection root, final ConfigurationSection parent, final Map config, final Map def){
+        this.root   = root == null  ? this          : root;
         this.parent = parent;
         this.config = config;
-        this.def = def;
+        this.def    = def == null   ? new HashMap() : def;
     }
 
     //
@@ -73,30 +62,26 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public final ConfigurationSection get(final String key){
-        return new ConfigurationSectionImpl(root,parent,getMap(key));
+        return new ConfigurationSectionImpl(root,this,getMap(key));
     }
 
     //
 
     @Override
     public final ConfigurationSection getDefault(){
-        if(def == null)
-            throw new UnsupportedOperationException();
-        return def;
+        return new ConfigurationSectionImpl(def);
     }
 
     @Override
     public final void setDefault(final String key, final Object value){
-        if(def == null)
-            throw new UnsupportedOperationException();
-        def.set(key,value);
+        def.put(key,value);
     }
 
     //
 
     @Override
     public final boolean contains(final String key){
-        return config.containsKey(key) || (def != null && def.contains(key));
+        return config.containsKey(key) || def.containsKey(key);
     }
 
     @Override
@@ -272,6 +257,27 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     @Override
     public final Map toMap(){
         return new HashMap(config);
+    }
+
+    @Override
+    public Map toMapWithDefaults(){
+        final Map map = new HashMap(def);
+        map.putAll(config);
+        return map;
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return
+            "ConfigurationSection" + '{' +
+            "root"      + '=' +     (root == this ? "this" : root)    + ", " +
+            "parent"    + '=' +     parent  + ", " +
+            "config"    + '=' +     config  + ", " +
+            "def"       + '=' +     def     +
+            '}';
     }
 
 }

@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.generator.function.Exceptions;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ConfigurationFileImpl extends ConfigurationSectionImpl implements ConfigurationFile {
@@ -24,13 +25,10 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
     }
 
     public synchronized void saveToFile(final File file) throws IOException{
-        final Map cfg = new HashMap(def.toMap());
-        cfg.putAll(config);
-
         YamlWriter OUT = null;
         try{
             OUT = new YamlWriter(new FileWriter(file));
-            OUT.write(cfg);
+            OUT.write(toMapWithDefaults());
         }finally{
             if(OUT != null)
                 try{ OUT.close();
@@ -40,7 +38,7 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
 
     @Override
     public void setDefault(final ConfigurationSection def){
-        this.def = def;
+        this.def = def.toMap();
     }
 
     @Override

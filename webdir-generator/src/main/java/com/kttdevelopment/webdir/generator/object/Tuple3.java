@@ -16,7 +16,7 @@ public class Tuple3<X,Y,Z> extends Tuple2<X,Y> {
     @Override
     public String toString(){
         return
-            "Tuple" + '{' +
+            "Tuple3" + '{' +
             "var1"  + '=' + getVar1() + ", " +
             "var2"  + '=' + getVar2() + ", " +
             "var3"  + '=' + getVar3() +

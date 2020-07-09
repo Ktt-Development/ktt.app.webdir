@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.generator.config;
 
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.File;
@@ -9,11 +8,6 @@ public class SafeConfigurationFileImpl extends ConfigurationFileImpl {
 
     public SafeConfigurationFileImpl(final File file){
         super(file);
-    }
-
-    @Override
-    public final void setDefault(final ConfigurationSection def){
-        this.def = def;
     }
 
     @Override

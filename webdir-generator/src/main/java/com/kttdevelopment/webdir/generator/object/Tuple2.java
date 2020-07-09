@@ -21,7 +21,7 @@ public class Tuple2<X,Y> {
     @Override
     public String toString(){
         return
-            "Tuple" + '{' +
+            "Tuple2" + '{' +
             "var1"  + '=' + getVar1() + ", " +
             "var2"  + '=' + getVar2() + ", " +
             '}';

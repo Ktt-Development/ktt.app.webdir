@@ -9,10 +9,10 @@ public class LocaleServiceTests {
     @Test @Ignore
     public void testWatching(){
         Locale.setDefault(Locale.US);
-        final LocaleService locale = new LocaleService("bundle");
+        final LocaleService locale = new LocaleService("/locale/bundle");
         locale.setLocale(Locale.JAPAN);
 
-        final LocaleBundleImpl bundle = new LocaleBundleImpl("bundle");
+        final LocaleBundleImpl bundle = new LocaleBundleImpl("/locale/bundle");
 
         final String testKey = "noSF";
 

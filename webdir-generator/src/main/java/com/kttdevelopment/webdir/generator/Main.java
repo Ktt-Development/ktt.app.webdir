@@ -39,7 +39,7 @@ public abstract class Main {
     public static void main(String[] args){
         try{
             loggerService = new LoggerService();
-            localeService = new LocaleService("lang/bundle");
+            localeService = new LocaleService("/lang/bundle");
             configService = new ConfigService(new File("config.yml"), "/config.yml");
 
             final ConfigurationSection config = configService.getConfig();

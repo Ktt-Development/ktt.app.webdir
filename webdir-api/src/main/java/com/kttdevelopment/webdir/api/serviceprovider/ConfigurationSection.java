@@ -57,7 +57,6 @@ public interface ConfigurationSection {
      * Returns the default configuration for the key.
      *
      * @return default configuration
-     * @throws UnsupportedOperationException if default configuration is null
      *
      * @since 01.00.00
      * @author Ktt Development
@@ -69,7 +68,6 @@ public interface ConfigurationSection {
      *
      * @param key key
      * @param value value
-     * @throws UnsupportedOperationException if default configuration is null
      *
      * @since 01.00.00
      * @author Ktt Development
@@ -450,9 +448,21 @@ public interface ConfigurationSection {
      *
      * @return map
      *
+     * @see #toMapWithDefaults()
      * @since 01.00.00
      * @author Ktt Development
      */
     Map toMap();
+
+    /**
+     * Returns configuration as a map with default values.
+     *
+     * @return map
+     *
+     * @see #toMap() ()
+     * @since 01.00.00
+     * @author Ktt Development
+     */
+    Map toMapWithDefaults();
 
 }
