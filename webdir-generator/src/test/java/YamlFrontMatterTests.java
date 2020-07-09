@@ -44,8 +44,8 @@ public class YamlFrontMatterTests {
         Assert.assertEquals("Content without front matter should not remove invalid front matter",out,yml.getContent());
 
         yml = new YamlFrontMatterReader(frontMatter).read();
-        Assert.assertFalse("Content without dashes should not be read as front matter",yml.hasFrontMatter());
-        Assert.assertEquals("Content without front matter should not remove invalid front matter",out,yml.getContent());
+        Assert.assertFalse("Content without front matter dashes should not be read as front matter",yml.hasFrontMatter());
+        Assert.assertEquals("Content without front matter dashes should not remove anything",frontMatter,yml.getContent());
     }
 
     @Test @Ignore

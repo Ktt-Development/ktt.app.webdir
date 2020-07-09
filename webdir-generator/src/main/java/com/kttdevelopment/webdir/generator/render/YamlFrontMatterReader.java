@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class YamlFrontMatterReader {
 
-    private static final Pattern pattern = Pattern.compile("^(---)$\\n(.*)^(---)$", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern pattern = Pattern.compile("^(---)$\\n(.*)\\n^(---)$",Pattern.MULTILINE | Pattern.DOTALL);
 
     private final String content;
 
@@ -29,7 +29,7 @@ public class YamlFrontMatterReader {
         String frontMatterStr = null;
         String cont = content;
 
-        if(matcher.matches()){
+        if(matcher.find()){
             final String g2 = matcher.group(2);
             final int len = matcher.group(0).length();
             final String ct = content.length() == len ? "" : content.substring(len + 1);
