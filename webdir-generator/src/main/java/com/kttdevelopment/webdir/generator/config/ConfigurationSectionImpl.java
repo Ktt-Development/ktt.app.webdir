@@ -38,7 +38,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     }
 
     public ConfigurationSectionImpl(final ConfigurationSection root, final ConfigurationSection parent, final Map config, final ConfigurationSection def){
-        this(root,parent,config,def.toMapWithDefaults());
+        this(root,parent,config,def == null ? null : def.toMapWithDefaults());
     }
 
     public ConfigurationSectionImpl(final ConfigurationSection root, final ConfigurationSection parent, final Map config, final Map def){

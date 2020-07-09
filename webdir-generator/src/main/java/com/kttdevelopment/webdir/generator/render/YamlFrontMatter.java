@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public abstract class YamlFrontMatter {
 
@@ -33,26 +34,44 @@ public abstract class YamlFrontMatter {
     }
 
     public static ConfigurationSection loadRelativeImports(final File source, final ConfigurationSection frontMatter){
-       return loadImports("importRelative",source,frontMatter);
+       return loadImports("import_relative",source,frontMatter);
     }
+
+    private static final Pattern pattern = Pattern.compile("^(.*)\\.(.*)$");
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final String key, final File source, final ConfigurationSection frontMatter){
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("pageRenderer"));
+        final LocaleService locale = Exceptions.requireNonExceptionElse(Main::getLocaleService, null);
+        final Logger logger = Exceptions.requireNonExceptionElse(() -> Logger.getLogger(locale.getString("pageRenderer")),null);
 
         final List<String> imports = frontMatter.getList(key, String.class);
         final Map OUT = new HashMap();
         imports.forEach(s -> {
-            final File IN = Paths.get(Objects.requireNonNullElse(source,new File("")).getAbsolutePath(),s).toFile();
+            // if does not end with an extension, assume it to be a yaml file
+            final String fileName = s + (pattern.matcher(s).matches() ? "" : ".yml");
+            final File IN = Paths.get(Objects.requireNonNullElse(source,new File("")).getAbsolutePath(),fileName).toFile();
             try{
                 final ConfigurationFileImpl impl = new ConfigurationFileImpl(IN);
                 impl.load(IN);
-                OUT.putAll(impl.toMap());
+
+                // imported files may also have imports as well
+                final Map innerImports = new HashMap();
+
+                if(impl.contains("import"))
+                    innerImports.putAll(loadImports(impl).toMap());
+                if(impl.contains("import_relative"))
+                    innerImports.putAll(loadRelativeImports(IN,impl).toMap());
+
+                final Map map = impl.toMap();
+                innerImports.putAll(map);
+
+                OUT.putAll(innerImports);
             }catch(final FileNotFoundException ignored){
-                logger.warning(locale.getString("pageRenderer.yfm.notFound",IN.getAbsolutePath()));
+                if(logger != null)
+                    logger.warning(locale.getString("pageRenderer.yfm.notFound",IN.getAbsolutePath()));
             }catch(final ClassCastException |  YamlException e){
-                logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",IN.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                if(logger != null)
+                    logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",IN.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
         OUT.putAll(frontMatter.toMap());

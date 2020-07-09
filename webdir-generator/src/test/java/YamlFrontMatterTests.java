@@ -1,3 +1,4 @@
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import org.junit.*;
@@ -13,11 +14,7 @@ public class YamlFrontMatterTests {
 
         final String content = "random content";
 
-        final String out =
-            "---" + '\n' +
-            frontMatter + '\n' +
-            "---" + '\n' +
-            content;
+        final String out = String.format("---\n%s\n---\n%s",frontMatter,content);
 
         final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
 
@@ -34,10 +31,7 @@ public class YamlFrontMatterTests {
             "ot}her: true"  + '\n' +
             "an&d: 34";
 
-        final String out =
-            "---" + '\n' +
-            frontMatter + '\n' +
-            "---";
+        final String out = String.format("---\n%s\n---",frontMatter);
 
         YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
         Assert.assertFalse("Malformed front matter should not be read as front matter",yml.hasFrontMatter());
@@ -48,9 +42,24 @@ public class YamlFrontMatterTests {
         Assert.assertEquals("Content without front matter dashes should not remove anything",frontMatter,yml.getContent());
     }
 
-    @Test @Ignore
+    @Test
     public void testImports(){
+        final String frontMatter =
+            "import: webdir-generator/src/main/test/resources/frontMatter/import.yml";
+
+        final String out = String.format("---\n%s\n---",frontMatter);
+
+        final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
+        final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
+
+        Assert.assertEquals("Front matter should have 1 value from import and 3 imported values",4, config.toMap().size());
+
         // todo
+    }
+
+    @Test @Ignore
+    public void testSubImports(){
+
     }
 
 }
