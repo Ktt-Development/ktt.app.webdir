@@ -121,12 +121,14 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public final String getString(final String key){
-        return config.getOrDefault(key,def.get(key)).toString();
+        final Object value = config.getOrDefault(key,def.get(key));
+        return (value instanceof List ? ((List) value).get(0) : value).toString();
     }
 
     @Override
     public final String getString(final String key, final String def){
-        return Objects.requireNonNullElse(config.get(key).toString(),def);
+        final Object value = Objects.requireNonNullElse(config.get(key),def);
+        return (value instanceof List ? ((List) value).get(0) : value).toString();
     }
 
     @Override
@@ -145,7 +147,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public final int getInteger(final String key){
-        return Integer.parseInt(config.getOrDefault(key,def.get(key)).toString());
+        return (int) Double.parseDouble(config.getOrDefault(key,def.get(key)).toString());
     }
 
     @Override
@@ -219,7 +221,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     @Override
     public final <K,V> Map<K,V> getMap(final String key, final Map<K,V> def){
         try{
-            return getMap(key, def);
+            return (Map<K, V>) Objects.requireNonNullElse(config.get(key), def);
         }catch(final ClassCastException ignored){
             return def;
         }
@@ -239,7 +241,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     @Override
     public final <T> List<T> getList(final String key, final List<T> def){
         try{
-            return getList(key, def);
+            return (List<T>) Objects.requireNonNullElse(config.get(key), def);
         }catch(final ClassCastException ignored){
             return def;
         }
