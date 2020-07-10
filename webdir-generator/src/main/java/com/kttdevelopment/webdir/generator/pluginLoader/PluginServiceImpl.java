@@ -20,7 +20,7 @@ public class PluginServiceImpl extends PluginService {
     public PluginServiceImpl(final ConfigurationSection pluginYml){
         this.pluginYml = new PluginYmlImpl(pluginYml);
         this.pluginFolder = new File("/plugins/" + this.pluginYml.getPluginName());
-        this.logger = Logger.getLogger(this.pluginYml.getPluginName());
+        this.logger = Main.getLoggerService().getLogger(this.pluginYml.getPluginName());
     }
 
     @Override

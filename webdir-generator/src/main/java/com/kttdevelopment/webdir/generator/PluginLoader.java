@@ -47,7 +47,7 @@ public class PluginLoader {
     public PluginLoader(){
         final LocaleService locale = Main.getLocaleService();
         final ConfigService config = Main.getConfigService();
-        final Logger logger = Logger.getLogger(locale.getString("pluginLoader"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pluginLoader"));
 
         logger.info(locale.getString("pluginLoader.const"));
 
@@ -153,25 +153,25 @@ public class PluginLoader {
                 try{
                     final PluginService provider = new PluginServiceImpl(yml);
                     final String pluginName = provider.getPluginYml().getPluginName();
-                    final Logger logger1 = Logger.getLogger(pluginName);
+                    final Logger pluginLogger = Main.getLoggerService().getLogger(pluginName);
 
                     try{
                         final WebDirPlugin plugin = mainClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
                         loader.accept(plugin);
                         loadedPlugins.incrementAndGet();
                     }catch(final InstantiationException ignored){
-                        logger1.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
+                        pluginLogger.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
                     }catch(final IllegalAccessException ignored){
-                        logger1.severe(locale.getString("pluginLoader.loader.scope", pluginName));
+                        pluginLogger.severe(locale.getString("pluginLoader.loader.scope", pluginName));
                     }catch(final NoSuchMethodException | IllegalArgumentException ignored){
-                        logger1.severe(locale.getString("pluginLoader.loader.constArgs", pluginName));
+                        pluginLogger.severe(locale.getString("pluginLoader.loader.constArgs", pluginName));
                     }catch(final ExceptionInInitializerError | InvocationTargetException e){
-                        logger1.severe(locale.getString("pluginLoader.loader.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        pluginLogger.severe(locale.getString("pluginLoader.loader.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
-                        logger1.severe(locale.getString("pluginLoader.loader.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        pluginLogger.severe(locale.getString("pluginLoader.loader.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
                 }catch(final NullPointerException ignored){
-                    Logger.getLogger(pluginFile.getName()).severe(locale.getString("pluginLoader.loader.noName",pluginFile.getName()));
+                    Main.getLoggerService().getLogger(pluginFile.getName()).severe(locale.getString("pluginLoader.loader.noName",pluginFile.getName()));
                 }
             });
 

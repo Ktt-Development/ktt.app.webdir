@@ -14,7 +14,7 @@ public final class Server {
 
     Server(final int port, final File rendered) throws IOException{
         final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("server"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
         final SimpleHttpServer server;
         try{
             server = SimpleHttpServer.create(port);

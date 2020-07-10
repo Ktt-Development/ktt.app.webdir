@@ -33,9 +33,9 @@ public final class LocaleService {
         Logger logger;
 
         try{
-            logger = Logger.getLogger(key.equals("locale") ? "Locale" : Objects.requireNonNull(Objects.requireNonNull(locale).getString("locale")));
+            logger = Main.getLoggerService().getLogger(key.equals("locale") ? "Locale" : Objects.requireNonNull(Objects.requireNonNull(locale).getString("locale")));
         }catch(final NullPointerException ignored){
-            logger = Logger.getLogger("Locale");
+            logger = Main.getLoggerService().getLogger("Locale");
         }
 
         final String value = locale.getString(key);
@@ -48,7 +48,7 @@ public final class LocaleService {
     }
 
     public final String getString(final String key, final Object... args){
-        final Logger logger = Logger.getLogger(getString("locale"));
+        final Logger logger = Main.getLoggerService().getLogger(getString("locale"));
 
         final String value = locale.getString(key,args);
         if(value.equals(getString(key)))
@@ -60,7 +60,7 @@ public final class LocaleService {
     }
 
     public LocaleService(String resource_prefix){
-        final Logger logger = Logger.getLogger("Locale");
+        final Logger logger = Main.getLoggerService().getLogger("Locale");
         logger.info("Started locale initialization");
 
         Locale.setDefault(Locale.US);

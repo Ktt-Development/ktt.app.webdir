@@ -42,7 +42,7 @@ public abstract class YamlFrontMatter {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final String key, final File source, final ConfigurationSection frontMatter){
         final LocaleService locale = Exceptions.requireNonExceptionElse(Main::getLocaleService, null);
-        final Logger logger = Exceptions.requireNonExceptionElse(() -> Logger.getLogger(locale.getString("pageRenderer")),null);
+        final Logger logger = Exceptions.requireNonExceptionElse(() -> Main.getLoggerService().getLogger(locale.getString("pageRenderer")),null);
 
         final List<String> imports = frontMatter.getList(key, String.class);
         final Map OUT = new HashMap();
@@ -83,7 +83,7 @@ public abstract class YamlFrontMatter {
     @SuppressWarnings("rawtypes")
     public static List<Renderer> getRenderers(List renderers){
         final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("pageRenderer"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final List<PluginRendererEntry> installedRenderers = Main.getPluginLoader().getRenderers();
         final List<Renderer> out = new ArrayList<>();

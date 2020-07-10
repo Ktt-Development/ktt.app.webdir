@@ -16,7 +16,7 @@ public final class PageRenderingService {
 
     public PageRenderingService(final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("pageRenderer"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
 
         final Path sourcePath = source.getAbsoluteFile().toPath();
@@ -24,6 +24,8 @@ public final class PageRenderingService {
 
         final AtomicInteger total = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
+
+        if(source.exists())
         try{
             Files.walk(sourcePath).forEach(path -> {
                 total.incrementAndGet();

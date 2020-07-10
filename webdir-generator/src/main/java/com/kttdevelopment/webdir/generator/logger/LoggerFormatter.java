@@ -30,10 +30,10 @@ public class LoggerFormatter extends Formatter {
 
         return
             (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
-            '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Objects.requireNonNull(Main.getLocaleService()).getString("logger.level.")) + level, level) + ']' + ' ' +
+            '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Main.getLocaleService().getString("logger.level." + level)), level) + ']' + ' ' +
             (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") +
             String.format(name,record.getLoggerName()) + ' ' +
-            record.getMessage();
+            record.getMessage() + '\n';
     }
 
 }

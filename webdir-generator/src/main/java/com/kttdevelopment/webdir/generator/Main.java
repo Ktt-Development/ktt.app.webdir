@@ -53,8 +53,11 @@ public abstract class Main {
             Runtime.getRuntime().addShutdownHook(new PluginShutdownThread());
         }catch(final Exception e){
             try{
-                Files.write(new File("/crash-" + System.currentTimeMillis()).toPath(), Exceptions.getStackTraceAsString(e).getBytes());
-            }catch(IOException ignored){ }
+                e.printStackTrace();
+                Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
+            }catch(IOException e2){
+                e2.printStackTrace();
+            }
         }
     }
 

@@ -5,16 +5,20 @@ import com.kttdevelopment.webdir.generator.logger.LoggerFormatter;
 import com.kttdevelopment.webdir.generator.object.Tuple3;
 
 import java.io.IOException;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.*;
+import java.util.logging.Formatter;
 
 public final class LoggerService {
 
-    public LoggerService(){
-        final Logger logger = Logger.getLogger("Logger");
-        logger.setLevel(Level.ALL);
-        logger.setUseParentHandlers(false);
+    private final List<Handler> handlers = new ArrayList<>();
 
-        logger.addHandler( new ConsoleHandler(){{
+    public LoggerService(){
+        Logger logger = getLogger("Logger");
+        logger.setLevel(Level.ALL);
+
+        handlers.add(new ConsoleHandler(){{
             setLevel(Level.INFO);
             setFormatter(new LoggerFormatter(false,false));
         }} );
@@ -28,7 +32,7 @@ public final class LoggerService {
 
         for(final Tuple3<String,Level,Formatter> tuple : loggers){
             try{
-                logger.addHandler( new FileHandler(tuple.getVar1()){{
+                handlers.add( new FileHandler(tuple.getVar1()){{
                     setLevel(tuple.getVar2());
                     setFormatter(tuple.getVar3());
                 }});
@@ -36,9 +40,18 @@ public final class LoggerService {
                 logger.severe(String.format("Failed to start logger for %s \n %s", tuple.getVar1(), Exceptions.getStackTraceAsString(e)));
             }
         }
+        logger = getLogger("Logger");
 
         logger.info("Finished logger service initialization");
+    }
 
+    public final Logger getLogger(final String loggerName){
+        final Logger logger = Logger.getLogger(loggerName);
+        final List<Handler> handlers = Arrays.asList(logger.getHandlers());
+        for(final Handler handler : this.handlers)
+            if(!handlers.contains(handler))
+                logger.addHandler(handler);
+        return logger;
     }
 
 }

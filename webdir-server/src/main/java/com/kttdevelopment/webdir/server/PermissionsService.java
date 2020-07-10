@@ -29,7 +29,7 @@ public final class PermissionsService {
         this.permissionsFile = permissionsFile;
 
         final LocaleService locale = Main.getLocaleService();
-        Logger logger = Logger.getLogger("Permissions");
+        Logger logger = Main.getLoggerService().getLogger("Permissions");
         
         logger.info(locale.getString("permissions.init.start"));
 
@@ -49,14 +49,14 @@ public final class PermissionsService {
         }
 
         read();
-        logger = Logger.getLogger(locale.getString("permissions"));
+        logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.init.finished"));
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public synchronized final boolean read(){
         final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("permissions"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.read.start"));
 
         YamlReader IN = null;
@@ -86,7 +86,7 @@ public final class PermissionsService {
 
     public synchronized final boolean write(){
         final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("permissions"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
         logger.info(locale.getString("permissions.write.start"));
 
         YamlWriter OUT = null;

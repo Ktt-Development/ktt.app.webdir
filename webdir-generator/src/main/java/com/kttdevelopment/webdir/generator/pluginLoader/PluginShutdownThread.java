@@ -18,7 +18,7 @@ public class PluginShutdownThread extends Thread{
     @Override
     public final void run(){
         final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Logger.getLogger(locale.getString("shutdown"));
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("shutdown"));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final AtomicInteger success = new AtomicInteger(0);
