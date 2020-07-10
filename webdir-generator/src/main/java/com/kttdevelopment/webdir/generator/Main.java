@@ -36,6 +36,8 @@ public abstract class Main {
 
     public static Server getServer(){ return server; }
 
+    public static boolean testMode = false;
+
     public static void main(String[] args){
         try{
             loggerService = new LoggerService();
