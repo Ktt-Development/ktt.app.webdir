@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.generator.logger;
 
 import com.kttdevelopment.webdir.generator.Main;
-import com.kttdevelopment.webdir.generator.function.ExceptionSupplier;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.text.SimpleDateFormat;

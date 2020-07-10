@@ -26,7 +26,7 @@ public class LocaleBundleImpl implements LocaleBundle {
             resource,
             locale,
             getClass().getClassLoader(),
-            ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES)
+            new UTF8PropertiesControl()
         );
     }
 

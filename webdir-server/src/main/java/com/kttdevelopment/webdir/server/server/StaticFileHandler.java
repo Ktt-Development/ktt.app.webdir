@@ -21,7 +21,6 @@ public class StaticFileHandler extends FileHandler {
         super(new HTMLNameAdapter());
     }
 
-    @SuppressWarnings({"SpellCheckingInspection"})
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{ // handle exchange render only
         final String str = new String(bytes);

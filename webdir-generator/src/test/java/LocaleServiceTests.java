@@ -26,7 +26,7 @@ public class LocaleServiceTests {
     }
 
     @Test
-    public void testGetString(){ // test format args
+    public void testGetString(){
         Locale.setDefault(Locale.US);
         final LocaleBundle bundle = new LocaleBundleImpl("locale/bundle");
 

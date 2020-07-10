@@ -6,11 +6,9 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class ConfigurationFileImpl extends ConfigurationSectionImpl implements ConfigurationFile {
 
     private File file;
