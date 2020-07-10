@@ -60,7 +60,7 @@ public final class LocaleService {
     }
 
     public LocaleService(String resource_prefix){
-        final Logger logger = Main.getLoggerService().getLogger("Locale");
+        final Logger logger = Exceptions.requireNonExceptionElse(() -> Main.getLoggerService().getLogger("Locale"), Logger.getLogger("Locale"));
         logger.info("Started locale initialization");
 
         Locale.setDefault(Locale.US);
