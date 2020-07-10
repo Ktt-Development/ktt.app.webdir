@@ -24,7 +24,7 @@ public class ConfigurationFileTests {
     }
 
     @Test
-    public void testFile(){
+    public void testFile() throws IOException{
         final String testKey = "time", testValue = String.valueOf(System.currentTimeMillis());
         final File target = new File("src/test/resources/config/config.yml");
         try{
@@ -54,6 +54,8 @@ public class ConfigurationFileTests {
         config.reload();
 
         Assert.assertEquals("After save and reload written key and value should match",after,config.getString(testKey));
+
+        Files.write(target.toPath(),"".getBytes());
     }
 
 }
