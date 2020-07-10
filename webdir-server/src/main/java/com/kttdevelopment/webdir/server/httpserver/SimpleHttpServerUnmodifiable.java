@@ -44,7 +44,7 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
     @Override
     public final HttpContext createContext(final String context, final Authenticator authenticator){
-        return createContext(context,(HttpExchange exchange) -> {},null);
+        return createContext(context,(HttpExchange exchange) -> {},authenticator);
     }
 
     @Override
