@@ -48,7 +48,7 @@ public final class LocaleService {
     }
 
     public final String getString(final String key, final Object... args){
-        final Logger logger = Logger.getLogger(Exceptions.requireNonExceptionElse(() -> getString("locale"), "Locale"));
+        final Logger logger = Logger.getLogger(getString("locale"));
 
         final String value = locale.getString(key,args);
         if(value.equals(getString(key)))

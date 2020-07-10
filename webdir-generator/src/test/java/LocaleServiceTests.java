@@ -1,3 +1,4 @@
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 import org.junit.*;
@@ -24,9 +25,22 @@ public class LocaleServiceTests {
 
     }
 
-    @Test @Ignore
+    @Test
     public void testGetString(){ // test format args
+        Locale.setDefault(Locale.US);
+        final LocaleBundle bundle = new LocaleBundleImpl("locale/bundle");
 
+        final String literalKey = "noSF";
+        final String literalValue = "[English] string with no format";
+        final String formatKey = "SF";
+        final String formatValue = "[English] String with two formats %s %s";
+        final String formatArg = "this", formatArg2 = "and";
+
+        Assert.assertEquals("Get string on key should return correct value",literalValue,bundle.getString(literalKey));
+
+        Assert.assertEquals("Formatted string should return literal value given no parameters",formatValue,bundle.getString(formatKey));
+        Assert.assertEquals("Formatted string should return value with format applied", String.format(formatValue, formatArg,formatArg2),bundle.getString(formatKey,formatArg,formatArg2));
+        Assert.assertEquals("Formatted string with insufficient args should return literal value", formatValue,bundle.getString(formatKey,formatArg));
     }
 
 }
