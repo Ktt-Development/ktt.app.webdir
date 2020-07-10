@@ -30,7 +30,13 @@ public final class LocaleService {
     //
 
     public final String getString(final String key){
-        final Logger logger = Logger.getLogger(Exceptions.requireNonExceptionElse(() -> getString("locale"), "Locale"));
+        Logger logger;
+
+        try{
+            logger = Logger.getLogger(key.equals("locale") ? "Locale" : Objects.requireNonNull(Objects.requireNonNull(locale).getString("locale")));
+        }catch(final NullPointerException ignored){
+            logger = Logger.getLogger("Locale");
+        }
 
         final String value = locale.getString(key);
         if(value == null)
