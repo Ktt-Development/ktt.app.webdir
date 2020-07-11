@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.generator.object.Tuple3;
 
-public class PluginRendererEntry extends Tuple3<String,String, Renderer> {
+public final class PluginRendererEntry extends Tuple3<String,String,Renderer> {
 
     public PluginRendererEntry(final String pluginName, final String rendererName, final Renderer renderer){
         super(pluginName,rendererName,renderer);
