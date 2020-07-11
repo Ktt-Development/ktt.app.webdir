@@ -22,11 +22,11 @@ public class PluginLoader {
 
     // Global Settings //
 
-    private static final String mainClassName = "main";
-
     private static final String pluginDirKey = "plugins_dir", pluginDirDefault = ".plugins";
 
     private static final String pluginYml = "plugin.yml";
+
+    private static final String mainClassKey = "main";
 
     private static final int loadTimeout = 30;
     private static final TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
@@ -94,7 +94,7 @@ public class PluginLoader {
                 try{
                     pluginsIsJar.put(file,file.toURI().toURL());
                 }catch(final MalformedURLException | IllegalArgumentException e){
-                    logger.severe(locale.getString("pluginLoader.const.badURL", file.getName() + '\n' + Exceptions.getStackTraceAsString(e)));
+                    logger.severe(locale.getString("pluginLoader.const.loadJars.badURL", file.getName() + '\n' + Exceptions.getStackTraceAsString(e)));
                 }
             }
         }
@@ -107,11 +107,11 @@ public class PluginLoader {
                 final URL yml = Objects.requireNonNull(loader.findResource(pluginYml));
                 pluginYMLs.put(file,yml);
             }catch(final SecurityException e){
-                logger.severe(locale.getString("pluginLoader.const.UCLSec",file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final NullPointerException ignored){
-                logger.severe(locale.getString("pluginLoader.const.nullYML",file.getName()));
+                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.null", file.getName()));
             }catch(final IOException e){
-                logger.warning(locale.getString("pluginLoader.const.UCLCloseIO", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pluginLoader.const.loadPluginYML.closeIO", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 
@@ -132,34 +132,34 @@ public class PluginLoader {
                 // test if yml has all required keys
                 pluginYml = new PluginYmlImpl(yml);
             }catch(final NullPointerException ignored){
-                logger.severe(locale.getString("pluginLoader.loader.noName", pluginName));
+                logger.severe(locale.getString("pluginLoader.const.loadValid.noNameKey", pluginName));
                 return;
             }catch(final ClassCastException | YamlException e){
-                logger.severe(locale.getString("pluginLoader.const.badYMLSyntax", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadValid.malformedYML", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                 return;
             }catch(final IOException e){
-                logger.severe(locale.getString("pluginLoader.const.ymlStreamIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadValid.openIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                 return;
             }finally{
                 if(IN != null)
                     try{
                         IN.close();
                     }catch(final IOException e){
-                        logger.warning(locale.getString("pluginLoader.const.streamClose", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pluginLoader.const.loadValid.closeIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
             }
 
             // test if main class can be loaded
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
-                pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)), yml, pluginYml));
+                pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(mainClassKey))), yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
-                logger.severe(locale.getString("pluginLoader.const.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final ClassNotFoundException | NullPointerException ignored){
-                logger.severe(locale.getString("pluginLoader.const.noMainClass", pluginName));
+                logger.severe(locale.getString("pluginLoader.const.loadValidMain.notFound", pluginName));
             }catch(final ClassCastException ignored){
-                logger.severe(locale.getString("pluginLoader.const.badMainCast", pluginName));
+                logger.severe(locale.getString("pluginLoader.const.loadValidMain.badCast", pluginName));
             }catch(final IOException e){
-                logger.warning(locale.getString("pluginLoader.const.UCLCloseIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pluginLoader.const.loadPluginYML.closeIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 
@@ -170,9 +170,9 @@ public class PluginLoader {
             final List<String> dependencies = Arrays.asList(entry.getPluginYml().getDependencies());
             pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
             if(!dependencies.isEmpty())
-                logger.severe(locale.getString("pluginLoader.loader.missingDep",entry.getPluginYml().getPluginName()));
+                logger.severe(locale.getString("pluginLoader.const.loadValidDeps.missingDep", entry.getPluginYml().getPluginName()));
             else if(new HasCircularDependencies(entry,pluginsValid).test(entry))
-                logger.severe(locale.getString("pluginLoader.loader.circleDep",entry.getPluginYml().getPluginName()));
+                logger.severe(locale.getString("pluginLoader.const.loadValidDeps.circleDep", entry.getPluginYml().getPluginName()));
             else
                 pluginsValidDep.add(entry);
         });
@@ -224,15 +224,15 @@ public class PluginLoader {
                     try{
                         plugin = entry.getMainClass().getDeclaredConstructor(PluginService.class).newInstance(provider);
                     }catch(final InstantiationException ignored){
-                        logger.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
+                        logger.severe(locale.getString("pluginLoader.const.enable.abstract", pluginName));
                     }catch(final IllegalAccessException ignored){
-                        logger.severe(locale.getString("pluginLoader.loader.scope", pluginName));
+                        logger.severe(locale.getString("pluginLoader.const.enable.scope", pluginName));
                     }catch(final NoSuchMethodException | IllegalArgumentException ignored){
-                        logger.severe(locale.getString("pluginLoader.loader.constArgs", pluginName));
+                        logger.severe(locale.getString("pluginLoader.const.enable.constArgs", pluginName));
                     }catch(final ExceptionInInitializerError | InvocationTargetException e){
-                        logger.severe(locale.getString("pluginLoader.loader.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.severe(locale.getString("pluginLoader.const.enable.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
-                        logger.severe(locale.getString("pluginLoader.loader.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.severe(locale.getString("pluginLoader.const.enable.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
 
                     if(plugin != null){
@@ -249,8 +249,8 @@ public class PluginLoader {
                     future.cancel(true);
                     logger.severe(
                         e instanceof TimeoutException
-                        ? locale.getString("pluginLoader.loader.timedOut", entry.getPluginYml().getPluginName(), loadTimeout + ' ' + loadTimeoutUnit.name().toLowerCase())
-                        : locale.getString("pluginLoader.loader.unknown",entry.getPluginYml().getPluginName()) + '\n' + Exceptions.getStackTraceAsString(e)
+                        ? locale.getString("pluginLoader.const.loader.timedOut", entry.getPluginYml().getPluginName(), loadTimeout + ' ' + loadTimeoutUnit.name().toLowerCase())
+                        : locale.getString("pluginLoader.const.loader.uncaught", entry.getPluginYml().getPluginName()) + '\n' + Exceptions.getStackTraceAsString(e)
                     );
                     success.set(false);
                 }
