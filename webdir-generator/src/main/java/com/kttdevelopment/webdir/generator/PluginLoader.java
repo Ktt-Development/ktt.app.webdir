@@ -121,7 +121,7 @@ public class PluginLoader {
         });
 
     // load plugins that have valid plugin.yml, required paramters, and correct main class
-        final List<Tuple4<File,Class<WebDirPlugin>,ConfigurationSection,PluginYml>> pluginValidYML = new ArrayList<>();
+        final List<Tuple4<File,Class<WebDirPlugin>,ConfigurationSection,PluginYml>> pluginsValid = new ArrayList<>();
         pluginYMLs.forEach((plugin, ymlURL) -> {
             final String pluginName = plugin.getName();
 
@@ -156,7 +156,7 @@ public class PluginLoader {
 
             // test if main class can be loaded
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
-                pluginValidYML.add(new Tuple4<>(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)), yml, pluginYml));
+                pluginsValid.add(new Tuple4<>(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)), yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
                 logger.severe(locale.getString("pluginLoader.const.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final ClassNotFoundException | NullPointerException ignored){
@@ -168,7 +168,19 @@ public class PluginLoader {
             }
         });
 
-
+    // load plugins with no missing dependencies
+        final List<Tuple4<File,Class<WebDirPlugin>,ConfigurationSection,PluginYml>> pluginsValidDep = new ArrayList<>();
+        pluginsValid.forEach(tuple -> {
+            final List<String> dependencies = Arrays.asList(tuple.getVar4().getDependencies());
+            pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getVar4().getPluginName()));
+            final boolean missingDependencies = !dependencies.isEmpty();
+            if(missingDependencies)
+                logger.severe(locale.getString("pluginLoader.loader.missingDep",tuple.getVar4().getPluginName()));
+            else if(new HasCircularDependencies(tuple,pluginsValid).test(tuple))
+                logger.severe(locale.getString("pluginLoader.loader.circleDep",tuple.getVar4().getPluginName()));
+            else
+                pluginsValidDep.add(tuple);
+        });
 
         /*
             For plugin dependency management:
@@ -178,23 +190,6 @@ public class PluginLoader {
             - logic to order dependencies first and dependents last
             - additional check if enable fails (dependents will also fail)
          */
-
-    // remove plugins with missing dependencies
-
-        // omit circular here???
-        // plugin ymls could be loaded here!!!
-        pluginsHasYML.removeIf(tuple -> {
-            // remove dependencies that will be loaded by the server
-            // if this this is not empty that means a dependency is missing
-            final List<String> dependencies = tuple.getVar3().getList(dependencyKey,String.class);
-            pluginsHasYML.forEach(depTuple -> dependencies.remove(depTuple.getVar3().getString(pluginNameKey)));
-            final boolean missingDependencies = !dependencies.isEmpty();
-            if(missingDependencies)
-                logger.warning(locale.getString("pluginLoader.loader.missingDep", tuple.getVar3().getString(pluginNameKey), Arrays.toString(dependencies.toArray())));
-            return missingDependencies;
-        });
-
-    // omit circular dependencies
 
     // sort so dependencies are first
 
@@ -252,4 +247,5 @@ public class PluginLoader {
         executor.shutdown();
         logger.info(locale.getString("pluginLoader.const.loaded",loadedPlugins.get(),initialPluginCount));
     }
+
 }
