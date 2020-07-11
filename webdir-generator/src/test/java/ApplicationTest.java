@@ -4,6 +4,20 @@ import org.junit.Test;
 
 public class ApplicationTest {
 
+    /* to test:
+        - plugin safemode skip
+        - plugin missing yml
+        - plugin missing name
+        - plugin malformed yml
+        - plugin missing main class
+        - plugin main not extends WDP
+        - plugin missing dependency
+        - plugin circular dependency
+        - plugin no dependency
+        - plugin timed out
+        - plugin internal exception
+     */
+
     @Test @Ignore
     public void testInitialization(){
         Main.main(new String[]{});

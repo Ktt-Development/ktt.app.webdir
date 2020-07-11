@@ -10,6 +10,8 @@ import java.util.function.*;
 
 public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
 
+    // todo: skip bad renders and warn to logger
+
     @Override
     public final byte[] apply(final File file, final byte[] bytes){
         final String str = new String(bytes);

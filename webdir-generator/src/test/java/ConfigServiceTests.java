@@ -4,27 +4,27 @@ import org.junit.Test;
 public class ConfigServiceTests {
 
     @Test @Ignore
-    public void testValid(){
+    public void testValid(){ // test read and check values
 
     }
 
     @Test @Ignore
-    public void testMissingDef(){
+    public void testMissingDef(){ // check that no def crashes
 
     }
 
     @Test @Ignore
-    public void testMissingConfig(){
+    public void testMalformedDef(){ // check that bad def crashes
 
     }
 
     @Test @Ignore
-    public void testMalformedDef(){
+    public void testMissingConfig(){ // check that new config equals def
 
     }
 
     @Test @Ignore
-    public void testMalformedConfig(){
+    public void testMalformedConfig(){ // check that malformed uses default instead
 
     }
 

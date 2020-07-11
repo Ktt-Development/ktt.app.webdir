@@ -28,7 +28,7 @@ public final class ConfigService {
         this.configFile = configFile;
         this.defaultConfigResource = defaultConfigResource;
 
-        Logger logger = Main.getLoggerService().getLogger("Config");
+        Logger logger = !Main.testMode ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
         logger.info("Started configuration initialization");
 
         // load default
@@ -66,10 +66,9 @@ public final class ConfigService {
         config.setDefault(def);
         this.config = config;
 
-        final LocaleService locale = Main.getLocaleService();
-        locale.setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
-        logger = Main.getLoggerService().getLogger(locale.getString("config"));
-        logger.info(locale.getString("config.const.loaded"));
+        if(!Main.testMode)
+            Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
+        logger.info("Finished configuration service initialization");
     }
 
     private synchronized void copyDefaultConfig(){
