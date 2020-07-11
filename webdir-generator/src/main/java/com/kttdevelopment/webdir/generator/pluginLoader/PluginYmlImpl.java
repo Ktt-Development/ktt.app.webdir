@@ -10,12 +10,14 @@ public class PluginYmlImpl extends PluginYml {
 
     private final String pluginName, pluginVersion;
     private final String[] authors;
+    private final String[] dependencies;
     private final ConfigurationSection config;
 
     public PluginYmlImpl(final ConfigurationSection config){
         this.pluginName = Objects.requireNonNull(config.getString("name"));
         this.pluginVersion = config.getString("version");
-        this.authors = (String[]) config.getList("authors",String.class).toArray();
+        this.authors = config.getList("authors", String.class).toArray(new String[0]);
+        this.dependencies = config.getList("dependencies", String.class).toArray(new String[0]);
         this.config = config;
     }
 
@@ -37,6 +39,11 @@ public class PluginYmlImpl extends PluginYml {
     @Override
     public final String[] getAuthors(){
         return Arrays.copyOf(authors,authors.length);
+    }
+
+    @Override
+    public String[] getDependencies(){
+        return Arrays.copyOf(dependencies,dependencies.length);
     }
 
     @Override

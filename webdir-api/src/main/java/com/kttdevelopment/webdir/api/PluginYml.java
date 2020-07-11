@@ -12,6 +12,8 @@ public abstract class PluginYml {
 
     public abstract String[] getAuthors();
 
+    public abstract String[] getDependencies();
+
     public abstract ConfigurationSection getConfiguration();
 
 }

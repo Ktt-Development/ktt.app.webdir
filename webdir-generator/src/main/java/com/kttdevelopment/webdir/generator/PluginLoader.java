@@ -2,14 +2,13 @@ package com.kttdevelopment.webdir.generator;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
-import com.kttdevelopment.webdir.api.PluginService;
-import com.kttdevelopment.webdir.api.WebDirPlugin;
+import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.object.Tuple3;
-import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
-import com.kttdevelopment.webdir.generator.pluginLoader.PluginServiceImpl;
+import com.kttdevelopment.webdir.generator.object.Tuple4;
+import com.kttdevelopment.webdir.generator.pluginLoader.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 public class PluginLoader {
@@ -29,6 +29,12 @@ public class PluginLoader {
     private static final String pluginDirKey = "plugins_dir", pluginDirDefault = ".plugins";
 
     private static final String pluginYml = "plugin.yml";
+
+    private static final String pluginNameKey = "name"; // note: this should match pluginLoader/PluginYmlImpl.class
+    private static final String dependencyKey = "dependencies";
+
+    private static final int loadTimeout = 30;
+    private static final TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
 
     // //
 
@@ -82,8 +88,8 @@ public class PluginLoader {
             return;
         }
 
-        // load jar files
-        final Map<File,URL> pluginJars = new HashMap<>();
+    // load files that a jars
+        final Map<File,URL> pluginsIsJar = new HashMap<>();
         {
             final File[] plugins =  Objects.requireNonNullElse(
                 pluginFolder.listFiles((dir, name) -> !dir.isDirectory() && name.toLowerCase().endsWith(".jar")),
@@ -91,17 +97,17 @@ public class PluginLoader {
             );
             for(final File file : plugins){
                 try{
-                    pluginJars.put(file,file.toURI().toURL());
+                    pluginsIsJar.put(file,file.toURI().toURL());
                 }catch(final MalformedURLException | IllegalArgumentException e){
                     logger.severe(locale.getString("pluginLoader.const.badURL", file.getName() + '\n' + Exceptions.getStackTraceAsString(e)));
                 }
             }
         }
-        final int initialPluginCount = pluginJars.size();
+        final int initialPluginCount = pluginsIsJar.size();
 
-        // load plugin.yml
+    // load plugins that have a plugin.yml
         final Map<File,URL> pluginYMLs = new HashMap<>();
-        pluginJars.forEach((file, url) -> {
+        pluginsIsJar.forEach((file, url) -> {
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{url})){
                 final URL yml = Objects.requireNonNull(loader.findResource(pluginYml));
                 pluginYMLs.put(file,yml);
@@ -114,61 +120,92 @@ public class PluginLoader {
             }
         });
 
-        // load plugin main
-        final List<Tuple3<File,Class<WebDirPlugin>,ConfigurationSection>> plugins = new ArrayList<>();
-
-        pluginYMLs.entrySet().removeIf(entry -> {
-            final File plugin = entry.getKey();
+    // load plugins that have valid plugin.yml, required paramters, and correct main class
+        final List<Tuple4<File,Class<WebDirPlugin>,ConfigurationSection,PluginYml>> pluginValidYML = new ArrayList<>();
+        pluginYMLs.forEach((plugin, ymlURL) -> {
             final String pluginName = plugin.getName();
-            final URL ymlURL = entry.getValue();
 
             final ConfigurationSection yml;
+            final PluginYml pluginYml;
 
+            // read plugin yml
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new InputStreamReader(ymlURL.openStream()));
                 //noinspection rawtypes
                 yml = new ConfigurationSectionImpl((Map) IN.read());
+                // test if yml has all required keys
+                pluginYml = new PluginYmlImpl(yml);
+            }catch(final NullPointerException ignored){
+                logger.severe(locale.getString("pluginLoader.loader.noName", pluginName));
+                return;
             }catch(final ClassCastException | YamlException e){
-                logger.severe(locale.getString("pluginLoader.const.badYMLSyntax",pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-                return true;
+                logger.severe(locale.getString("pluginLoader.const.badYMLSyntax", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                return;
             }catch(final IOException e){
                 logger.severe(locale.getString("pluginLoader.const.ymlStreamIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-                return true;
+                return;
             }finally{
                 if(IN != null)
-                    try{ IN.close();
+                    try{
+                        IN.close();
                     }catch(final IOException e){
-                        logger.warning(locale.getString("pluginLoader.const.streamClose",pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pluginLoader.const.streamClose", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
             }
 
+            // test if main class can be loaded
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
-                plugins.add(new Tuple3<>(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)), yml));
-            }catch(MalformedURLException | IllegalArgumentException e){
-                logger.severe(locale.getString("pluginLoader.const.UCLSec",pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-                return true;
+                pluginValidYML.add(new Tuple4<>(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(mainClassName)), yml, pluginYml));
+            }catch(final MalformedURLException | IllegalArgumentException e){
+                logger.severe(locale.getString("pluginLoader.const.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final ClassNotFoundException | NullPointerException ignored){
-                logger.severe(locale.getString("pluginLoader.const.noMainClass",pluginName));
-                return true;
+                logger.severe(locale.getString("pluginLoader.const.noMainClass", pluginName));
             }catch(final ClassCastException ignored){
-                logger.severe(locale.getString("pluginLoader.const.badMainCast",pluginName));
-                return true;
+                logger.severe(locale.getString("pluginLoader.const.badMainCast", pluginName));
             }catch(final IOException e){
                 logger.warning(locale.getString("pluginLoader.const.UCLCloseIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }
-
-            return false;
         });
 
-        // initialize plugins
+
+
+        /*
+            For plugin dependency management:
+            - check each plugin to see if plugin list contains dependency
+                - if not remove from loading list with err msg
+            - filter circular dependencies (list for already read)
+            - logic to order dependencies first and dependents last
+            - additional check if enable fails (dependents will also fail)
+         */
+
+    // remove plugins with missing dependencies
+
+        // omit circular here???
+        // plugin ymls could be loaded here!!!
+        pluginsHasYML.removeIf(tuple -> {
+            // remove dependencies that will be loaded by the server
+            // if this this is not empty that means a dependency is missing
+            final List<String> dependencies = tuple.getVar3().getList(dependencyKey,String.class);
+            pluginsHasYML.forEach(depTuple -> dependencies.remove(depTuple.getVar3().getString(pluginNameKey)));
+            final boolean missingDependencies = !dependencies.isEmpty();
+            if(missingDependencies)
+                logger.warning(locale.getString("pluginLoader.loader.missingDep", tuple.getVar3().getString(pluginNameKey), Arrays.toString(dependencies.toArray())));
+            return missingDependencies;
+        });
+
+    // omit circular dependencies
+
+    // sort so dependencies are first
+
+    // execute #onEnable for each plugin
+        // remove those that crash from list and run dependency check so plugins don't accidentally load without dependency
+
+        // execute #onEnable for each plugin
         final ExecutorService executor = Executors.newSingleThreadExecutor();
 
         final AtomicInteger loadedPlugins = new AtomicInteger(0);
-        final int timeout = 30;
-        final TimeUnit unit = TimeUnit.SECONDS;
-
-        plugins.forEach(tuple -> {
+        pluginsHasYML.forEach(tuple -> {
             final File pluginFile = tuple.getVar1();
             final Class<WebDirPlugin> mainClass = tuple.getVar2();
             final ConfigurationSection yml = tuple.getVar3();
@@ -181,7 +218,7 @@ public class PluginLoader {
 
                     try{
                         final WebDirPlugin plugin = mainClass.getDeclaredConstructor(PluginService.class).newInstance(provider);
-                        loader.accept(plugin);
+                        loader.accept(plugin); // move this set
                         loadedPlugins.incrementAndGet();
                     }catch(final InstantiationException ignored){
                         pluginLogger.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
@@ -200,13 +237,12 @@ public class PluginLoader {
             });
 
             try{
-                future.get(timeout,unit);
+                future.get(loadTimeout,loadTimeoutUnit);
             }catch(final Exception e){
                 future.cancel(true);
-
                 logger.severe(
                     e instanceof TimeoutException
-                    ? locale.getString("pluginLoader.loader.timedOut",pluginFile.getName(),timeout + ' ' + unit.name().toLowerCase())
+                    ? locale.getString("pluginLoader.loader.timedOut",pluginFile.getName(),loadTimeout + ' ' + loadTimeoutUnit.name().toLowerCase())
                     : locale.getString("pluginLoader.loader.unknown",pluginFile.getName()) + '\n' + Exceptions.getStackTraceAsString(e)
                 );
             }
