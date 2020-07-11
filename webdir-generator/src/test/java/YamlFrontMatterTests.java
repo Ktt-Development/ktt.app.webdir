@@ -65,7 +65,7 @@ public class YamlFrontMatterTests {
         final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
         final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
 
-        Assert.assertEquals("Front matter should have 2 values from import and import_relative and 3 imported values",5,config.toMap().size());
+        Assert.assertEquals("Front matter should have 1 values from import and import_relative and 3 imported values",4,config.toMap().size());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class YamlFrontMatterTests {
         final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
         final ConfigurationSection config = YamlFrontMatter.loadImports(yml.getFrontMatter());
 
-        Assert.assertEquals("Front matter should have 2 values from import and import_relative and 3 imported values",5,config.toMap().size());
+        Assert.assertEquals("Front matter should have 1 values from import and import_relative and 3 imported values",4,config.toMap().size());
     }
 
 }
