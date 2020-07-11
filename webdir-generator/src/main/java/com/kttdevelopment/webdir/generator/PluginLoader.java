@@ -198,10 +198,9 @@ public class PluginLoader {
                 final Future<?> future = executor.submit(() -> {
                     final PluginService provider = new PluginServiceImpl(entry.getYml());
                     final String pluginName = entry.getPluginYml().getPluginName();
+                    WebDirPlugin plugin = null;
                     try{
-                        final WebDirPlugin plugin = entry.getMainClass().getDeclaredConstructor(PluginService.class).newInstance(provider);
-                        loader.accept(plugin);
-                        success.set(true);
+                        plugin = entry.getMainClass().getDeclaredConstructor(PluginService.class).newInstance(provider);
                     }catch(final InstantiationException ignored){
                         logger.severe(locale.getString("pluginLoader.loader.abstract", pluginName));
                     }catch(final IllegalAccessException ignored){
@@ -212,6 +211,13 @@ public class PluginLoader {
                         logger.severe(locale.getString("pluginLoader.loader.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
                         logger.severe(locale.getString("pluginLoader.loader.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                    }
+
+                    if(plugin != null){
+                        loader.accept(plugin);
+                        success.set(true);
+                    }else{
+                        success.set(false);
                     }
                 });
 
