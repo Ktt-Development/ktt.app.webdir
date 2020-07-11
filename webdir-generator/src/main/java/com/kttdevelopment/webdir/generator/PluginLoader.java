@@ -22,7 +22,15 @@ import java.util.logging.Logger;
 
 public class PluginLoader {
 
+    // Global Settings //
+
     private static final String mainClassName = "main";
+
+    private static final String pluginDirKey = "plugins_dir", pluginDirDefault = ".plugins";
+
+    private static final String pluginYml = "plugin.yml";
+
+    // //
 
     private final List<PluginRendererEntry> renderers = new ArrayList<>();
 
@@ -35,6 +43,22 @@ public class PluginLoader {
     public final List<WebDirPlugin> getPlugins(){
         return Collections.unmodifiableList(plugins);
     }
+
+    //
+
+    public final WebDirPlugin getPlugin(final String pluginName){
+        for(final WebDirPlugin plugin : plugins)
+            if(plugin.getPluginYml().getPluginName().equals(pluginName))
+                return plugin;
+        return null;
+    }
+
+    @SuppressWarnings({"unchecked", "unused"}) // IntelliJ defect; doesn't recognize plugin class param is required for casting
+    public final <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass){
+        return (T) getPlugin(pluginName);
+    }
+
+    //
 
     protected Consumer<WebDirPlugin> loader = plugin -> {
         plugin.onEnable();
@@ -51,7 +75,7 @@ public class PluginLoader {
 
         logger.info(locale.getString("pluginLoader.const"));
 
-        final File pluginFolder = new File(config.getConfig().getString("plugins_dir",".plugins"));
+        final File pluginFolder = new File(config.getConfig().getString(pluginDirKey,pluginDirDefault));
 
         if(config.getConfig().getBoolean("safemode")){
             logger.info(locale.getString("pluginLoader.const.safemode"));
@@ -79,7 +103,7 @@ public class PluginLoader {
         final Map<File,URL> pluginYMLs = new HashMap<>();
         pluginJars.forEach((file, url) -> {
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{url})){
-                final URL yml = Objects.requireNonNull(loader.findResource("plugin.yml"));
+                final URL yml = Objects.requireNonNull(loader.findResource(pluginYml));
                 pluginYMLs.put(file,yml);
             }catch(final SecurityException e){
                 logger.severe(locale.getString("pluginLoader.const.UCLSec",file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));

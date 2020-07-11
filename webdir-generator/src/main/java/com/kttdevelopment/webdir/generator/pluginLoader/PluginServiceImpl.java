@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.generator.pluginLoader;
 
-import com.kttdevelopment.webdir.api.PluginService;
-import com.kttdevelopment.webdir.api.PluginYml;
+import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.*;
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.config.SafeConfigurationFileImpl;
@@ -36,6 +35,16 @@ public class PluginServiceImpl extends PluginService {
     @Override
     public final PluginYml getPluginYml(){
         return pluginYml;
+    }
+
+    @Override
+    public WebDirPlugin getPlugin(final String pluginName){
+        return Main.getPluginLoader().getPlugin(pluginName);
+    }
+
+    @Override
+    public <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass){
+        return Main.getPluginLoader().getPlugin(pluginName,pluginClass);
     }
 
     @Override

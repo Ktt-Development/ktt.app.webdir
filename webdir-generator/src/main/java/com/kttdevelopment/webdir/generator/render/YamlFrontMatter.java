@@ -27,6 +27,12 @@ public abstract class YamlFrontMatter {
 
     public abstract String getContent();
 
+    // Global Settings //
+
+    private static final String importKey = "import", importRelativeKey = "import_relative";
+
+    //
+
     // imports
 
     public static ConfigurationSection loadImports(final ConfigurationSection frontMatter){
@@ -41,8 +47,8 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final String key, final File source, final ConfigurationSection frontMatter){
-        final LocaleService locale = Exceptions.requireNonExceptionElse(Main::getLocaleService, null);
-        final Logger logger = Exceptions.requireNonExceptionElse(() -> Main.getLoggerService().getLogger(locale.getString("pageRenderer")),null);
+        final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
+        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
         final List<String> imports = frontMatter.getList(key, String.class);
         final Map OUT = new HashMap();
@@ -57,20 +63,26 @@ public abstract class YamlFrontMatter {
                 // imported files may also have imports as well
                 final Map innerImports = new HashMap();
 
-                if(impl.contains("import"))
+                if(impl.contains(importKey))
                     innerImports.putAll(loadImports(impl).toMap());
-                if(impl.contains("import_relative"))
+                if(impl.contains(importRelativeKey))
                     innerImports.putAll(loadRelativeImports(IN,impl).toMap());
 
                 final Map map = impl.toMap();
                 innerImports.putAll(map);
+                innerImports.remove(imports);
+                innerImports.remove(importRelativeKey);
 
                 OUT.putAll(innerImports);
             }catch(final FileNotFoundException ignored){
-                if(logger != null)
+                if(!Main.testMode)
+                    // IntelliJ defect; locale will not be null while not in test mode
+                    //noinspection ConstantConditions
                     logger.warning(locale.getString("pageRenderer.yfm.notFound",IN.getAbsolutePath()));
             }catch(final ClassCastException |  YamlException e){
-                if(logger != null)
+                if(!Main.testMode)
+                    // IntelliJ defect; locale will not be null while not in test mode
+                    //noinspection ConstantConditions
                     logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",IN.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });

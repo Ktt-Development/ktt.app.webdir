@@ -15,6 +15,10 @@ public abstract class PluginService {
 
     public abstract PluginYml getPluginYml();
 
+    public abstract WebDirPlugin getPlugin(final String pluginName);
+
+    public abstract <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass);
+
     public abstract InputStream getResource(final String path);
 
     public abstract ConfigurationFile createConfiguration(final File file);

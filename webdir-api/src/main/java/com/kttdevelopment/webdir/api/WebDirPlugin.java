@@ -30,6 +30,14 @@ public class WebDirPlugin {
         return service.getPluginYml();
     }
 
+    public final WebDirPlugin getPlugin(final String pluginName){
+        return service.getPlugin(pluginName);
+    }
+
+    public final <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass){
+        return service.getPlugin(pluginName,pluginClass);
+    }
+
     // resources
 
     public final InputStream getResource(final String path){
