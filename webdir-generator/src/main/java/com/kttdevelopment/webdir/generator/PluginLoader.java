@@ -166,7 +166,8 @@ public class PluginLoader {
     // load plugins with no missing dependencies and no circular dependencies
         final List<PluginLoaderEntry> pluginsValidDep = new ArrayList<>();
         pluginsValid.forEach(entry -> {
-            final List<String> dependencies = Arrays.asList(entry.getVar4().getDependencies());
+            // remove dependencies that will be loaded in this for loop
+            final List<String> dependencies = Arrays.asList(entry.getPluginYml().getDependencies());
             pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
             if(!dependencies.isEmpty())
                 logger.severe(locale.getString("pluginLoader.loader.missingDep",entry.getPluginYml().getPluginName()));
@@ -177,8 +178,29 @@ public class PluginLoader {
         });
 
     // sort so dependencies are first
+        // load each in given order, and if dependency has not yet loaded in move it to the end of the list
         final List<PluginLoaderEntry> pluginsSortedDep = new ArrayList<>();
-        // todo:
+        {
+            final List<PluginLoaderEntry> pluginLoadingQueue = new ArrayList<>(pluginsValidDep);
+            final ListIterator<PluginLoaderEntry> iterator = pluginLoadingQueue.listIterator();
+            while(iterator.hasNext()){
+                final PluginLoaderEntry entry = iterator.next();
+                final List<String> unloadedDependencies = Arrays.asList(entry.getPluginYml().getDependencies());
+                unloadedDependencies.removeIf(dependencyName -> {
+                    // remove dependencies if they have alreay been read by this loop
+                    for(final PluginLoaderEntry dependency : pluginsSortedDep)
+                        if(dependency.getPluginYml().getPluginName().equals(dependencyName))
+                            return true;
+                    return false;
+                });
+                // if all required dependencies have already been read add to loading
+                // else add to end of queue to try again
+                if(unloadedDependencies.isEmpty())
+                    pluginsSortedDep.add(entry);
+                else
+                    iterator.add(entry);
+            }
+        }
 
     // execute #onEnable for each plugin
         final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -188,7 +210,7 @@ public class PluginLoader {
         while(iterator.hasNext()){
             final PluginLoaderEntry entry = iterator.next();
             // check dependencies
-            final List<String> dependencies = Arrays.asList(entry.getVar4().getDependencies());
+            final List<String> dependencies = Arrays.asList(entry.getPluginYml().getDependencies());
             pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
             if(!dependencies.isEmpty()){
                 iterator.remove();
