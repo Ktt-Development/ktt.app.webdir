@@ -12,8 +12,8 @@ public class ApplicationTest {
         - plugin missing main class
         - plugin main not extends WDP
         - plugin missing dependency
-        - plugin circular dependency
-        - plugin no dependency
+        - todo: plugin circular dependency
+        - todo: plugin no dependency
         - plugin timed out
         - plugin internal exception
 
