@@ -57,7 +57,7 @@ public final class ConfigService {
         }catch(final FileNotFoundException ignored){
             logger.warning("Configuration file not found, creating a new configuration file");
             copyDefaultConfig();
-        }catch(final NullPointerException e){
+        }catch(final NullPointerException ignored){
             logger.severe("Failed to load configuration file (none specified)");
         }catch(final ClassCastException | YamlException e){
             logger.severe("Failed to load configuration file (invalid syntax)" + '\n' + Exceptions.getStackTraceAsString(e));
@@ -72,11 +72,11 @@ public final class ConfigService {
     }
 
     private synchronized void copyDefaultConfig(){
-        final Logger logger = Main.getLoggerService().getLogger("Config");
+        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
         logger.fine("Creating default configuration file");
 
         if(!configFile.exists()){
-            try(final InputStream IN = getClass().getClassLoader().getResourceAsStream(defaultConfigResource)){
+            try(final InputStream IN = getClass().getResourceAsStream(defaultConfigResource)){
                 Files.copy(Objects.requireNonNull(IN), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.info("Created default configuration file");
             }catch(final NullPointerException ignored){
