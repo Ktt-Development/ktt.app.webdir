@@ -50,6 +50,10 @@ public class ConfigServiceTests {
     public void testMissingConfig() throws IOException{
         final String key = "default", value = "value";
         final File configFile = new File("src/test/resources/config/missing/config.yml");
+
+        if(!configFile.getParentFile().exists() && !configFile.getParentFile().mkdirs())
+            Assert.fail("Failed to create empty directory for missing config tests");
+
         final String defaultResource = "/config/defaultConfig.yml";
 
         if(configFile.exists() && !configFile.delete())
