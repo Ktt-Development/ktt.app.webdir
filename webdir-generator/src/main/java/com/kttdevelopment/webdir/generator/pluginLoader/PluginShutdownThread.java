@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-public class PluginShutdownThread extends Thread{
+public final class PluginShutdownThread extends Thread{
 
     private static final int timeout = 30;
     private static final TimeUnit unit = TimeUnit.SECONDS;

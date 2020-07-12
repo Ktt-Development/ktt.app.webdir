@@ -6,7 +6,7 @@ import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 
 import java.util.*;
 
-public class PluginYmlImpl extends PluginYml {
+public final class PluginYmlImpl extends PluginYml {
 
     private final String pluginName, pluginVersion;
     private final String[] authors;

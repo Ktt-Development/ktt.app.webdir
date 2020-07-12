@@ -60,6 +60,7 @@ public class ConfigServiceTests {
         Assert.assertEquals("New config did not return correct value for key",value,config.getConfig().getString(key));
         Assert.assertTrue("Config service did not create a new file",configFile.exists());
         if(configFile.exists())
+            //noinspection ResultOfMethodCallIgnored
             configFile.delete();
     }
 

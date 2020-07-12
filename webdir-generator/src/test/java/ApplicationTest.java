@@ -16,6 +16,9 @@ public class ApplicationTest {
         - plugin no dependency
         - plugin timed out
         - plugin internal exception
+
+        - page render order
+        - page render skip exception
      */
 
     @Test @Ignore

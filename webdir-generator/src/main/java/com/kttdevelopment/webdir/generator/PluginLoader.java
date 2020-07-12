@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-public class PluginLoader {
+public final class PluginLoader {
 
     // Global Settings //
 

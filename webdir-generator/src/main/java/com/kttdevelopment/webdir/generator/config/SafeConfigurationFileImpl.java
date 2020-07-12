@@ -4,7 +4,7 @@ import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.File;
 
-public class SafeConfigurationFileImpl extends ConfigurationFileImpl {
+public final class SafeConfigurationFileImpl extends ConfigurationFileImpl {
 
     public SafeConfigurationFileImpl(final File file){
         super(file);

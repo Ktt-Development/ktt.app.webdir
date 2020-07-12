@@ -85,7 +85,7 @@ public final class ConfigService {
                 logger.warning("Failed to close default configuration input stream (I/O exception)" + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }else{
-            logger.severe("Failed to create default configuration file (file already exists)");
+            logger.warning("Failed to create default configuration file (file already exists)");
         }
     }
 

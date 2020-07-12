@@ -5,7 +5,7 @@ import com.kttdevelopment.webdir.generator.LocaleService;
 
 import java.util.*;
 
-public class LocaleBundleImpl implements LocaleBundle {
+public final class LocaleBundleImpl implements LocaleBundle {
 
     private ResourceBundle bundle;
     private final String resource;

@@ -2,18 +2,23 @@ package com.kttdevelopment.webdir.generator.render;
 
 import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.LocaleService;
+import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
+import java.util.logging.Logger;
 
 public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
 
-    // todo: skip bad renders and warn to logger
-
     @Override
     public final byte[] apply(final File file, final byte[] bytes){
+        final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
+        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+
         final String str = new String(bytes);
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
 
@@ -27,7 +32,16 @@ public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
         final List<Renderer> renderers = YamlFrontMatter.getRenderers(finalFrontMatter.getList("renderers"));
 
         final AtomicReference<String> content = new AtomicReference<>(str);
-        renderers.forEach(renderer -> content.set(renderer.format(file, finalFrontMatter, content.get())));
+        renderers.forEach(renderer -> {
+            try{
+                content.set(renderer.format(file, finalFrontMatter, content.get()));
+            }catch(final Exception e){
+                if(!Main.testMode)
+                    // IntelliJ defect; locale will not be null while not in test mode
+                    //noinspection ConstantConditions
+                    logger.warning(locale.getString("pageRenderer.rdr.uncaught",renderer.getClass().getSimpleName(),file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            }
+        });
 
         return content.get().getBytes();
     }

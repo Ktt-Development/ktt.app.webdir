@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-public class PluginServiceImpl extends PluginService {
+public final class PluginServiceImpl extends PluginService {
 
     private final Logger logger;
     private final File pluginFolder;

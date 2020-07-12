@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-public class LoggerFormatter extends Formatter {
+public final class LoggerFormatter extends Formatter {
 
     private final boolean hasTimestamp;
     @SuppressWarnings("SpellCheckingInspection")

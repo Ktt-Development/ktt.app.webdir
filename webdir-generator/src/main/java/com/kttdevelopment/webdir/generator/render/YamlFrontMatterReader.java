@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YamlFrontMatterReader {
+public final class YamlFrontMatterReader {
 
     private static final Pattern pattern = Pattern.compile("^(---)$\\n(.*)\\n^(---)$",Pattern.MULTILINE | Pattern.DOTALL);
 
