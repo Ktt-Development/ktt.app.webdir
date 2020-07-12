@@ -1,3 +1,4 @@
 main: Plugin
-name: Valid-Plugin
+name: dependent
 version: v1
+dependencies: dependency

@@ -13,6 +13,23 @@
     <artifactId>webdir-tests</artifactId>
     <version>NOT_FOR_RELEASE</version>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                  <archive>
+                      <manifestEntries>
+                          <!--suppress CheckTagEmptyBody -->
+                          <Built-By></Built-By>
+                      </manifestEntries>
+                  </archive>
+                </configuration>
+              </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.kttdevelopment</groupId>

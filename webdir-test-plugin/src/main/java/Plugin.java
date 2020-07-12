@@ -9,7 +9,7 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        getLogger().info("Loaded Plugin");
+        getLogger().info("loaded dependent");
     }
 
 }
