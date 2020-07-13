@@ -187,7 +187,6 @@ public final class PluginLoader {
                             return true;
                     return false;
                 });
-                System.out.println("testing " + entry.getPluginYml().getPluginName());
                 // if all required dependencies have already been read add to loading
                 // else add to end of queue to try again
                 if(unloadedDependencies.isEmpty())
