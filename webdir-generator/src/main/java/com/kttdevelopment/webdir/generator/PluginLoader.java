@@ -172,10 +172,13 @@ public final class PluginLoader {
         // load each in given order, and if dependency has not yet loaded in move it to the end of the list
         final List<PluginLoaderEntry> pluginsSortedDep = new ArrayList<>();
         {
+            final int pluginsToLoad = pluginsValidDep.size();
             final List<PluginLoaderEntry> pluginLoadingQueue = new ArrayList<>(pluginsValidDep);
-            final ListIterator<PluginLoaderEntry> iterator = pluginLoadingQueue.listIterator();
-            while(iterator.hasNext()){
-                final PluginLoaderEntry entry = iterator.next();
+            boolean hasNext = true;
+
+            int index = 0;
+            while(hasNext){
+                final PluginLoaderEntry entry = pluginLoadingQueue.get(index);
                 final List<String> unloadedDependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
                 unloadedDependencies.removeIf(dependencyName -> {
                     // remove dependencies if they have alreay been read by this loop
@@ -184,12 +187,15 @@ public final class PluginLoader {
                             return true;
                     return false;
                 });
+                System.out.println("testing " + entry.getPluginYml().getPluginName());
                 // if all required dependencies have already been read add to loading
                 // else add to end of queue to try again
                 if(unloadedDependencies.isEmpty())
                     pluginsSortedDep.add(entry);
                 else
-                    iterator.add(entry);
+                    pluginLoadingQueue.add(entry);
+                index++;
+                hasNext = pluginsSortedDep.size() != pluginsToLoad;
             }
         }
 
