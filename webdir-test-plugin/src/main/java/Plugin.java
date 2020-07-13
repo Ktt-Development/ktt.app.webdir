@@ -9,7 +9,11 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        getLogger().info("loaded dependent");
+        addRenderer("first", (source, yamlFrontMatter, content) -> "first");
+        addRenderer("second", (source, yamlFrontMatter, content) -> "second");
+        addRenderer("exception", (source, yamlFrontMatter, content) -> {
+            throw new RuntimeException();
+        });
     }
 
 }

@@ -1,4 +1,3 @@
 main: Plugin
-name: dependent
+name: Render-Plugin
 version: v1
-dependencies: dependency

@@ -12,6 +12,7 @@ public class ApplicationTest {
         - plugin with dependency
 
         Test that none of these load
+        - plugin constructor exception
         - plugin missing yml
         - plugin missing name
         - plugin malformed yml
@@ -22,6 +23,9 @@ public class ApplicationTest {
         - plugin timed out
         - plugin internal exception
 
+        Test case on plugin impl!
+
+        Test renders
         - page render order
         - page render skip exception
      */
