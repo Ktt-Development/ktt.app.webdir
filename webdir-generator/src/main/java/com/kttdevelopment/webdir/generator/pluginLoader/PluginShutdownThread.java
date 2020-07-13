@@ -33,7 +33,7 @@ public final class PluginShutdownThread extends Thread{
                 future.cancel(true);
                 logger.severe(
                     e instanceof TimeoutException
-                    ? locale.getString("shutdown.run.timedOut",plugin.getPluginYml().getPluginName(),timeout + ' ' + unit.name().toLowerCase())
+                    ? locale.getString("shutdown.run.timedOut",plugin.getPluginYml().getPluginName(),timeout + " " + unit.name().toLowerCase())
                     : locale.getString("shutdown.run.unknown",plugin.getPluginYml().getPluginName()) + '\n' + Exceptions.getStackTraceAsString(e)
                 );
             }

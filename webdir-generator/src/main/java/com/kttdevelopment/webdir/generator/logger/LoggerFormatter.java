@@ -27,7 +27,6 @@ public final class LoggerFormatter extends Formatter {
     @Override
     public final String format(final LogRecord record){
         final String level = record.getLevel().getName().toUpperCase();
-
         return
             (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
             '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Main.getLocaleService().getString("logger.level." + level)), level) + ']' + ' ' +
