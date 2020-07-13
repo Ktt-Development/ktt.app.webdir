@@ -17,6 +17,7 @@ public class ApplicationTest {
 
     @Test
     public void testPluginLoading(){
+        Main.testSafeMode = false;
         Main.main(null);
 
         final String[] badPlugins = {
