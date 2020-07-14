@@ -25,6 +25,10 @@ source_dir: .root
 # Default: _site
 output_dir: _site
 
+# Should the server clear the output directory before rendering pages.
+# Default: true
+clean: true
+
 # Should the generator run a server to view files in realtime.
 # (WebDir - Generator only)
 # Default: false

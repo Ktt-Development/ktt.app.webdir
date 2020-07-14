@@ -9,11 +9,7 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        addRenderer("first", (source, yamlFrontMatter, content) -> "first");
-        addRenderer("second", (source, yamlFrontMatter, content) -> "second");
-        addRenderer("exception", (source, yamlFrontMatter, content) -> {
-            throw new RuntimeException();
-        });
+        addRenderer("first", (source, yamlFrontMatter, content) -> "DUPLICATE");
     }
 
 }

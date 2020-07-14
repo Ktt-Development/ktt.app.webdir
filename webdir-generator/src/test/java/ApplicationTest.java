@@ -1,5 +1,6 @@
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.PluginLoader;
+import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import org.junit.*;
 
 import java.util.logging.Logger;
@@ -12,8 +13,24 @@ public class ApplicationTest {
 
         Test renders
         - page render order
+        - page render duplicate
         - page render skip exception
+        - page render 'clean' config
+
+        plugin-render-tests.jar {
+            first, second, exception
+        }
+
+        plugin-render-duplicate.jar {
+            first -> DUPLICATE
+        |
+
      */
+
+    @Before
+    public void before(){
+        Main.testMode = false;
+    }
 
     @Test
     public void testPluginLoading(){
@@ -40,7 +57,8 @@ public class ApplicationTest {
             "dependency",
             "dependent",
             "Render-Plugin",
-            "Valid-Plugin"
+            "Valid-Plugin",
+            "Duplicate-Plugin"
         };
 
         final PluginLoader pluginLoader = Main.getPluginLoader();
@@ -60,6 +78,5 @@ public class ApplicationTest {
         Main.main(null);
         Assert.assertTrue("Safe-mode should not load any plugins",Main.getPluginLoader().getPlugins().isEmpty());
     }
-
 
 }

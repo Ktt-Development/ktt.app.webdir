@@ -17,7 +17,7 @@ public final class YamlFrontMatterReader {
     private final String content;
 
     public YamlFrontMatterReader(final String content){
-        this.content = content;
+        this.content = content.replace("\r",""); // Carriage return causes read issues; new line doesn't even need carriage return
     }
 
     @SuppressWarnings("rawtypes")

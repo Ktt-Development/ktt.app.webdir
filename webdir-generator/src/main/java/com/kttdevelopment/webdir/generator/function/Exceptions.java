@@ -5,10 +5,12 @@ import java.io.StringWriter;
 
 public abstract class Exceptions {
 
+    private static final String stackTrace = "--- Begin Stack Trace ---\n%s--- End Stack Trace ---";
+
     public static String getStackTraceAsString(final Throwable e){
         final StringWriter err = new StringWriter();
         e.printStackTrace(new PrintWriter(err));
-        return err.toString();
+        return String.format(stackTrace,err.toString());
     }
 
     public static <T> T requireNonExceptionElse(final ExceptionSupplier<T> consumer, T def){

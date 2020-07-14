@@ -39,7 +39,7 @@ public class StaticFileHandler extends FileHandler {
         final ConfigurationSection finalFrontMatter = tFrontMatter;
 
         final AtomicReference<String> content = new AtomicReference<>(str);
-        final List<Renderer> renderers = YamlFrontMatter.getRenderers(finalFrontMatter.getList("renderers"));
+        final List<Renderer> renderers = null; // YamlFrontMatter.getRenderers(finalFrontMatter.getList("renderers"));
         renderers.forEach(r -> {
             if(!(r instanceof ExchangeRenderer)) return;
 

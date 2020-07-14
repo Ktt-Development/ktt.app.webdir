@@ -52,6 +52,9 @@ public abstract class YamlFrontMatter {
 
         final List<String> imports = frontMatter.getList(key, String.class);
         final Map OUT = new HashMap();
+
+        if(imports == null) return new ConfigurationSectionImpl(frontMatter.toMap());
+
         imports.forEach(s -> {
             // if does not end with an extension, assume it to be a yaml file
             final String fileName = s + (pattern.matcher(s).matches() ? "" : ".yml");
@@ -93,12 +96,12 @@ public abstract class YamlFrontMatter {
     // renderer
 
     @SuppressWarnings("rawtypes")
-    public static List<Renderer> getRenderers(List renderers){
+    public static List<PluginRendererEntry> getRenderers(List renderers){
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final List<PluginRendererEntry> installedRenderers = Main.getPluginLoader().getRenderers();
-        final List<Renderer> out = new ArrayList<>();
+        final List<PluginRendererEntry> out = new ArrayList<>();
 
         for(final Object obj : renderers){
             PluginRenderer renderer = null;
@@ -128,7 +131,7 @@ public abstract class YamlFrontMatter {
                      renderer.getPluginName().equals(entry.getPluginName()) &&
                      renderer.getRendererName().equals(entry.getRendererName()))
                 ){
-                    out.add(entry.getRenderer());
+                    out.add(entry);
                     break;
                 }
             }
