@@ -1,9 +1,10 @@
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.PluginLoader;
-import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import org.junit.*;
 
-import java.util.logging.Logger;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class ApplicationTest {
 
@@ -12,9 +13,6 @@ public class ApplicationTest {
         Test case on plugin impl!
 
         Test renders
-        - page render order
-        - page render duplicate
-        - page render skip exception
         - page render 'clean' config
 
         plugin-render-tests.jar {
@@ -23,7 +21,7 @@ public class ApplicationTest {
 
         plugin-render-duplicate.jar {
             first -> DUPLICATE
-        |
+        }
 
      */
 
@@ -77,6 +75,32 @@ public class ApplicationTest {
         Main.testSafeMode = true;
         Main.main(null);
         Assert.assertTrue("Safe-mode should not load any plugins",Main.getPluginLoader().getPlugins().isEmpty());
+    }
+
+    /*
+        plugin-render-tests.jar {
+            first, second, exception
+        }
+
+        plugin-render-duplicate.jar {
+            first -> DUPLICATE
+        }
+     */
+
+    @Test
+    public void testRenderer() throws IOException{
+        Main.testSafeMode = false;
+        Main.main(null);
+
+        Assert.assertEquals("order.html has second listed as the final renderer but result was incorrect (returns first render or exception)","second", Files.readString(new File("_site/order.html").toPath()));
+        Assert.assertEquals("order-reverse.html has first listed as the final renderer but result was incorrect","first", Files.readString(new File("_site/order-reverse.html").toPath()));
+        Assert.assertEquals("exact-first.html specifically calls for first renderer but returned duplicate","first", Files.readString(new File("_site/exact-first.html").toPath()));
+        Assert.assertEquals("exact-duplicate.html specifically calls for duplicate renderer but returned first","DUPLICATE", Files.readString(new File("_site/exact-duplicate.html").toPath()));
+    }
+
+    @Test
+    public void testRender(){
+
     }
 
 }

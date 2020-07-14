@@ -1,8 +1,6 @@
-package com.kttdevelopment.webdir.generator.pluginLoader;
+package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.util.List;
@@ -10,7 +8,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-public final class PluginShutdownThread extends Thread{
+public final class ShutdownThread extends Thread{
 
     private static final int timeout = 30;
     private static final TimeUnit unit = TimeUnit.SECONDS;
@@ -19,6 +17,12 @@ public final class PluginShutdownThread extends Thread{
     public final void run(){
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("shutdown"));
+        try{
+            Main.getConfigService().getConfigFile().save();
+            logger.info(locale.getString("config.save"));
+        }catch(final Exception e){
+            logger.severe(locale.getString("config.saveFailed") + '\n' + Exceptions.getStackTraceAsString(e));
+        }
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final AtomicInteger success = new AtomicInteger(0);

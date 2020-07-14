@@ -17,6 +17,10 @@ public final class ConfigService {
 
     private final ConfigurationFile config;
 
+    public final ConfigurationFile getConfigFile(){
+        return config;
+    }
+
     public final ConfigurationSection getConfig(){
         return config;
     }

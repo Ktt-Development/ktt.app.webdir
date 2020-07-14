@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.generator.render;
 
 import com.esotericsoftware.yamlbeans.YamlException;
-import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Main;

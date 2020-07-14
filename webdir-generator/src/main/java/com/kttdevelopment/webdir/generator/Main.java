@@ -2,7 +2,6 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.pluginLoader.PluginShutdownThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +52,7 @@ public abstract class Main {
             if(config.getBoolean("preview"))
                 server = new Server(config.getInteger("port",80),new File("_site"));
 
-            Runtime.getRuntime().addShutdownHook(new PluginShutdownThread());
+            Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Exception e){
             try{
                 e.printStackTrace();
