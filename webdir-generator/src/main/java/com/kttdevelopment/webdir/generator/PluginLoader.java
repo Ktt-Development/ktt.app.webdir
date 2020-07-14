@@ -67,7 +67,7 @@ public final class PluginLoader {
 
         logger.info(locale.getString("pluginLoader.const"));
 
-        final File pluginFolder = new File(config.getConfig().getString(pluginDirKey,pluginDirDefault));
+        final File pluginsFolder = new File(config.getConfig().getString(pluginDirKey,pluginDirDefault));
 
         if(Main.testSafeMode || config.getConfig().getBoolean("safemode")){
             logger.info(locale.getString("pluginLoader.const.safemode"));
@@ -78,7 +78,7 @@ public final class PluginLoader {
         final Map<File,URL> pluginsIsJar = new HashMap<>();
         {
             final File[] plugins =  Objects.requireNonNullElse(
-                pluginFolder.listFiles(pathname -> !pathname.isDirectory() && pathname.getName().toLowerCase().endsWith(".jar")),
+                pluginsFolder.listFiles(pathname -> !pathname.isDirectory() && pathname.getName().toLowerCase().endsWith(".jar")),
                 new File[0]
             );
             for(final File file : plugins){
@@ -213,7 +213,7 @@ public final class PluginLoader {
             }else{
                 // run main function
                 final Future<WebDirPlugin> future = executor.submit(() -> {
-                    final PluginService provider = new PluginServiceImpl(entry.getYml());
+                    final PluginService provider = new PluginServiceImpl(entry.getYml(),pluginsFolder);
                     final String pluginName = entry.getPluginYml().getPluginName();
                     WebDirPlugin plugin = null;
                     try{

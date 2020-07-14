@@ -1,3 +1,5 @@
+import com.kttdevelopment.webdir.api.PluginYml;
+import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.PluginLoader;
 import org.junit.*;
@@ -7,23 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class ApplicationTest {
-
-    /* to test:
-
-        Test case on plugin impl!
-
-        Test renders
-        - page render 'clean' config
-
-        plugin-render-tests.jar {
-            first, second, exception
-        }
-
-        plugin-render-duplicate.jar {
-            first -> DUPLICATE
-        }
-
-     */
 
     @Before
     public void before(){
@@ -68,6 +53,7 @@ public class ApplicationTest {
             Assert.assertNotNull("Server should have loaded plugin " + goodPlugin,pluginLoader.getPlugin(goodPlugin));
 
         Assert.assertEquals("Server should have only loaded " + goodPlugins.length + " plugins",goodPlugins.length,pluginLoader.getPlugins().size());
+
     }
 
     @Test
@@ -99,7 +85,41 @@ public class ApplicationTest {
     }
 
     @Test
-    public void testRender(){
+    public void testClear() throws IOException{
+        Main.testSafeMode = false;
+
+        final File testRoot = new File(".root/test.html");
+        final File testOutput = new File("_site/test.html");
+
+        Files.createFile(testRoot.toPath());
+        Main.main(null);
+        Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
+
+        Files.delete(testRoot.toPath());
+        Main.testClear = true;
+        Main.main(null);
+        Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
+    }
+
+    @Test
+    public void testImpl(){
+        Main.testSafeMode = false;
+        Main.main(null);
+
+        final WebDirPlugin plugin = Main.getPluginLoader().getPlugin("Valid-Plugin");
+
+        Assert.assertNotNull("Valid plugin should be loaded by the server",plugin);
+
+        final PluginYml pluginYml = plugin.getPluginYml();
+        Assert.assertEquals("Plugin yml should return correct plugin name","Valid-Plugin",pluginYml.getPluginName());
+        Assert.assertEquals("Plugin dependencies in yml should return no dependencies",0,pluginYml.getDependencies().length);
+        Assert.assertEquals("Plugin yml should return correct plugin version","v1",pluginYml.getPluginVersion());
+        Assert.assertEquals("First plugin author should be first on list","first",pluginYml.getAuthor());
+        Assert.assertEquals("Second plugin author should be last on list","second",pluginYml.getAuthors()[1]);
+
+        Assert.assertEquals("Plugin should be able to get other loaded plugins on the server",plugin,plugin.getPlugin("Valid-Plugin"));
+        Assert.assertEquals("Plugin folder should be plugins folder + plugin name",new File(".plugins/Valid-Plugin"),plugin.getPluginFolder());
+        Assert.assertEquals("Plugin logger name should be plugin name",pluginYml.getPluginName(),plugin.getLogger().getName());
 
     }
 

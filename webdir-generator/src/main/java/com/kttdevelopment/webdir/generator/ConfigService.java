@@ -25,14 +25,8 @@ public final class ConfigService {
         return config;
     }
 
-    private final File configFile;
-    private final String defaultConfigResource;
-
     public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
-        this.configFile = configFile;
-        this.defaultConfigResource = defaultConfigResource;
-
-        Logger logger = !Main.testMode ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
+        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
         logger.info("Started configuration initialization");
 
         // load default
@@ -53,14 +47,21 @@ public final class ConfigService {
         }
 
         // load config
-        ConfigurationFile config = new ConfigurationFileImpl(configFile);
+        final ConfigurationFileImpl config = new ConfigurationFileImpl(configFile);
+        config.setDefault(def);
         try{
-            final ConfigurationFileImpl impl = new ConfigurationFileImpl();
-            impl.load(configFile);
-            config = impl;
+            config.load(configFile);
         }catch(final FileNotFoundException ignored){
             logger.warning("Configuration file not found, creating a new configuration file");
-            copyDefaultConfig();
+            if(!configFile.exists())
+                try{
+                    config.save();
+                    logger.info("Created default configuration file");
+                }catch(final Exception e){
+                    logger.severe("Failed to save default configuration file" + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+            else
+                logger.warning("Failed to create default configuration file (file already exists)");
         }catch(final NullPointerException ignored){
             logger.severe("Failed to load configuration file (none specified)");
         }catch(final ClassCastException | YamlException e){
@@ -73,24 +74,6 @@ public final class ConfigService {
         if(!Main.testMode)
             Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
         logger.info("Finished configuration service initialization");
-    }
-
-    private synchronized void copyDefaultConfig(){
-        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
-        logger.fine("Creating default configuration file");
-
-        if(!configFile.exists()){
-            try(final InputStream IN = getClass().getResourceAsStream(defaultConfigResource)){
-                Files.copy(Objects.requireNonNull(IN), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                logger.info("Created default configuration file");
-            }catch(final NullPointerException ignored){
-                logger.severe("Failed to load default configuration file (not found)");
-            }catch(final IOException e){
-                logger.warning("Failed to close default configuration input stream (I/O exception)" + '\n' + Exceptions.getStackTraceAsString(e));
-            }
-        }else{
-            logger.warning("Failed to create default configuration file (file already exists)");
-        }
     }
 
 }

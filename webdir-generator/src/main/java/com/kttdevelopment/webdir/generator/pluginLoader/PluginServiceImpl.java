@@ -8,6 +8,8 @@ import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class PluginServiceImpl extends PluginService {
@@ -16,9 +18,9 @@ public final class PluginServiceImpl extends PluginService {
     private final File pluginFolder;
     private final PluginYml pluginYml;
 
-    public PluginServiceImpl(final ConfigurationSection pluginYml){
+    public PluginServiceImpl(final ConfigurationSection pluginYml, final File pluginFolder){
         this.pluginYml = new PluginYmlImpl(pluginYml);
-        this.pluginFolder = new File("/plugins/" + this.pluginYml.getPluginName());
+        this.pluginFolder = Paths.get( pluginFolder.getPath() ,this.pluginYml.getPluginName()).toFile();
         this.logger = Main.getLoggerService().getLogger(this.pluginYml.getPluginName());
     }
 
