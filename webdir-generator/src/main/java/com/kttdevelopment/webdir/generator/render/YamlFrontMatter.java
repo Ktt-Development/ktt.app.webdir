@@ -72,7 +72,7 @@ public abstract class YamlFrontMatter {
 
                 final Map map = impl.toMap();
                 innerImports.putAll(map);
-                innerImports.remove(imports);
+                innerImports.remove(importKey);
                 innerImports.remove(importRelativeKey);
 
                 OUT.putAll(innerImports);
