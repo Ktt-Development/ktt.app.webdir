@@ -49,7 +49,9 @@ public abstract class YamlFrontMatter {
         final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
         final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
-        final List<String> imports = Collections.reverse(frontMatter.getList(key, String.class));
+        final List<String> imports = frontMatter.getList(key, String.class);
+        Collections.reverse(imports);
+
         final Map OUT = new HashMap();
 
         if(imports == null) return new ConfigurationSectionImpl(frontMatter.toMap());
