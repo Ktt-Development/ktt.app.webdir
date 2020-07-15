@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class Main {
+public abstract class Main {
 
     private static LoggerService loggerService;
 
@@ -45,14 +45,16 @@ public class Main {
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
+            final File output = new File(config.getString("output_dir","_site"));
             pageRenderingService = new PageRenderingService(new File(config.getString("source_dir",".root")),new File(config.getString("output_dir","_site")));
 
-            server = new FileServer(config.getInteger("port",80),new File("_site"));
+            if(config.getBoolean("preview",false))
+                server = new FileServer(config.getInteger("port",80),output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Exception e){
             try{
-                Files.write(new File("/crash-" + System.currentTimeMillis()).toPath(), Exceptions.getStackTraceAsString(e).getBytes());
+                Files.write(new File("crash-" + System.currentTimeMillis()).toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(IOException ignored){ }
         }
     }

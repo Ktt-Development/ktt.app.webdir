@@ -46,15 +46,15 @@ public abstract class Main {
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
-            pageRenderingService = new PageRenderingService(new File(config.getString("source_dir",".root")),new File(config.getString("output_dir","_site")));
+            final File output = new File(config.getString("output_dir","_site"));
+            pageRenderingService = new PageRenderingService(new File(config.getString("source_dir",".root")),output);
 
-            if(config.getBoolean("preview"))
-                server = new Server(config.getInteger("port",80),new File("_site"));
+            if(config.getBoolean("preview",false))
+                server = new Server(config.getInteger("port",80),output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Exception e){
             try{
-                e.printStackTrace();
                 Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(IOException e2){
                 e2.printStackTrace();

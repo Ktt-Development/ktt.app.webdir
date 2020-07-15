@@ -4,23 +4,42 @@
 # +------------------------------------------------------+ #
 ############################################################
 
-# Safemode will skip plugin loading
+# The generator will skip loading plugins if running in safe mode.
+# Default: false
 safemode: false
 
-# The language that the application will use.
-# Supported languages:
-#  - English: en
-locale: en
+# The language that the application will use for logging and plugins.
+# Default: en_us
+# Allowed: en_us
+locale: en_us
 
-# The port that the server will run on
-# Allowed values: 1 - 65535
-# Default port is 80.
+# The folder where plugins will be loaded from.
+# Default: .plugins
+plugins_dir: .plugins
+
+# The folder where files will be loaded from.
+# Default: .root
+source_dir: .root
+
+# The output folder where rendered files will be saved.
+# Default: _site
+output_dir: _site
+
+# Should the server clear the output directory before rendering pages.
+# Default: true
+clean: true
+
+# Should the generator run a server to view files in realtime.
+# (WebDir - Generator only)
+# Default: false
+preview: false
+
+# The port that the server will run on.
+# Default: 80
 port: 80
 
-# Where static files on the server will be loaded.
-# Default: _site
-source: _site
-
-# The context that files will be hosted at.
+# The context to view files at.
+# (WebDir - Server only)
+# Ex: setting this to 'files' would put files from C://* at http://localhost/files/C/*    ← here
 # Default: files
-files: files
+files_context: files
