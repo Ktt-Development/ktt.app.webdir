@@ -6,6 +6,6 @@ import java.io.File;
 
 public interface Renderer {
 
-    String format(final File source, final ConfigurationSection yamlFrontMatter, final String content);
+    String format(final File output, final ConfigurationSection yamlFrontMatter, final String content);
 
 }
