@@ -9,7 +9,6 @@ import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class PluginServiceImpl extends PluginService {

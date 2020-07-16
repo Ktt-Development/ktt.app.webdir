@@ -7,6 +7,7 @@ import org.junit.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 public class ApplicationTest {
 
@@ -26,22 +27,23 @@ public class ApplicationTest {
                 - plugin missing name
                 - plugin malformed yml
              */
-            "circle-dep1",
-            "circle-dep2",
-            "Const-Exception",
-            "Missing-Dep",
-            "No-Extends",
-            "No-Main",
-            "Exception-Plugin",
-            "Timed-Plugin"
+            "CircularDependency1",
+            "CircularDependency2",
+            "ConstructorException",
+            "MissingDependency",
+            "MissingMain",
+            "NoExtends",
+            "NoMain",
+            "ThrowsException",
+            "TimedOut"
         };
 
         final String[] goodPlugins = {
-            "dependency",
-            "dependent",
-            "Render-Plugin",
-            "Valid-Plugin",
-            "Duplicate-Plugin"
+            "Dependency",
+            "Dependent",
+            "DuplicateRenderTests",
+            "RenderTests",
+            "Valid"
         };
 
         final PluginLoader pluginLoader = Main.getPluginLoader();

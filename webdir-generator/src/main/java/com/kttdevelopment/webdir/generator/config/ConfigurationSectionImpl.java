@@ -122,12 +122,12 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     @Override
     public final String getString(final String key){
         final Object value = config.getOrDefault(key,def.get(key));
-        return (value instanceof List ? ((List) value).get(0) : value).toString();
+        return value != null ? (value instanceof List ? ((List) value).get(0) : value).toString() : null;
     }
 
     @Override
     public final String getString(final String key, final String def){
-        final Object value = Objects.requireNonNullElse(config.get(key),def);
+        final Object value = config.getOrDefault(key,def);
         return (value instanceof List ? ((List) value).get(0) : value).toString();
     }
 
@@ -240,8 +240,9 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public final <T> List<T> getList(final String key, final List<T> def){
+        final Object v = config.getOrDefault(key,def);
         try{
-            return (List<T>) Objects.requireNonNullElse(config.get(key), def);
+            return v instanceof String ? (List<T>) Collections.singletonList(v) : (List<T>) v;
         }catch(final ClassCastException ignored){
             return def;
         }

@@ -1,0 +1,3 @@
+main: Plugin
+name: MissingDependency
+dependencies: 3ac03688ff2dc93ee959a3a50b28816e1be3b828

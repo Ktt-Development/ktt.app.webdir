@@ -7,8 +7,6 @@ import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -57,7 +55,7 @@ public final class ConfigService {
                 try{
                     config.save();
                     logger.info("Created default configuration file");
-                }catch(final Exception e){
+                }catch(final Exception | Error e){
                     logger.severe("Failed to save default configuration file" + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             else

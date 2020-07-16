@@ -26,6 +26,7 @@
         <module>webdir-server</module>
         <module>webdir-api</module>
         <module>webdir-generator</module>
+        <module>webdir-test-plugins</module>
     </modules>
 
     <build>

@@ -122,8 +122,8 @@ public final class PluginLoader {
                 yml = new ConfigurationSectionImpl((Map) IN.read());
                 // test if yml has all required keys
                 pluginYml = new PluginYmlImpl(yml);
-            }catch(final NullPointerException ignored){
-                logger.severe(locale.getString("pluginLoader.const.loadValid.noNameKey", pluginName));
+            }catch(final NullPointerException e){
+                logger.severe(locale.getString("pluginLoader.const.loadValid.missingReq", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                 return;
             }catch(final ClassCastException | YamlException e){
                 logger.severe(locale.getString("pluginLoader.const.loadValid.malformedYML", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -145,7 +145,7 @@ public final class PluginLoader {
                 pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(mainClassKey))), yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
                 logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-            }catch(final ClassNotFoundException | NullPointerException ignored){
+            }catch(final ClassNotFoundException | NullPointerException e){
                 logger.severe(locale.getString("pluginLoader.const.loadValidMain.notFound", pluginName));
             }catch(final ClassCastException ignored){
                 logger.severe(locale.getString("pluginLoader.const.loadValidMain.badCast", pluginName));
@@ -177,25 +177,27 @@ public final class PluginLoader {
             boolean hasNext = true;
 
             int index = 0;
-            while(hasNext){
-                final PluginLoaderEntry entry = pluginLoadingQueue.get(index);
-                final List<String> unloadedDependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
-                unloadedDependencies.removeIf(dependencyName -> {
-                    // remove dependencies if they have alreay been read by this loop
-                    for(final PluginLoaderEntry dependency : pluginsSortedDep)
-                        if(dependency.getPluginYml().getPluginName().equals(dependencyName))
-                            return true;
-                    return false;
-                });
-                // if all required dependencies have already been read add to loading
-                // else add to end of queue to try again
-                if(unloadedDependencies.isEmpty())
-                    pluginsSortedDep.add(entry);
-                else
-                    pluginLoadingQueue.add(entry);
-                index++;
-                hasNext = pluginsSortedDep.size() != pluginsToLoad;
-            }
+
+            if(!pluginLoadingQueue.isEmpty())
+                while(hasNext){
+                    final PluginLoaderEntry entry = pluginLoadingQueue.get(index);
+                    final List<String> unloadedDependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
+                    unloadedDependencies.removeIf(dependencyName -> {
+                        // remove dependencies if they have alreay been read by this loop
+                        for(final PluginLoaderEntry dependency : pluginsSortedDep)
+                            if(dependency.getPluginYml().getPluginName().equals(dependencyName))
+                                return true;
+                        return false;
+                    });
+                    // if all required dependencies have already been read add to loading
+                    // else add to end of queue to try again
+                    if(unloadedDependencies.isEmpty())
+                        pluginsSortedDep.add(entry);
+                    else
+                        pluginLoadingQueue.add(entry);
+                    index++;
+                    hasNext = pluginsSortedDep.size() != pluginsToLoad;
+                }
         }
 
     // execute #onEnable for each plugin
@@ -242,7 +244,7 @@ public final class PluginLoader {
                     plugin.getRenderers().forEach((rendererName, renderer) -> renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer)));
                     plugins.add(plugin);
                     loadedPlugins.incrementAndGet();
-                }catch(final Exception e){
+                }catch(final Exception | Error e){
                     future.cancel(true);
                     logger.severe(
                         e instanceof TimeoutException

@@ -51,7 +51,7 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
             if(file == null) throw new UnsupportedOperationException();
             load(file);
             return true;
-        }catch(final Exception e){
+        }catch(final Exception | Error e){
             Exceptions.throwUnchecked(e);
             return false;
         }
@@ -63,7 +63,7 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
             if(file == null) throw new UnsupportedOperationException();
             saveToFile(file);
             return true;
-        }catch(final Exception e){
+        }catch(final Exception | Error e){
             Exceptions.throwUnchecked(e);
             return false;
         }

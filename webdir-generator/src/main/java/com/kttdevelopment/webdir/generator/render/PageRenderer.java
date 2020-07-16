@@ -38,7 +38,7 @@ public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
         renderers.forEach(renderer -> {
             try{
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, content.get()));
-            }catch(final Exception e){
+            }catch(final Exception | Error e){
                 if(!Main.testMode)
                     // IntelliJ defect; locale will not be null while not in test mode
                     //noinspection ConstantConditions

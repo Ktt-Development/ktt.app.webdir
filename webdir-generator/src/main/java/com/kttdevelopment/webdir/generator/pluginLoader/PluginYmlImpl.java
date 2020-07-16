@@ -14,11 +14,12 @@ public final class PluginYmlImpl extends PluginYml {
     private final ConfigurationSection config;
 
     public PluginYmlImpl(final ConfigurationSection config){
-        this.pluginName = Objects.requireNonNull(config.getString("name"));
-        this.pluginVersion = config.getString("version");
-        this.authors = Objects.requireNonNullElse(config.getList("authors", String.class),new ArrayList<String>()).toArray(new String[0]);
-        this.dependencies = Objects.requireNonNullElse(config.getList("dependencies", String.class),new ArrayList<String>()).toArray(new String[0]);
-        this.config = config;
+        Objects.requireNonNull(config);
+        this.pluginName     = Objects.requireNonNull(config.getString("name"));
+        this.pluginVersion  = config.getString("version");
+        this.authors        = config.getList("authors", new ArrayList<String>()).toArray(new String[0]);
+        this.dependencies   = config.getList("dependencies",new ArrayList<String>()).toArray(new String[0]);
+        this.config         = config;
     }
 
     @Override
