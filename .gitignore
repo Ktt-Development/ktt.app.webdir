@@ -16,7 +16,12 @@ target
 
 *.log
 *.lck
-*.log.1
+*.1
+*.2
+*.3
+*.4
+*.5
+*.6
 
 webdir-generator/_site
 webdir-generator/*.yml

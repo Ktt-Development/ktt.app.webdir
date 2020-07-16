@@ -91,7 +91,8 @@ public class ApplicationTest {
         final File testRoot = new File(".root/test.html");
         final File testOutput = new File("_site/test.html");
 
-        Files.createFile(testRoot.toPath());
+        if(!testRoot.exists())
+            Files.createFile(testRoot.toPath());
         Main.main(null);
         Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
 
