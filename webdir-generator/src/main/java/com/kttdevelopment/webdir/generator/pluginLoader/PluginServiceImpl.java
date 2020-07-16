@@ -34,6 +34,7 @@ public final class PluginServiceImpl extends PluginService {
 
     @Override
     public final File getPluginFolder(){
+        if(!pluginFolder.exists()) pluginFolder.mkdirs();
         return pluginFolder;
     }
 

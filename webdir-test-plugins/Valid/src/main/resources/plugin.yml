@@ -1,2 +1,6 @@
 main: Plugin
 name: Valid
+version: v1
+authors:
+  - first
+  - second
