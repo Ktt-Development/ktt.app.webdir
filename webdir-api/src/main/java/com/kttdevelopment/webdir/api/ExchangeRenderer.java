@@ -7,7 +7,7 @@ import java.io.File;
 
 public interface ExchangeRenderer extends Renderer {
 
-    String format(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content);
+    String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content);
 
     default String getPermission(){ return null; }
 

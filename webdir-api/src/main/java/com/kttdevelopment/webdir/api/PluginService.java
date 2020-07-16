@@ -23,6 +23,8 @@ public abstract class PluginService {
 
     public abstract ConfigurationFile createConfiguration(final File file);
 
+    public abstract ConfigurationFile createConfiguration(final InputStream stream);
+
     public abstract LocaleBundle getLocaleBundle(String resource);
 
 }

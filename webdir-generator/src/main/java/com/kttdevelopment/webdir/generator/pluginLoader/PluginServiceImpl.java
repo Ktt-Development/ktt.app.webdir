@@ -60,6 +60,11 @@ public final class PluginServiceImpl extends PluginService {
     }
 
     @Override
+    public final ConfigurationFile createConfiguration(final InputStream stream){
+        return new SafeConfigurationFileImpl(stream);
+    }
+
+    @Override
     public LocaleBundle getLocaleBundle(final String resource){
         return new LocaleBundleImpl(Main.getLocaleService(),resource);
     }

@@ -47,7 +47,7 @@ public class StaticFileHandler extends FileHandler {
 
             //noinspection ConstantConditions
             if(/* todo: hasPermission*/ true)
-                content.set(renderer.format(exchange,source,finalFrontMatter,content.get()));
+                content.set(renderer.render(exchange, source, finalFrontMatter, content.get()));
         });
 
         exchange.send(content.get());

@@ -48,6 +48,10 @@ public class WebDirPlugin {
         return service.createConfiguration(file);
     }
 
+    public final ConfigurationFile createConfiguration(final InputStream stream){
+        return service.createConfiguration(stream);
+    }
+
     public final LocaleBundle getLocaleBundle(final String resource){
         return service.getLocaleBundle(resource);
     }

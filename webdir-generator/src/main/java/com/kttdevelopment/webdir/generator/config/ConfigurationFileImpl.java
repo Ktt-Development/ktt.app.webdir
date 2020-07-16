@@ -22,6 +22,12 @@ public class ConfigurationFileImpl extends ConfigurationSectionImpl implements C
         this.file = file;
     }
 
+    public ConfigurationFileImpl(final InputStream stream){
+        super();
+        try{ load(stream);
+        }catch(final YamlException e){ Exceptions.throwUnchecked(e); }
+    }
+
     public synchronized void saveToFile(final File file) throws IOException{
         YamlWriter OUT = null;
         try{

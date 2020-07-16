@@ -3,11 +3,16 @@ package com.kttdevelopment.webdir.generator.config;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.File;
+import java.io.InputStream;
 
 public final class SafeConfigurationFileImpl extends ConfigurationFileImpl {
 
     public SafeConfigurationFileImpl(final File file){
         super(file);
+    }
+
+    public SafeConfigurationFileImpl(final InputStream stream){
+        super(stream);
     }
 
     @Override
