@@ -14,13 +14,17 @@ import java.util.logging.Logger;
 
 public final class PluginServiceImpl extends PluginService {
 
+    private static String badFileChars = "[\\\\/:*?\"<>|]";
+
+    //
+
     private final Logger logger;
     private final File pluginFolder;
     private final PluginYml pluginYml;
 
     public PluginServiceImpl(final ConfigurationSection pluginYml, final File pluginFolder){
         this.pluginYml = new PluginYmlImpl(pluginYml);
-        this.pluginFolder = Paths.get( pluginFolder.getPath() ,this.pluginYml.getPluginName()).toFile();
+        this.pluginFolder = Paths.get( pluginFolder.getPath() ,this.pluginYml.getPluginName().replaceAll('[' + badFileChars + ']',"_")).toFile();
         this.logger = Main.getLoggerService().getLogger(this.pluginYml.getPluginName());
     }
 
