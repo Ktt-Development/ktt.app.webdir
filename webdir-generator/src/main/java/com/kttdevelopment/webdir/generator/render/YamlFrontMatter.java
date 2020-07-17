@@ -30,7 +30,78 @@ public abstract class YamlFrontMatter {
 
     private static final String importKey = "import", importRelativeKey = "import_relative";
 
+    private static final Pattern hasExtension = Pattern.compile("^(.*)\\.(.*)$");
+
     //
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static ConfigurationSection loadImports(final File file, final List<File> checkedImports, final List<File> checkedRelativeImports){
+        final LocaleService locale  = !Main.testMode ? Main.getLocaleService() : null;
+        final Logger logger         = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+
+        try{
+            final ConfigurationFileImpl impl = new ConfigurationFileImpl(file);
+            impl.load(file);
+
+            // reverse lists so top imports#putAll will override lower imports
+            final List<String> imports = impl.getList(importKey, new ArrayList<>());
+            Collections.reverse(imports);
+            final List<String> relativeImports = impl.getList(importRelativeKey, new ArrayList<>());
+            Collections.reverse(relativeImports);
+
+            if(imports.isEmpty() && relativeImports.isEmpty())
+                return impl;
+
+            final Map out = new HashMap<>();
+
+            imports.forEach(s -> {
+                // if has no extension assume .yml
+                final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
+                final File IN = Paths.get(new File("").getAbsolutePath(),fileName).toFile();
+
+                if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
+                    checkedImports.add(IN);
+                    final Map imported = loadImports(IN,checkedImports,new ArrayList<>()).toMap();
+                    imported.remove(importKey);
+                    imported.remove(importRelativeKey);
+                    out.putAll(imported);
+                }else{
+                    // warn
+                }
+            });
+
+            // relative imports will override exact imports
+            relativeImports.forEach(s -> {
+                // if has no extension assume .yml
+                final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
+                final File IN = Paths.get(new File("").getAbsolutePath(),fileName).toFile();
+
+                if(!checkedRelativeImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
+                    checkedRelativeImports.add(IN);
+                    final Map imported = loadImports(IN,new ArrayList<>(),checkedRelativeImports).toMap();
+                    imported.remove(importKey);
+                    imported.remove(importRelativeKey);
+                    out.putAll(imported);
+                }else{
+                    // warn
+                }
+            });
+
+            out.putAll(impl.toMap());
+            return new ConfigurationSectionImpl(out);
+        }catch(final FileNotFoundException ignored){
+            if(!Main.testMode)
+                // IntelliJ defect; locale will not be null while not in test mode
+                //noinspection ConstantConditions
+                logger.warning(locale.getString("pageRenderer.yfm.notFound",file.getAbsolutePath()));
+        }catch(final ClassCastException | YamlException e){
+            if(!Main.testMode)
+                // IntelliJ defect; locale will not be null while not in test mode
+                //noinspection ConstantConditions
+                logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
+        }
+        return null;
+    }
 
     // imports
 
@@ -59,7 +130,7 @@ public abstract class YamlFrontMatter {
 
         imports.forEach(s -> {
             // if does not end with an extension, assume it to be a yaml file
-            final String fileName = s + (pattern.matcher(s).matches() ? "" : ".yml");
+            final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
             final File IN = Paths.get((source == null ? new File("") : source.getParentFile()).getAbsolutePath(),fileName).toFile();
             try{
                 final ConfigurationFileImpl impl = new ConfigurationFileImpl(IN);
