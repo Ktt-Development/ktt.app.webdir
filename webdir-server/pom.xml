@@ -51,13 +51,13 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
-            <version>1.0</version>
+            <version>G-EAV-01</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-generator</artifactId>
-            <version>1.0</version>
+            <version>G-EAV-01</version>
             <scope>compile</scope>
         </dependency>
 
