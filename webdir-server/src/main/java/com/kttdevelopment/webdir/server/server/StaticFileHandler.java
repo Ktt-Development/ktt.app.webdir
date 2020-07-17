@@ -35,7 +35,6 @@ public class StaticFileHandler extends FileHandler {
 
         ConfigurationSection tFrontMatter = frontMatter.getFrontMatter();
         tFrontMatter = YamlFrontMatter.loadImports(tFrontMatter);
-        tFrontMatter = YamlFrontMatter.loadRelativeImports(source,tFrontMatter);
         final ConfigurationSection finalFrontMatter = tFrontMatter;
 
         final AtomicReference<String> content = new AtomicReference<>(str);
