@@ -53,7 +53,7 @@ public abstract class Main {
                 server = new Server(config.getInteger("port",80),output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
-        }catch(final Exception | Error e){
+        }catch(final Throwable e){
             try{
                 Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(IOException e2){

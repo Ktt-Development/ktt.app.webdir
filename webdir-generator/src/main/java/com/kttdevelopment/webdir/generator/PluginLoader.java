@@ -244,7 +244,7 @@ public final class PluginLoader {
                     plugin.getRenderers().forEach((rendererName, renderer) -> renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer)));
                     plugins.add(plugin);
                     loadedPlugins.incrementAndGet();
-                }catch(final Exception | Error e){
+                }catch(final Throwable e){
                     future.cancel(true);
                     logger.severe(
                         e instanceof TimeoutException

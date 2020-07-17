@@ -55,7 +55,7 @@ public final class ConfigService {
                 try{
                     config.save();
                     logger.info("Created default configuration file");
-                }catch(final Exception | Error e){
+                }catch(final Throwable e){
                     logger.severe("Failed to save default configuration file" + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             else

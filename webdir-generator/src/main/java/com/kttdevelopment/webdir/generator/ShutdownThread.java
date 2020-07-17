@@ -20,7 +20,7 @@ public final class ShutdownThread extends Thread{
         try{
             Main.getConfigService().getConfigFile().save();
             logger.info(locale.getString("config.save"));
-        }catch(final Exception | Error e){
+        }catch(final Throwable e){
             logger.severe(locale.getString("config.saveFailed") + '\n' + Exceptions.getStackTraceAsString(e));
         }
 
@@ -33,7 +33,7 @@ public final class ShutdownThread extends Thread{
             try{
                 future.get(timeout,unit);
                 success.incrementAndGet();
-            }catch(final Exception | Error e){
+            }catch(final Throwable e){
                 future.cancel(true);
                 logger.severe(
                     e instanceof TimeoutException
