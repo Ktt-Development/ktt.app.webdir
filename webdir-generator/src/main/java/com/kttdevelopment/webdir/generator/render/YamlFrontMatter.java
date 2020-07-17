@@ -49,7 +49,7 @@ public abstract class YamlFrontMatter {
         final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
         final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
-        final List<String> imports =frontMatter.getList(key, String.class);
+        final List<String> imports = frontMatter.getList(key, String.class);
         if(imports == null || imports.isEmpty())
             return new ConfigurationSectionImpl(frontMatter.toMap());
 

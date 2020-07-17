@@ -162,7 +162,7 @@ public final class PluginLoader {
             pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
             if(!dependencies.isEmpty())
                 logger.severe(locale.getString("pluginLoader.const.loadValidDeps.missingDep", entry.getPluginYml().getPluginName(), Arrays.toString(entry.getPluginYml().getDependencies())));
-            else if(new HasCircularDependencies(entry,pluginsValid).test(entry))
+            else if(new CircularDependencyChecker(entry,pluginsValid).test(entry))
                 logger.severe(locale.getString("pluginLoader.const.loadValidDeps.circleDep", entry.getPluginYml().getPluginName()));
             else
                 pluginsValidDep.add(entry);
