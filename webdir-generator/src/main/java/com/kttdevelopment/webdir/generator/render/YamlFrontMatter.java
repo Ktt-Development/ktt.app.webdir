@@ -34,6 +34,10 @@ public abstract class YamlFrontMatter {
 
     //
 
+    public static ConfigurationSection loadImports(final File file){
+        return loadImports(file,new ArrayList<>(),new ArrayList<>());
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports, final List<File> checkedRelativeImports){
         final LocaleService locale  = !Main.testMode ? Main.getLocaleService() : null;
@@ -61,12 +65,15 @@ public abstract class YamlFrontMatter {
 
                 if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                     checkedImports.add(IN);
-                    final Map imported = loadImports(IN,checkedImports,new ArrayList<>()).toMap();
-                    imported.remove(importKey);
-                    imported.remove(importRelativeKey);
-                    out.putAll(imported);
-                }else{
-                    // warn
+                    final ConfigurationSection imported = loadImports(IN,checkedImports,new ArrayList<>());
+                    final Map importedMap = imported != null ? imported.toMap() : new HashMap();
+                    importedMap.remove(importKey);
+                    importedMap.remove(importRelativeKey);
+                    out.putAll(importedMap);
+                }else if(!Main.testMode){
+                    // IntelliJ defect; locale will not be null while not in test mode
+                    //noinspection ConstantConditions
+                    logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
                 }
             });
 
@@ -78,12 +85,15 @@ public abstract class YamlFrontMatter {
 
                 if(!checkedRelativeImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                     checkedRelativeImports.add(IN);
-                    final Map imported = loadImports(IN,new ArrayList<>(),checkedRelativeImports).toMap();
-                    imported.remove(importKey);
-                    imported.remove(importRelativeKey);
-                    out.putAll(imported);
-                }else{
-                    // warn
+                    final ConfigurationSection imported = loadImports(IN,new ArrayList<>(),checkedRelativeImports);
+                    final Map importedMap = imported != null ? imported.toMap() : new HashMap();
+                    importedMap.remove(importKey);
+                    importedMap.remove(importRelativeKey);
+                    out.putAll(importedMap);
+                }else if(!Main.testMode){
+                    // IntelliJ defect; locale will not be null while not in test mode
+                    //noinspection ConstantConditions
+                    logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
                 }
             });
 
@@ -100,70 +110,7 @@ public abstract class YamlFrontMatter {
                 //noinspection ConstantConditions
                 logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
         }
-        return null;
-    }
-
-    // imports
-
-    public static ConfigurationSection loadImports(final ConfigurationSection frontMatter){
-        return loadImports("import",null,frontMatter);
-    }
-
-    public static ConfigurationSection loadRelativeImports(final File source, final ConfigurationSection frontMatter){
-       return loadImports("import_relative",source,frontMatter);
-    }
-
-    private static final Pattern pattern = Pattern.compile("^(.*)\\.(.*)$");
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static ConfigurationSection loadImports(final String key, final File source, final ConfigurationSection frontMatter){
-        final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
-        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
-
-        final List<String> imports = frontMatter.getList(key, String.class);
-        if(imports == null || imports.isEmpty())
-            return new ConfigurationSectionImpl(frontMatter.toMap());
-
-        Collections.reverse(imports);
-
-        final Map OUT = new HashMap();
-
-        imports.forEach(s -> {
-            // if does not end with an extension, assume it to be a yaml file
-            final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
-            final File IN = Paths.get((source == null ? new File("") : source.getParentFile()).getAbsolutePath(),fileName).toFile();
-            try{
-                final ConfigurationFileImpl impl = new ConfigurationFileImpl(IN);
-                impl.load(IN);
-
-                // imported files may also have imports as well
-                final Map innerImports = new HashMap();
-
-                if(impl.contains(importKey))
-                    innerImports.putAll(loadImports(impl).toMap());
-                if(impl.contains(importRelativeKey))
-                    innerImports.putAll(loadRelativeImports(IN,impl).toMap());
-
-                final Map map = impl.toMap();
-                innerImports.putAll(map);
-                innerImports.remove(importKey);
-                innerImports.remove(importRelativeKey);
-
-                OUT.putAll(innerImports);
-            }catch(final FileNotFoundException ignored){
-                if(!Main.testMode)
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.yfm.notFound",IN.getAbsolutePath()));
-            }catch(final ClassCastException |  YamlException e){
-                if(!Main.testMode)
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",IN.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
-            }
-        });
-        OUT.putAll(frontMatter.toMap());
-        return new ConfigurationSectionImpl(OUT);
+        return new ConfigurationSectionImpl();
     }
 
     // renderer
