@@ -37,7 +37,7 @@ public abstract class YamlFrontMatter {
 
     // load imports via config → loads exact only
     public static ConfigurationSection loadImports(final ConfigurationSection config){
-        return loadImports(null,config,new ArrayList<>(),new ArrayList<>());
+        return loadImports(null,config,new ArrayList<>());
     }
 
     // load imports via file → loads both, may be empty if bad file
@@ -64,11 +64,11 @@ public abstract class YamlFrontMatter {
 
     // load imports via file and config → loads both safe
     public static ConfigurationSection loadImports(final File file, final ConfigurationSection config){
-        return loadImports(file,config,new ArrayList<>(),new ArrayList<>());
+        return loadImports(file,config,new ArrayList<>());
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports, final List<File> checkedRelativeImports){
+    private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports){
         final LocaleService locale  = !Main.testMode ? Main.getLocaleService() : null;
         final Logger logger         = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
@@ -83,10 +83,12 @@ public abstract class YamlFrontMatter {
 
         final Map out = new HashMap<>();
 
-        imports.forEach(s -> {
+        final List<List<String>> repeat = List.of(imports,relativeImports);
+
+        repeat.forEach(list -> list.forEach(s -> {
             // if has no extension assume .yml
             final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
-            final File IN = Paths.get(new File("").getAbsolutePath(),fileName).toFile();
+            final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
@@ -99,27 +101,7 @@ public abstract class YamlFrontMatter {
                 //noinspection ConstantConditions
                 logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
             }
-        });
-
-        // relative imports will override exact imports
-        if(source != null)
-            relativeImports.forEach(s -> {
-                // if has no extension assume .yml
-                final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
-                final File IN = Paths.get(new File("").getAbsolutePath(),fileName).toFile();
-
-                if(!checkedRelativeImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
-                    checkedRelativeImports.add(IN);
-                    final Map<?,?> imported = loadImports(IN).toMap();
-                    imported.remove(importKey);
-                    imported.remove(importRelativeKey);
-                    out.putAll(imported);
-                }else if(!Main.testMode){
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
-                }
-            });
+        }));
 
         out.putAll(config.toMap());
         return new ConfigurationSectionImpl(out);
