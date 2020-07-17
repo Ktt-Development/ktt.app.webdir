@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator.render;
 
 import com.esotericsoftware.yamlbeans.YamlException;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Main;
@@ -34,50 +35,74 @@ public abstract class YamlFrontMatter {
 
     //
 
-    public static ConfigurationSection loadImports(final File file){
-        return loadImports(file,new ArrayList<>(),new ArrayList<>());
+    // load imports via config → loads exact only
+    public static ConfigurationSection loadImports(final ConfigurationSection config){
+        return loadImports(null,config,new ArrayList<>(),new ArrayList<>());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static ConfigurationSection loadImports(final File file, final List<File> checkedImports, final List<File> checkedRelativeImports){
+    // load imports via file → loads both, may be empty if bad file
+    public static ConfigurationSection loadImports(final File file){
+        final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
+        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ConfigurationFileImpl config = new ConfigurationFileImpl(file);
+        try{
+            config.load(file);
+            return loadImports(file,config);
+        }catch(final FileNotFoundException ignored){
+            if(!Main.testMode)
+                // IntelliJ defect; locale will not be null while not in test mode
+                //noinspection ConstantConditions
+                logger.warning(locale.getString("pageRenderer.yfm.notFound",file.getAbsolutePath()));
+        }catch(final ClassCastException |  YamlException e){
+            if(!Main.testMode)
+                // IntelliJ defect; locale will not be null while not in test mode
+                //noinspection ConstantConditions
+                logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
+        }
+        return new ConfigurationSectionImpl();
+    }
+
+    // load imports via file and config → loads both safe
+    public static ConfigurationSection loadImports(final File file, final ConfigurationSection config){
+        return loadImports(file,config,new ArrayList<>(),new ArrayList<>());
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports, final List<File> checkedRelativeImports){
         final LocaleService locale  = !Main.testMode ? Main.getLocaleService() : null;
         final Logger logger         = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
-        try{
-            final ConfigurationFileImpl impl = new ConfigurationFileImpl(file);
-            impl.load(file);
+        // reverse lists so top imports#putAll will override lower imports
+        final List<String> imports = config.getList(importKey, new ArrayList<>());
+        Collections.reverse(imports);
+        final List<String> relativeImports = config.getList(importRelativeKey, new ArrayList<>());
+        Collections.reverse(relativeImports);
 
-            // reverse lists so top imports#putAll will override lower imports
-            final List<String> imports = impl.getList(importKey, new ArrayList<>());
-            Collections.reverse(imports);
-            final List<String> relativeImports = impl.getList(importRelativeKey, new ArrayList<>());
-            Collections.reverse(relativeImports);
+        if(imports.isEmpty() && relativeImports.isEmpty())
+            return config;
 
-            if(imports.isEmpty() && relativeImports.isEmpty())
-                return impl;
+        final Map out = new HashMap<>();
 
-            final Map out = new HashMap<>();
+        imports.forEach(s -> {
+            // if has no extension assume .yml
+            final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
+            final File IN = Paths.get(new File("").getAbsolutePath(),fileName).toFile();
 
-            imports.forEach(s -> {
-                // if has no extension assume .yml
-                final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
-                final File IN = Paths.get(new File("").getAbsolutePath(),fileName).toFile();
+            if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
+                checkedImports.add(IN);
+                final Map imported = loadImports(IN).toMap();
+                imported.remove(importKey);
+                imported.remove(importRelativeKey);
+                out.putAll(imported);
+            }else if(!Main.testMode){
+                // IntelliJ defect; locale will not be null while not in test mode
+                //noinspection ConstantConditions
+                logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
+            }
+        });
 
-                if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
-                    checkedImports.add(IN);
-                    final ConfigurationSection imported = loadImports(IN,checkedImports,new ArrayList<>());
-                    final Map importedMap = imported != null ? imported.toMap() : new HashMap();
-                    importedMap.remove(importKey);
-                    importedMap.remove(importRelativeKey);
-                    out.putAll(importedMap);
-                }else if(!Main.testMode){
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
-                }
-            });
-
-            // relative imports will override exact imports
+        // relative imports will override exact imports
+        if(source != null)
             relativeImports.forEach(s -> {
                 // if has no extension assume .yml
                 final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
@@ -85,11 +110,10 @@ public abstract class YamlFrontMatter {
 
                 if(!checkedRelativeImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                     checkedRelativeImports.add(IN);
-                    final ConfigurationSection imported = loadImports(IN,new ArrayList<>(),checkedRelativeImports);
-                    final Map importedMap = imported != null ? imported.toMap() : new HashMap();
-                    importedMap.remove(importKey);
-                    importedMap.remove(importRelativeKey);
-                    out.putAll(importedMap);
+                    final Map<?,?> imported = loadImports(IN).toMap();
+                    imported.remove(importKey);
+                    imported.remove(importRelativeKey);
+                    out.putAll(imported);
                 }else if(!Main.testMode){
                     // IntelliJ defect; locale will not be null while not in test mode
                     //noinspection ConstantConditions
@@ -97,20 +121,8 @@ public abstract class YamlFrontMatter {
                 }
             });
 
-            out.putAll(impl.toMap());
-            return new ConfigurationSectionImpl(out);
-        }catch(final FileNotFoundException ignored){
-            if(!Main.testMode)
-                // IntelliJ defect; locale will not be null while not in test mode
-                //noinspection ConstantConditions
-                logger.warning(locale.getString("pageRenderer.yfm.notFound",file.getAbsolutePath()));
-        }catch(final ClassCastException | YamlException e){
-            if(!Main.testMode)
-                // IntelliJ defect; locale will not be null while not in test mode
-                //noinspection ConstantConditions
-                logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
-        }
-        return new ConfigurationSectionImpl();
+        out.putAll(config.toMap());
+        return new ConfigurationSectionImpl(out);
     }
 
     // renderer

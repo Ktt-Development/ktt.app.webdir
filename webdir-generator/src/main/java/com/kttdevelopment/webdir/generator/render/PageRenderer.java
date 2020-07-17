@@ -24,7 +24,7 @@ public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
 
         if(!frontMatter.hasFrontMatter()) return bytes;
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,frontMatter.getFrontMatter());
         final List<String> renderersStr = finalFrontMatter.getList("renderer",String.class);
 
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
