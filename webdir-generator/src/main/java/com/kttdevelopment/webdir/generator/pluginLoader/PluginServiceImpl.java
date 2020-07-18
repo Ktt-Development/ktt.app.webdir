@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public final class PluginServiceImpl extends PluginService {
 
-    private static String badFileChars = "[\\\\/:*?\"<>|]";
+    private static final String badFileChars = "[\\\\/:*?\"<>|]";
 
     //
 
@@ -32,6 +32,7 @@ public final class PluginServiceImpl extends PluginService {
         return logger;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public final File getPluginFolder(){
         if(!pluginFolder.exists()) pluginFolder.mkdirs();

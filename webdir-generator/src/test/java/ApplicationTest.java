@@ -1,24 +1,22 @@
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.generator.Main;
-import com.kttdevelopment.webdir.generator.PluginLoader;
+import com.kttdevelopment.webdir.generator.*;
 import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
 
 public class ApplicationTest {
 
     @Before
     public void before(){
-        Main.testMode = false;
+        Vars.Test.testmode = false;
     }
 
     @Test
     public void testPluginLoading(){
-        Main.testSafeMode = false;
+        Vars.Test.safemode = false;
         Main.main(null);
 
         final String[] badPlugins = {
@@ -60,7 +58,7 @@ public class ApplicationTest {
 
     @Test
     public void testSafeMode(){
-        Main.testSafeMode = true;
+        Vars.Test.safemode = true;
         Main.main(null);
         Assert.assertTrue("Safe-mode should not load any plugins",Main.getPluginLoader().getPlugins().isEmpty());
     }
@@ -77,7 +75,7 @@ public class ApplicationTest {
 
     @Test
     public void testRenderer() throws IOException{
-        Main.testSafeMode = false;
+        Vars.Test.safemode = false;
         Main.main(null);
 
         Assert.assertEquals("order.html has second listed as the final renderer but result was incorrect (returns first render or exception)","second", Files.readString(new File("_site/order.html").toPath()));
@@ -88,7 +86,7 @@ public class ApplicationTest {
 
     @Test
     public void testClear() throws IOException{
-        Main.testSafeMode = false;
+        Vars.Test.safemode = false;
 
         final File testRoot = new File(".root/test.html");
         final File testOutput = new File("_site/test.html");
@@ -99,14 +97,14 @@ public class ApplicationTest {
         Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
 
         Files.delete(testRoot.toPath());
-        Main.testClear = true;
+        Vars.Test.clear = true;
         Main.main(null);
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
     }
 
     @Test
     public void testImpl(){
-        Main.testSafeMode = false;
+        Vars.Test.safemode = false;
         Main.main(null);
 
         final WebDirPlugin plugin = Main.getPluginLoader().getPlugin("Valid");

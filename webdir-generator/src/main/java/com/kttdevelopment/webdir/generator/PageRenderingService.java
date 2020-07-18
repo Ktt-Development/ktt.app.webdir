@@ -17,8 +17,6 @@ public final class PageRenderingService {
 
     private final BiFunction<File,byte[],byte[]> render = new PageRenderer();
 
-    private static final String cleanKey = "clean";
-
     private final File source;
     private final File output;
 
@@ -39,7 +37,7 @@ public final class PageRenderingService {
         if(source.exists() && Objects.requireNonNullElse(source.list(),new File[0]).length != 0)
             try{
                 // make sure that only files in the web dir domain will be considered for deletion
-                if(Main.testClear || (output.exists() && config.getConfig().getBoolean(cleanKey) && output.getAbsolutePath().startsWith(new File("").getAbsolutePath())))
+                if(Vars.Test.clear || (output.exists() && config.getConfig().getBoolean(Vars.Config.cleanKey) && output.getAbsolutePath().startsWith(new File("").getAbsolutePath())))
                     // Files must be delete recursively because for some reason java doesn't allow deletion of a folder with contents
                     try(Stream<Path> walk = Files.walk(output.toPath())){
                         //noinspection ResultOfMethodCallIgnored

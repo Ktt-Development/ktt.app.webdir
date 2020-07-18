@@ -1,6 +1,5 @@
 import com.esotericsoftware.yamlbeans.YamlException;
-import com.kttdevelopment.webdir.generator.ConfigService;
-import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.*;
 import org.junit.*;
 
 import java.io.File;
@@ -10,7 +9,7 @@ public class ConfigServiceTests {
 
     @Before
     public void before(){
-        Main.testMode = true;
+        Vars.Test.testmode = true;
     }
 
     @Test

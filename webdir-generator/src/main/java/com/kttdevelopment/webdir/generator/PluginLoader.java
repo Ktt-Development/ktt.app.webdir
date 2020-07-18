@@ -18,19 +18,6 @@ import java.util.logging.Logger;
 
 public final class PluginLoader {
 
-    // Global Settings //
-
-    private static final String pluginDirKey = "plugins_dir", pluginDirDefault = ".plugins";
-
-    private static final String pluginYml = "plugin.yml";
-
-    private static final String mainClassKey = "main";
-
-    private static final int loadTimeout = 30;
-    private static final TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
-
-    // //
-
     private final List<PluginRendererEntry> renderers = new ArrayList<>();
 
     public final List<PluginRendererEntry> getRenderers(){
@@ -67,9 +54,9 @@ public final class PluginLoader {
 
         logger.info(locale.getString("pluginLoader.const"));
 
-        final File pluginsFolder = new File(config.getConfig().getString(pluginDirKey,pluginDirDefault));
+        final File pluginsFolder = new File(config.getConfig().getString(Vars.Config.pluginsKey,Vars.Config.defaultPlugins));
 
-        if(Main.testSafeMode || config.getConfig().getBoolean("safemode")){
+        if(Vars.Test.safemode || config.getConfig().getBoolean("safemode")){
             logger.info(locale.getString("pluginLoader.const.safemode"));
             return;
         }
@@ -95,7 +82,7 @@ public final class PluginLoader {
         final Map<File,URL> pluginYMLs = new HashMap<>();
         pluginsIsJar.forEach((file, url) -> {
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{url})){
-                final URL yml = Objects.requireNonNull(loader.findResource(pluginYml));
+                final URL yml = Objects.requireNonNull(loader.findResource(Vars.Plugin.pluginYml));
                 pluginYMLs.put(file,yml);
             }catch(final SecurityException e){
                 logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -142,7 +129,7 @@ public final class PluginLoader {
 
             // test if main class can be loaded
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
-                pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(mainClassKey))), yml, pluginYml));
+                pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(Vars.Plugin.mainClassKey))), yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
                 logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final ClassNotFoundException | NullPointerException e){
@@ -240,7 +227,7 @@ public final class PluginLoader {
                 });
 
                 try{
-                    final WebDirPlugin plugin = future.get(loadTimeout,loadTimeoutUnit);
+                    final WebDirPlugin plugin = future.get(Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
                     plugin.getRenderers().forEach((rendererName, renderer) -> renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer)));
                     plugins.add(plugin);
                     loadedPlugins.incrementAndGet();
@@ -248,7 +235,7 @@ public final class PluginLoader {
                     future.cancel(true);
                     logger.severe(
                         e instanceof TimeoutException
-                        ? locale.getString("pluginLoader.const.loader.timedOut", entry.getPluginYml().getPluginName(), loadTimeout + " " + loadTimeoutUnit.name().toLowerCase())
+                        ? locale.getString("pluginLoader.const.loader.timedOut", entry.getPluginYml().getPluginName(), Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
                         : locale.getString("pluginLoader.const.loader.uncaught", entry.getPluginYml().getPluginName()) + '\n' + Exceptions.getStackTraceAsString(e)
                     );
                     iterator.remove();

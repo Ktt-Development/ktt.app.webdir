@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 
 import java.util.*;
@@ -15,10 +16,10 @@ public final class PluginYmlImpl extends PluginYml {
 
     public PluginYmlImpl(final ConfigurationSection config){
         Objects.requireNonNull(config);
-        this.pluginName     = Objects.requireNonNull(config.getString("name"));
-        this.pluginVersion  = config.getString("version");
-        this.authors        = config.getList("authors", new ArrayList<String>()).toArray(new String[0]);
-        this.dependencies   = config.getList("dependencies",new ArrayList<String>()).toArray(new String[0]);
+        this.pluginName     = Objects.requireNonNull(config.getString(Vars.Plugin.nameKey));
+        this.pluginVersion  = config.getString(Vars.Plugin.versionKey);
+        this.authors        = config.getList(Vars.Plugin.authorsKey, new ArrayList<String>()).toArray(new String[0]);
+        this.dependencies   = config.getList(Vars.Plugin.dependenciesKey,new ArrayList<String>()).toArray(new String[0]);
         this.config         = config;
     }
 

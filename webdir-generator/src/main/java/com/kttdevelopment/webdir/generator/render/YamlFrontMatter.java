@@ -1,10 +1,8 @@
 package com.kttdevelopment.webdir.generator.render;
 
 import com.esotericsoftware.yamlbeans.YamlException;
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
@@ -29,8 +27,6 @@ public abstract class YamlFrontMatter {
 
     // Global Settings //
 
-    private static final String importKey = "import", importRelativeKey = "import_relative";
-
     private static final Pattern hasExtension = Pattern.compile("^(.*)\\.(.*)$");
 
     //
@@ -46,19 +42,19 @@ public abstract class YamlFrontMatter {
 
     // load imports via file → loads both, may be empty if bad file
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
-        final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
-        final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
+        final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
         final ConfigurationFileImpl config = new ConfigurationFileImpl(file);
         try{
             config.load(file);
             return loadImports(file,config, checkedImports);
         }catch(final FileNotFoundException ignored){
-            if(!Main.testMode)
+            if(!Vars.Test.testmode)
                 // IntelliJ defect; locale will not be null while not in test mode
                 //noinspection ConstantConditions
                 logger.warning(locale.getString("pageRenderer.yfm.notFound",file.getAbsolutePath()));
         }catch(final ClassCastException |  YamlException e){
-            if(!Main.testMode)
+            if(!Vars.Test.testmode)
                 // IntelliJ defect; locale will not be null while not in test mode
                 //noinspection ConstantConditions
                 logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -73,13 +69,13 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports){
-        final LocaleService locale  = !Main.testMode ? Main.getLocaleService() : null;
-        final Logger logger         = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
+        final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
         // reverse lists so top imports#putAll will override lower imports
-        final List<String> imports = config.getList(importKey, new ArrayList<>());
+        final List<String> imports = config.getList(Vars.Renderer.importKey, new ArrayList<>());
         Collections.reverse(imports);
-        final List<String> relativeImports = config.getList(importRelativeKey, new ArrayList<>());
+        final List<String> relativeImports = config.getList(Vars.Renderer.importRelativeKey, new ArrayList<>());
         Collections.reverse(relativeImports);
 
         if(imports.isEmpty() && relativeImports.isEmpty())
@@ -97,10 +93,10 @@ public abstract class YamlFrontMatter {
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
                 final Map imported = loadImports(IN,checkedImports).toMap();
-                imported.remove(importKey);
-                imported.remove(importRelativeKey);
+                imported.remove(Vars.Renderer.importKey);
+                imported.remove(Vars.Renderer.importRelativeKey);
                 out.putAll(imported);
-            }else if(!Main.testMode){
+            }else if(!Vars.Test.testmode){
                 // IntelliJ defect; locale will not be null while not in test mode
                 //noinspection ConstantConditions
                 logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
@@ -129,8 +125,8 @@ public abstract class YamlFrontMatter {
                 final Map map = (Map) obj;
                 try{
                     renderer = new PluginRenderer(
-                        Objects.requireNonNull(map.get("plugin")).toString(),
-                        Objects.requireNonNull(map.get("renderer")).toString()
+                        Objects.requireNonNull(map.get(Vars.Renderer.pluginKey)).toString(),
+                        Objects.requireNonNull(map.get(Vars.Renderer.rendererKey)).toString()
                     );
                 }catch(final NullPointerException ignored){
                     logger.warning(locale.getString("pageRenderer.rdr.missingKV",obj));

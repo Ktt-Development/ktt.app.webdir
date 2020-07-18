@@ -1,5 +1,5 @@
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import org.junit.*;
@@ -8,7 +8,7 @@ public class YamlFrontMatterTests {
 
     @Before
     public void before(){
-        Main.testMode = true;
+        Vars.Test.testmode= true;
     }
 
     @Test

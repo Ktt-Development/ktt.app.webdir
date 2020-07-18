@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.function.ExceptionSupplier;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.File;
@@ -36,23 +35,21 @@ public abstract class Main {
 
     public static Server getServer(){ return server; }
 
-    public static boolean testSafeMode = false, testClear = false, testServer = false, testMode = false;
-
     public static void main(String[] args){
         try{
             loggerService = new LoggerService();
-            localeService = new LocaleService("lang/bundle");
-            configService = new ConfigService(new File("config.yml"), "/config.yml");
+            localeService = new LocaleService(Vars.Main.localeResource);
+            configService = new ConfigService(Vars.Main.configFile,Vars.Main.configResource);
 
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
-            final File source = new File(config.getString("source_dir",".root"));
-            final File output = new File(config.getString("output_dir","_site"));
+            final File source = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
+            final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
             pageRenderingService = new PageRenderingService(source,output);
 
-            if(testServer || config.getBoolean("preview",false))
-                server = new Server(config.getInteger("port",80),source,output);
+            if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))
+                server = new Server(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),source,output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){

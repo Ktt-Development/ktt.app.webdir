@@ -1,6 +1,5 @@
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
-import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 import org.junit.*;
 
@@ -10,7 +9,7 @@ public class LocaleServiceTests {
 
     @Test
     public void testWatching(){
-        Main.testMode = true;
+        Vars.Test.testmode = true;
         Locale.setDefault(Locale.US);
         final LocaleService locale = new LocaleService("locale/bundle");
         locale.setLocale(Locale.JAPAN);
