@@ -40,14 +40,18 @@ public abstract class YamlFrontMatter {
         return loadImports(null,config,new ArrayList<>());
     }
 
-    // load imports via file → loads both, may be empty if bad file
     public static ConfigurationSection loadImports(final File file){
+        return loadImports(file,new ArrayList<>());
+    }
+
+    // load imports via file → loads both, may be empty if bad file
+    public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
         final LocaleService locale = !Main.testMode ? Main.getLocaleService() : null;
         final Logger logger = !Main.testMode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
         final ConfigurationFileImpl config = new ConfigurationFileImpl(file);
         try{
             config.load(file);
-            return loadImports(file,config);
+            return loadImports(file,config, checkedImports);
         }catch(final FileNotFoundException ignored){
             if(!Main.testMode)
                 // IntelliJ defect; locale will not be null while not in test mode
@@ -92,7 +96,7 @@ public abstract class YamlFrontMatter {
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
-                final Map imported = loadImports(IN).toMap();
+                final Map imported = loadImports(IN,checkedImports).toMap();
                 imported.remove(importKey);
                 imported.remove(importRelativeKey);
                 out.putAll(imported);

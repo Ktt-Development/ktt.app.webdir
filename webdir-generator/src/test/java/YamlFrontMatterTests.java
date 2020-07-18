@@ -87,4 +87,21 @@ public class YamlFrontMatterTests {
         Assert.assertEquals("Front matter should have 1 values from import and import_relative and 3 imported values",4,config.toMap().size());
     }
 
+    @Test
+    public void testLoopImports(){
+        final String frontMatter =
+            "import: /src/test/resources/frontMatter/import_loop1.yml";
+
+        final String out = String.format("---\n%s\n---",frontMatter);
+
+        final YamlFrontMatter yml = new YamlFrontMatterReader(out).read();
+
+        try{
+            YamlFrontMatter.loadImports(yml.getFrontMatter());
+        }catch(final StackOverflowError ignored){
+            Assert.fail("Import loop prevention did not work correctly");
+        }
+
+    }
+
 }
