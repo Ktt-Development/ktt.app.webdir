@@ -19,6 +19,9 @@ public final class PageRenderingService {
 
     private static final String cleanKey = "clean";
 
+    private final File source;
+    private final File output;
+
     public PageRenderingService(final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final ConfigService config = Main.getConfigService();
@@ -26,7 +29,9 @@ public final class PageRenderingService {
         logger.info(locale.getString("pageRenderer.const"));
 
         final Path sourcePath = source.getAbsoluteFile().toPath();
+        this.source = source;
         final String outputPath = output.getAbsolutePath();
+        this.output = output;
 
         final AtomicInteger total = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
@@ -47,31 +52,46 @@ public final class PageRenderingService {
 
                 Files.walk(sourcePath).filter(path -> path.toFile().isFile()).forEach(path -> {
                     total.incrementAndGet();
-                    try{
-                        final byte[] bytes = Files.readAllBytes(path);
-
-                        final Path rel = sourcePath.relativize(path);
-                        final Path target = Paths.get(outputPath,rel.toString());
-                        final File parent = target.toFile().getParentFile();
-
-                        if(parent.exists() || parent.mkdirs())
-                            try{
-                                Files.write(target, render.apply(target.toFile(),bytes));
-                                rendered.incrementAndGet();
-                            }catch(final IOException e){
-                                logger.warning(locale.getString("pageRenderer.const.writeIO", target) + '\n' + Exceptions.getStackTraceAsString(e));
-                            }catch(final SecurityException e){
-                                logger.warning(locale.getString("pageRenderer.const.writeSec", target) + '\n' + Exceptions.getStackTraceAsString(e));
-                            }
-                    }catch(final IOException e){
-                        logger.warning(locale.getString("pageRenderer.const.readIO",path) + '\n' + Exceptions.getStackTraceAsString(e));
-                    }
+                    if(render(Paths.get(outputPath,sourcePath.relativize(path).toString()).toFile()))
+                        rendered.incrementAndGet();
                 });
             }catch(final IOException e){
                 logger.severe(locale.getString("pageRenderer.const.IO") + '\n' + Exceptions.getStackTraceAsString(e));
                 throw e;
             }
         logger.info(locale.getString("pageRenderer.const.loaded",rendered.get(),total.get()));
+    }
+
+    public final boolean render(final File target){
+        final LocaleService locale = Main.getLocaleService();
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+
+        if(target.isDirectory()) return false;
+
+        final Path path = target.toPath();
+        final Path rel = source.toPath().relativize(path);
+        final Path out = Paths.get(output.getAbsolutePath(),rel.toString());
+
+        if(!target.exists() && output.delete()){
+            return true;
+        }else{
+            final File parent = target.getParentFile();
+            if(parent.exists() || parent.mkdirs())
+                try{
+                    final byte[] bytes = Files.readAllBytes(path);
+                    try{
+                        Files.write(out, render.apply(target,bytes));
+                        return true;
+                    }catch(final IOException e){
+                        logger.warning(locale.getString("pageRenderer.const.writeIO", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                    }catch(final SecurityException e){
+                        logger.warning(locale.getString("pageRenderer.const.writeSec", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                    }
+                }catch(IOException e){
+                    logger.warning(locale.getString("pageRenderer.const.readIO",path) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+        }
+        return false;
     }
 
 }

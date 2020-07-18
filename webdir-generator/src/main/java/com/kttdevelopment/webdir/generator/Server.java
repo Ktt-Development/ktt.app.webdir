@@ -57,13 +57,7 @@ public final class Server {
                         if(file.isDirectory() && event.kind() == StandardWatchEventKinds.ENTRY_CREATE)
                             createWatchService(watchService,modified);
                         else
-                            if(event.kind() == StandardWatchEventKinds.ENTRY_DELETE)
-                                if(Paths.get(output.toString(),context.toString()).toFile().delete())
-                                    ; // failure
-                            else
-                                ; // todo: create centralized method for rendering files (even handle empty/null deletion
-
-                                // rerender
+                            Main.getPageRenderingService().render(file);
                     }
                     key.reset();
                 }

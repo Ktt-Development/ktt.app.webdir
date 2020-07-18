@@ -46,7 +46,7 @@ public abstract class Main {
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
-            final File source = new File(config.getString("source_dir",".root");
+            final File source = new File(config.getString("source_dir",".root"));
             final File output = new File(config.getString("output_dir","_site"));
             pageRenderingService = new PageRenderingService(source,output);
 
