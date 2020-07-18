@@ -69,7 +69,7 @@ public final class ConfigService {
         config.setDefault(def);
         this.config = config;
 
-        if(Vars.Test.testmode)
+        if(!Vars.Test.testmode)
             Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
         logger.info("Finished configuration service initialization");
     }

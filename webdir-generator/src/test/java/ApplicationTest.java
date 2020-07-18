@@ -123,5 +123,10 @@ public class ApplicationTest {
         Assert.assertEquals("Plugin logger name should be plugin name",pluginYml.getPluginName(),plugin.getLogger().getName());
 
     }
+    
+    @Test @Ignore
+    public void testServer(){
+        // just test that server read before modify and after modify are equal to source files.
+    }
 
 }
