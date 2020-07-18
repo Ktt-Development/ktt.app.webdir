@@ -46,11 +46,12 @@ public abstract class Main {
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
+            final File source = new File(config.getString("source_dir",".root");
             final File output = new File(config.getString("output_dir","_site"));
-            pageRenderingService = new PageRenderingService(new File(config.getString("source_dir",".root")),output);
+            pageRenderingService = new PageRenderingService(source,output);
 
             if(config.getBoolean("preview",false))
-                server = new Server(config.getInteger("port",80),output);
+                server = new Server(config.getInteger("port",80),source,output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){
