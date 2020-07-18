@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.webdir.generator.function.ExceptionSupplier;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.render.PageRenderer;
 import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
@@ -15,10 +16,6 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 public final class Server {
-
-    private final BiFunction<File,byte[],byte[]> render = new PageRenderer();
-
-    //
 
     Server(final int port, final File source, final File rendered) throws IOException{
         final LocaleService locale = Main.getLocaleService();
@@ -39,7 +36,6 @@ public final class Server {
 
         // re-render watch service
 
-        final Path output = rendered.toPath();
         final WatchService watchService = FileSystems.getDefault().newWatchService();
         final Path watching = source.toPath();
 
@@ -62,7 +58,7 @@ public final class Server {
                     key.reset();
                 }
             }catch(final InterruptedException e){
-                // stopped watch service
+                logger.severe(locale.getString("server.const.watchInterrupt") + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }).start();
 
@@ -76,17 +72,20 @@ public final class Server {
     }
 
     private void createWatchService(final WatchService watchService, final Path target){
+        final LocaleService locale = Main.getLocaleService();
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
+
         try{
             Files.walk(target).filter(path -> path.toFile().isDirectory()).forEach(p -> {
                 try{
                     p.register(watchService,StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.ENTRY_DELETE);
-                    // created watch service
+                    // created watch service debug
                 }catch(final IOException e){
-                    // failed to start watch service
+                    logger.severe(locale.getString("server.cws.failedWatch",p) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             });
-        }catch(IOException e){
-            // failed to walk
+        }catch(final IOException e){
+            logger.severe(locale.getString("server.cws.failedWalk",target) + '\n' + Exceptions.getStackTraceAsString(e));
         }
     }
 

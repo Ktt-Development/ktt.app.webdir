@@ -13,10 +13,15 @@ public abstract class Exceptions {
         return String.format(stackTrace,err.toString());
     }
 
-    public static <T> T requireNonExceptionElse(final ExceptionSupplier<T> consumer, T def){
+    public static void runIgnoreException(final ExceptionConsumer consumer){
+        try{ consumer.run();
+        }catch(final Throwable ignored){ }
+    }
+
+    public static <T> T requireNonExceptionElse(final ExceptionSupplier<T> supplier, T def){
         try{
-            return consumer.get();
-        }catch(Exception e){
+            return supplier.get();
+        }catch(final Throwable ignored){
             return def;
         }
     }

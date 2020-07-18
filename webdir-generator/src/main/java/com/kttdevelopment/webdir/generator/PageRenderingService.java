@@ -52,7 +52,7 @@ public final class PageRenderingService {
 
                 Files.walk(sourcePath).filter(path -> path.toFile().isFile()).forEach(path -> {
                     total.incrementAndGet();
-                    if(render(Paths.get(outputPath,sourcePath.relativize(path).toString()).toFile()))
+                    if(render(Paths.get(sourcePath.toString(),sourcePath.relativize(path).toString()).toFile()))
                         rendered.incrementAndGet();
                 });
             }catch(final IOException e){
@@ -66,16 +66,23 @@ public final class PageRenderingService {
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        if(target.isDirectory()) return false;
+        if(target.isDirectory()){
+            logger.warning(locale.getString("pageRenderer.render.dir", target));
+            return false;
+        }
 
-        final Path path = target.toPath();
-        final Path rel = source.toPath().relativize(path);
+        final Path path = target.getAbsoluteFile().toPath();
+        final Path rel = source.getAbsoluteFile().toPath().relativize(path);
         final Path out = Paths.get(output.getAbsolutePath(),rel.toString());
 
-        if(!target.exists() && output.delete()){
-            return true;
+        if(!target.exists()){
+            if(!out.toFile().delete()){
+                logger.warning(locale.getString("pageRenderer.render.delete", target));
+                return false;
+            }else
+                return true;
         }else{
-            final File parent = target.getParentFile();
+            final File parent = out.toFile().getParentFile();
             if(parent.exists() || parent.mkdirs())
                 try{
                     final byte[] bytes = Files.readAllBytes(path);
@@ -83,12 +90,12 @@ public final class PageRenderingService {
                         Files.write(out, render.apply(target,bytes));
                         return true;
                     }catch(final IOException e){
-                        logger.warning(locale.getString("pageRenderer.const.writeIO", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pageRenderer.render.writeIO", target) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
-                        logger.warning(locale.getString("pageRenderer.const.writeSec", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pageRenderer.render.writeSec", target) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
-                }catch(IOException e){
-                    logger.warning(locale.getString("pageRenderer.const.readIO",path) + '\n' + Exceptions.getStackTraceAsString(e));
+                }catch(final IOException e){
+                    logger.warning(locale.getString("pageRenderer.render.readIO", path) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
         }
         return false;
