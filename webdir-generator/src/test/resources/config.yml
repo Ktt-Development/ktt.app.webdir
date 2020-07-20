@@ -36,7 +36,7 @@ preview: false
 
 # The port that the server will run on.
 # Default: 80
-port: 80
+port: 8080
 
 # The context to view files at.
 # (WebDir - Server only)
