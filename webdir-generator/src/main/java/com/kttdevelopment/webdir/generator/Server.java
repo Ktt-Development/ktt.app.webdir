@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.simplehttpserver.handler.ByteLoadingOption;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
@@ -16,7 +17,10 @@ public final class Server {
     Server(final int port, final File source, final File rendered) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
+        logger.info(locale.getString("server.const"));
+
         final SimpleHttpServer server;
+
         try{
             server = SimpleHttpServer.create(port);
         }catch(final BindException e){
@@ -60,11 +64,13 @@ public final class Server {
 
         // server
         final FileHandler handler = new FileHandler(new HTMLNameAdapter());
-        handler.addDirectory(rendered,true);
+        handler.addDirectory(rendered,"",true);
 
         server.createContext("",handler);
 
         server.start();
+        logger.info(locale.getString("server.const.start"));
+        logger.info(locale.getString("server.const.loaded"));
     }
 
     private void createWatchService(final WatchService watchService, final Path target){

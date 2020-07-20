@@ -1,3 +1,4 @@
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.*;
@@ -5,7 +6,12 @@ import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.*;
+import java.net.http.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 public class ApplicationTest {
 
@@ -17,6 +23,7 @@ public class ApplicationTest {
     @Test
     public void testPluginLoading(){
         Vars.Test.safemode = false;
+        Vars.Test.server = false;
         Main.main(null);
 
         final String[] badPlugins = {
@@ -59,6 +66,7 @@ public class ApplicationTest {
     @Test
     public void testSafeMode(){
         Vars.Test.safemode = true;
+        Vars.Test.server = false;
         Main.main(null);
         Assert.assertTrue("Safe-mode should not load any plugins",Main.getPluginLoader().getPlugins().isEmpty());
     }
@@ -76,6 +84,7 @@ public class ApplicationTest {
     @Test
     public void testRenderer() throws IOException{
         Vars.Test.safemode = false;
+        Vars.Test.server = false;
         Main.main(null);
 
         Assert.assertEquals("order.html has second listed as the final renderer but result was incorrect (returns first render or exception)","second", Files.readString(new File("_site/order.html").toPath()));
@@ -87,6 +96,7 @@ public class ApplicationTest {
     @Test
     public void testClear() throws IOException{
         Vars.Test.safemode = false;
+        Vars.Test.server = false;
 
         final File testRoot = new File(".root/test.html");
         final File testOutput = new File("_site/test.html");
@@ -105,6 +115,7 @@ public class ApplicationTest {
     @Test
     public void testImpl(){
         Vars.Test.safemode = false;
+        Vars.Test.server = false;
         Main.main(null);
 
         final WebDirPlugin plugin = Main.getPluginLoader().getPlugin("Valid");
@@ -120,13 +131,75 @@ public class ApplicationTest {
 
         Assert.assertEquals("Plugin should be able to get other loaded plugins on the server",plugin,plugin.getPlugin("Valid"));
         Assert.assertEquals("Plugin folder should be plugins folder + plugin name",new File(".plugins/Valid"),plugin.getPluginFolder());
+        Assert.assertTrue("Using getPluginFolder should create a folder if it does not exist",new File(".plugins/Valid").exists());
         Assert.assertEquals("Plugin logger name should be plugin name",pluginYml.getPluginName(),plugin.getLogger().getName());
 
     }
     
-    @Test @Ignore
-    public void testServer(){
-        // just test that server read before modify and after modify are equal to source files.
+    @Test
+    public void testServer() throws ExecutionException, InterruptedException, IOException{
+        Vars.Test.server = true;
+        Main.main(null);
+
+        final String url = "http://localhost:%s/%s";
+        final int port = Main.getConfigService().getConfig().getInteger("port");
+        // final String target = String.valueOf(System.currentTimeMillis());
+        // final Path targetFile = new File(".root/" + target + ".html").toPath();
+
+        final String target = System.currentTimeMillis() + ".html";
+        final Path targetFile = new File(".root/" + target).toPath();
+
+        // test none
+        try{
+            Assert.assertNull(
+                "Referencing a non-existent page should return null content",
+                getResponseContent(URI.create(String.format(url, port, target)))
+            );
+        }catch(final Exception e){
+            if(!e.getMessage().contains("header parser received no bytes"))
+                Assert.fail("Referencing a non-existent page should return no content");
+        }
+
+        // test add
+        final String value = String.valueOf(System.currentTimeMillis());
+        Files.write(targetFile,value.getBytes());
+
+        Assert.assertEquals(
+            "Server should be able to retrieve newly added file",
+            value,
+            getResponseContent(URI.create(String.format(url,port,target)))
+        );
+
+        // test mod
+        final String newValue = String.valueOf(System.currentTimeMillis());
+        Files.write(targetFile,newValue.getBytes());
+
+        Assert.assertEquals(
+            "Server should be able to retrieve modified file",
+            newValue,
+            getResponseContent(URI.create(String.format(url,port,target)))
+        );
+
+        // test del
+        Files.delete(targetFile);
+        try{
+            Assert.assertNull(
+                "Referencing a deleted page should null content",
+                getResponseContent(URI.create(String.format(url, port, System.currentTimeMillis())))
+            );
+        }catch(final Exception e){
+            if(!e.getMessage().contains("header parser received no bytes"))
+                Assert.fail("Referencing a non-existent page should return no content");
+        }
+    }
+
+    private String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(uri)
+            .build();
+
+        return HttpClient.newHttpClient().sendAsync(request,HttpResponse.BodyHandlers.ofString())
+            .thenApply(HttpResponse::body).get();
     }
 
 }
