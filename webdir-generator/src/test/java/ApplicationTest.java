@@ -143,11 +143,8 @@ public class ApplicationTest {
 
         final String url = "http://localhost:%s/%s";
         final int port = Main.getConfigService().getConfig().getInteger("port");
-        // final String target = String.valueOf(System.currentTimeMillis());
-        // final Path targetFile = new File(".root/" + target + ".html").toPath();
-
-        final String target = System.currentTimeMillis() + ".html";
-        final Path targetFile = new File(".root/" + target).toPath();
+        final String target = String.valueOf(System.currentTimeMillis());
+        final Path targetFile = new File(".root/" + target + ".html").toPath();
 
         // test none
         try{
