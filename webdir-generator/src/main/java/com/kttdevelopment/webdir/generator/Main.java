@@ -44,9 +44,10 @@ public abstract class Main {
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
+            final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
             final File source = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
             final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
-            pageRenderingService = new PageRenderingService(source,output);
+            pageRenderingService = new PageRenderingService(defaults,source,output);
 
             if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))
                 server = new Server(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),source,output);

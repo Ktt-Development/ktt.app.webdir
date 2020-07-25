@@ -72,9 +72,11 @@ public abstract class Vars {
 
         public static final class Default {
 
-            public static final String defaultKey    = "default";
-            public static final String extensionsKey = "extensions";
-            public static final String contextsKey   = "contexts";
+            public static final String defaultKey   = "default";
+            public static final String indexKey     = "index";
+            public static final String scopeKey     = "scope";
+
+            public static final int defaultIndex    = 0;
 
         }
 

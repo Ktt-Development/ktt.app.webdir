@@ -48,7 +48,7 @@ public abstract class Main {
 
             pluginLoader = new PluginLoader();
             final File output = new File(config.getString("output_dir","_site"));
-            pageRenderingService = new PageRenderingService(new File(config.getString("source_dir",".root")),new File(config.getString("output_dir","_site")));
+            pageRenderingService = new PageRenderingService(null,new File(config.getString("source_dir",".root")),new File(config.getString("output_dir","_site")));
 
             if(config.getBoolean("preview",false))
                 server = new FileServer(config.getInteger("port",80),output);

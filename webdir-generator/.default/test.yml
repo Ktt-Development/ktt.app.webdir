@@ -1,0 +1,5 @@
+default:
+  scope:
+    - "!*test"
+  index: 1000
+

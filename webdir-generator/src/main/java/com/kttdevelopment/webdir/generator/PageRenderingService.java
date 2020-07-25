@@ -1,6 +1,8 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.TriFunction;
+import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
 import com.kttdevelopment.webdir.generator.render.PageRenderer;
 
 import java.io.File;
@@ -15,20 +17,22 @@ import java.util.stream.Stream;
 
 public final class PageRenderingService {
 
-    private final BiFunction<File,byte[],byte[]> render = new PageRenderer();
+    private final DefaultFrontMatterLoader defaultFrontMatterLoader;
+    private final PageRenderer render = new PageRenderer();
 
     private final File source;
     private final File output;
 
-    public PageRenderingService(final File source, final File output) throws IOException{
+    public PageRenderingService(final File defaults, final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final ConfigService config = Main.getConfigService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
 
+        defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
+
         final Path sourcePath = source.getAbsoluteFile().toPath();
         this.source = source;
-        final String outputPath = output.getAbsolutePath();
         this.output = output;
 
         final AtomicInteger total = new AtomicInteger(0);
@@ -60,6 +64,7 @@ public final class PageRenderingService {
         logger.info(locale.getString("pageRenderer.const.loaded",rendered.get(),total.get()));
     }
 
+    // target is the source file
     public final boolean render(final File target){
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
@@ -70,8 +75,8 @@ public final class PageRenderingService {
         }
 
         final Path path = target.getAbsoluteFile().toPath();
-        final Path rel = source.getAbsoluteFile().toPath().relativize(path);
-        final Path out = Paths.get(output.getAbsolutePath(),rel.toString());
+        final Path rel  = source.getAbsoluteFile().toPath().relativize(path);
+        final Path out  = Paths.get(output.getAbsolutePath(),rel.toString());
 
         if(!target.exists()){
             if(!out.toFile().delete()){
@@ -85,7 +90,7 @@ public final class PageRenderingService {
                 try{
                     final byte[] bytes = Files.readAllBytes(path);
                     try{
-                        Files.write(out, render.apply(target,bytes));
+                        Files.write(out, render.apply(target,defaultFrontMatterLoader.getDefaultFrontMatter(target),bytes));
                         return true;
                     }catch(final IOException e){
                         logger.warning(locale.getString("pageRenderer.render.writeIO", target) + '\n' + Exceptions.getStackTraceAsString(e));

@@ -74,7 +74,7 @@ public interface ConfigurationSection {
     void setDefault(final String key, final Object value);
 
     /**
-     * Sets the default configuration. Clears any existing values.
+     * Sets the default configuration.
      *
      * @param def default configuration
      *
@@ -82,6 +82,15 @@ public interface ConfigurationSection {
      * @author Ktt Development
      */
     void setDefault(final ConfigurationSection def);
+
+    /**
+     * Clears all default configuration values.
+     *
+     *
+     * @since 01.00.00
+     * @author Ktt Development
+     */
+    void clearDefault();
 
     //
 

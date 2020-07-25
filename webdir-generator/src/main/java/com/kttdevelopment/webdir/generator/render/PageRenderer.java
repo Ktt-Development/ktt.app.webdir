@@ -2,30 +2,35 @@ package com.kttdevelopment.webdir.generator.render;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
+import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.TriFunction;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.*;
 import java.util.logging.Logger;
 
-public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
-
-    private final DefaultRenderer defaultRenderer = new DefaultRenderer();
+public final class PageRenderer implements TriFunction<File,ConfigurationSection,byte[],byte[]> {
 
     @Override
-    public final byte[] apply(final File file, final byte[] bytes){
+    public final byte[] apply(final File file, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
         final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
         final String str = new String(bytes);
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
 
-        if(!frontMatter.hasFrontMatter()) return bytes;
+        if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,frontMatter.getFrontMatter());
+        final ConfigurationSection masterFrontMatter = new ConfigurationSectionImpl();
+        if(defaultFrontMatter != null)
+            masterFrontMatter.setDefault(defaultFrontMatter);
+        if(frontMatter.hasFrontMatter()) // file front matter overrides default
+            masterFrontMatter.setDefault(frontMatter.getFrontMatter());
+
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,masterFrontMatter);
         final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.rendererKey,String.class);
 
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
@@ -33,8 +38,6 @@ public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
         final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
 
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
-
-        content.set(defaultRenderer.apply(file,content.get()));
 
         renderers.forEach(renderer -> {
             try{
