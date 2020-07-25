@@ -3,11 +3,10 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.*;
 import com.kttdevelopment.webdir.generator.Main;
-import com.kttdevelopment.webdir.generator.config.SafeConfigurationFileImpl;
+import com.kttdevelopment.webdir.generator.config.*;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
@@ -60,13 +59,25 @@ public final class PluginServiceImpl extends PluginService {
     }
 
     @Override
-    public final ConfigurationFile createConfiguration(final File file){
-        return new SafeConfigurationFileImpl(file);
+    public final ConfigurationSection createConfiguration(final File file){
+        final ConfigurationFile configurationSection = new ConfigurationFile();
+        try{
+            configurationSection.load(file);
+            return configurationSection;
+        }catch(final Throwable ignored){
+            return null;
+        }
     }
 
     @Override
-    public final ConfigurationFile createConfiguration(final InputStream stream){
-        return new SafeConfigurationFileImpl(stream);
+    public final ConfigurationSection createConfiguration(final InputStream stream){
+        final ConfigurationFile configurationSection = new ConfigurationFile();
+        try{
+            configurationSection.load(stream);
+            return configurationSection;
+        }catch(final Throwable ignored){
+            return null;
+        }
     }
 
     @Override

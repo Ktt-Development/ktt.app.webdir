@@ -17,12 +17,6 @@ public final class ShutdownThread extends Thread{
     public final void run(){
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("shutdown"));
-        try{
-            Main.getConfigService().getConfigFile().save();
-            logger.info(locale.getString("config.save"));
-        }catch(final Throwable e){
-            logger.severe(locale.getString("config.saveFailed") + '\n' + Exceptions.getStackTraceAsString(e));
-        }
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final AtomicInteger success = new AtomicInteger(0);

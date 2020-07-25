@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir.generator.render;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
-import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
@@ -44,7 +44,7 @@ public abstract class YamlFrontMatter {
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
         final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
         final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
-        final ConfigurationFileImpl config = new ConfigurationFileImpl(file);
+        final ConfigurationFile config = new ConfigurationFile();
         try{
             config.load(file);
             return loadImports(file,config, checkedImports);

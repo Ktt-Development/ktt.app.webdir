@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.api;
 
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
-import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
+import com.kttdevelopment.webdir.api.serviceprovider.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -117,30 +116,30 @@ public class WebDirPlugin {
     }
 
     /**
-     * Creates a configuration reference from a file. To load the configuration use {@link ConfigurationFile#reload()}, to save the file use {@link ConfigurationFile#reload()}.
+     * Creates and loads a configuration from a file.
      *
      * @param file configuration file
      * @return configuration
      *
-     * @see ConfigurationFile
+     * @see ConfigurationSection
      * @since 01.00.00
      * @author Ktt Development
      */
-    public final ConfigurationFile createConfiguration(final File file){
+    public final ConfigurationSection createConfiguration(final File file){
         return service.createConfiguration(file);
     }
 
     /**
-     * Creates and loads a configuration from an input stream. {@link ConfigurationFile#reload()} is <b>not</b> needed.
+     * Creates and loads a configuration from an input stream.
      *
      * @param stream input stream
      * @return configuration
      *
-     * @see com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection
+     * @see ConfigurationSection
      * @since 01.00.00
      * @author Ktt Development
      */
-    public final ConfigurationFile createConfiguration(final InputStream stream){
+    public final ConfigurationSection createConfiguration(final InputStream stream){
         return service.createConfiguration(stream);
     }
 

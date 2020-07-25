@@ -77,6 +77,12 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
         def.put(key,value);
     }
 
+    @Override
+    public final void setDefault(final ConfigurationSection def){
+        this.def.clear();
+        this.def.putAll(def.toMap());
+    }
+
     //
 
     @Override

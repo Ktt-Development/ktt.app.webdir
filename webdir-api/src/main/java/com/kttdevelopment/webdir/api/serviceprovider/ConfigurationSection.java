@@ -6,7 +6,6 @@ import java.util.Map;
 /**
  * A simplified implementation of map reading.
  *
- * @see ConfigurationFile
  * @since 01.00.00
  * @version 01.00.00
  * @author Ktt Development
@@ -73,6 +72,16 @@ public interface ConfigurationSection {
      * @author Ktt Development
      */
     void setDefault(final String key, final Object value);
+
+    /**
+     * Sets the default configuration. Clears any existing values.
+     *
+     * @param def default configuration
+     *
+     * @since 01.00.00
+     * @author Ktt Development
+     */
+    void setDefault(final ConfigurationSection def);
 
     //
 

@@ -1,23 +1,20 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.esotericsoftware.yamlbeans.YamlException;
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationFile;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.config.ConfigurationFileImpl;
+import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class ConfigService {
 
-    private final ConfigurationFile config;
-
-    public final ConfigurationFile getConfigFile(){
-        return config;
-    }
+    private final ConfigurationSection config;
 
     public final ConfigurationSection getConfig(){
         return config;
@@ -28,9 +25,9 @@ public final class ConfigService {
         logger.info("Started configuration initialization");
 
         // load default
-        final ConfigurationFileImpl def;
+        final ConfigurationFile def;
         try(final InputStream IN = getClass().getResourceAsStream(Objects.requireNonNull( defaultConfigResource))){
-            final ConfigurationFileImpl impl = new ConfigurationFileImpl();
+            final ConfigurationFile impl = new ConfigurationFile();
             impl.load(IN);
             def = impl;
         }catch(final NullPointerException e){
@@ -45,18 +42,22 @@ public final class ConfigService {
         }
 
         // load config
-        final ConfigurationFileImpl config = new ConfigurationFileImpl(configFile);
+        final ConfigurationFile config = new ConfigurationFile();
         config.setDefault(def);
         try{
             config.load(configFile);
         }catch(final FileNotFoundException ignored){
             logger.warning("Configuration file not found, creating a new configuration file");
             if(!configFile.exists())
-                try{
-                    config.save();
+                try(final InputStream IN = getClass().getResourceAsStream(defaultConfigResource)){
+                    Files.copy(Objects.requireNonNull(IN), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Created default configuration file");
+                }catch(final NullPointerException e){
+                    logger.severe("Failed to save default configuration file (not found)" + '\n' + Exceptions.getStackTraceAsString(e));
+                }catch(final IOException e){
+                    logger.severe("Failed to save default configuration file (I/O exception)" + '\n' + Exceptions.getStackTraceAsString(e));
                 }catch(final Throwable e){
-                    logger.severe("Failed to save default configuration file" + '\n' + Exceptions.getStackTraceAsString(e));
+                    logger.severe("Failed to save default configuration" + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             else
                 logger.warning("Failed to create default configuration file (file already exists)");
