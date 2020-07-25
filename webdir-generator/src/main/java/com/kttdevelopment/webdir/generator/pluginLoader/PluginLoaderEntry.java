@@ -32,11 +32,11 @@ public final class PluginLoaderEntry extends Tuple4<File,Class<WebDirPlugin>,Con
     @Override
     public String toString(){
         return
-            "Tuple3" + '{' +
-            "pluginFile"  + '=' + getVar1() + ", " +
-            "mainClass"  + '=' + getVar2() + ", " +
-            "yml"  + '=' + getVar3() + ", " +
-            "pluginYml"  + '=' + getVar4() +
+            "PluginLoaderEntry" + '{' +
+            "pluginFile"    + '=' + getVar1() + ", " +
+            "mainClass"     + '=' + getVar2() + ", " +
+            "yml"           + '=' + getVar3() + ", " +
+            "pluginYml"     + '=' + getVar4() +
             '}';
     }
 

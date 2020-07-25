@@ -1,4 +1,3 @@
-import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.*;
@@ -10,7 +9,6 @@ import java.net.*;
 import java.net.http.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class ApplicationTest {
@@ -142,7 +140,7 @@ public class ApplicationTest {
         Main.main(null);
 
         final String url = "http://localhost:%s/%s";
-        final int port = Main.getConfigService().getConfig().getInteger("port");
+        final int port = 8080;
         final String target = String.valueOf(System.currentTimeMillis());
         final Path targetFile = new File(".root/" + target + ".html").toPath();
 

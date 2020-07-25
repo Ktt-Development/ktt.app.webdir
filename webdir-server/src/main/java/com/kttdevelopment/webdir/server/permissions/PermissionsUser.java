@@ -1,17 +1,16 @@
 package com.kttdevelopment.webdir.server.permissions;
 
-import java.net.*;
+import com.kttdevelopment.webdir.generator.object.Tuple4;
+import com.kttdevelopment.webdir.server.ServerVars;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
-public final class PermissionsUser {
-
-    private final InetAddress user;
-
-    private final List<String> groups;
-    private final Map options;
-    private final List<String> permissions;
+public final class PermissionsUser extends Tuple4<InetAddress,List<String>,Map,List<String>> {
 
     public PermissionsUser(final String user, final Map value) throws UnknownHostException{
         this(InetAddress.getByName(user),value);
@@ -19,57 +18,66 @@ public final class PermissionsUser {
 
     @SuppressWarnings("unchecked")
     public PermissionsUser(final InetAddress user, final Map value){
-        this.user = user;
-
-        // groups
-        List<String> tGroup = new ArrayList<>();
-        try{
-            final Object groups = Objects.requireNonNull(value.get("permissions"));
-            if(groups instanceof List)
-                tGroup = (List<String>) groups;
-            else
-                tGroup.add(groups.toString());
-        }catch(final ClassCastException | NullPointerException ignored){ }
-        groups = Collections.unmodifiableList(tGroup);
-
-        // options
-        Map tOptions = new HashMap();
-        try{
-            tOptions = (Map) Objects.requireNonNull(value.get("options"));
-        }catch(final ClassCastException | NullPointerException ignored){ }
-        options = Collections.unmodifiableMap(tOptions);
-
-        // permissions
-        List<String> tPermissions = new ArrayList<>();
-        try{
-            tPermissions =
-                ((List<String>) Objects.requireNonNull(value.get("permissions")))
-                    .stream()
-                    .map(String::toLowerCase).collect(Collectors.toList());
-        }catch(final ClassCastException | NullPointerException ignored){ }
-        permissions = Collections.unmodifiableList(tPermissions);
+        super(
+            user,
+            ((Supplier<List<String>>) () -> {
+                try{
+                    final Object groups = Objects.requireNonNull(value.get(ServerVars.Permissions.groupsKey));
+                    if(groups instanceof List)
+                        return Collections.unmodifiableList(((List) groups));
+                    else
+                        return Collections.singletonList(groups.toString());
+                }catch(final ClassCastException | NullPointerException ignored){
+                    return new ArrayList<>();
+                }
+            }).get(),
+            ((Supplier<Map>) () -> {
+                try{
+                    return Collections.unmodifiableMap((Map) Objects.requireNonNull(value.get(ServerVars.Permissions.optionsKey)));
+                }catch(final ClassCastException | NullPointerException ignored){
+                    return new HashMap();
+                }
+            }).get(),
+            ((Supplier<List<String>>) () -> {
+                try{
+                    return
+                        ((List<String>) Objects.requireNonNull(value.get(ServerVars.Permissions.permissionsKey)))
+                            .stream()
+                            .map(String::toLowerCase).collect(Collectors.toList());
+                }catch(final ClassCastException | NullPointerException ignored){
+                    return new ArrayList<>();
+                }
+            }).get()
+        );
     }
 
-    // ↓ inherently immutable
     public final InetAddress getUser(){
-        return user;
-    }
-
-    // ↓ declared as unmodifiable at assignment
-    public final String getGroup(){
-        return groups.get(0);
+        return getVar1();
     }
 
     public final List<String> getGroups(){
-        return groups;
+        return getVar2();
     }
 
     public final Map getOptions(){
-        return options;
+        return getVar3();
     }
 
     public final List<String> getPermissions(){
-        return permissions;
+        return getVar4();
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return
+            "PermissionsUser" + '{' +
+            "user"          + '=' + getVar1() + ", " +
+            "groups"        + '=' + getVar2() + ", " +
+            "options"       + '=' + getVar3() + ", " +
+            "permissions"   + '=' + getVar4() +
+            '}';
     }
 
 }

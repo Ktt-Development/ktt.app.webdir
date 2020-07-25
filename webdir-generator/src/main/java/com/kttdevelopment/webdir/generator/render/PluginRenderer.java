@@ -19,7 +19,7 @@ public final class PluginRenderer extends Tuple2<String,String> {
     @Override
     public String toString(){
         return
-            "Tuple" + '{' +
+            "PluginRenderer" + '{' +
             "pluginName"    + '=' + getVar1() + ", " +
             "rendererName"  + '=' + getVar2() + ", " +
             '}';

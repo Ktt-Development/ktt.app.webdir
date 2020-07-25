@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
-import com.kttdevelopment.simplehttpserver.handler.ByteLoadingOption;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;

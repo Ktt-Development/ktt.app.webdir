@@ -36,6 +36,8 @@ public abstract class Main {
 
     public static FileServer getServer(){ return server; }
 
+    // todo | have application run main from generator and hook into the active server to add handlers
+
     public static void main(String[] args){
         try{
             loggerService = new LoggerService();

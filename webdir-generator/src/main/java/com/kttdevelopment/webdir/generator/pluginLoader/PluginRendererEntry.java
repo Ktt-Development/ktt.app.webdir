@@ -24,7 +24,7 @@ public final class PluginRendererEntry extends Tuple3<String,String,Renderer> {
     @Override
     public String toString(){
         return
-            "Tuple" + '{' +
+            "PluginRenderEntry" + '{' +
             "pluginName"    + '=' + getVar1() + ", " +
             "rendererName"  + '=' + getVar2() + ", " +
             "renderer"      + '=' + getVar3() +
