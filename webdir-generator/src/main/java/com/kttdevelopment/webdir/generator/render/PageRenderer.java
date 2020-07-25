@@ -46,7 +46,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
                 if(!Vars.Test.testmode)
                     // IntelliJ defect; locale will not be null while not in test mode
                     //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.rdr.uncaught",renderer.getPluginName(),renderer.getRendererName(),file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 

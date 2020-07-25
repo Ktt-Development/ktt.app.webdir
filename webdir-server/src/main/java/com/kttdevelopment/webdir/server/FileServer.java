@@ -27,7 +27,7 @@ public class FileServer {
             logger.severe(locale.getString("server.const.invalidPort",port));
             throw e;
         }catch(final IOException e){
-            logger.severe(locale.getString("server.const.IO") + '\n' + Exceptions.getStackTraceAsString(e));
+            logger.severe(locale.getString("server.const.failedCreate") + '\n' + Exceptions.getStackTraceAsString(e));
             throw e;
         }
 

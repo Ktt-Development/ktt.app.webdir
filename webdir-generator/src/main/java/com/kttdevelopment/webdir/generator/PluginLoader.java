@@ -57,7 +57,7 @@ public final class PluginLoader {
         final File pluginsFolder = new File(config.getConfig().getString(Vars.Config.pluginsKey,Vars.Config.defaultPlugins));
 
         if(Vars.Test.safemode || config.getConfig().getBoolean("safemode")){
-            logger.info(locale.getString("pluginLoader.const.safemode"));
+            logger.info(locale.getString("pluginLoader.const.skippedReasonSafeMode"));
             return;
         }
 
@@ -72,7 +72,7 @@ public final class PluginLoader {
                 try{
                     pluginsIsJar.put(file,file.toURI().toURL());
                 }catch(final MalformedURLException | IllegalArgumentException e){
-                    logger.severe(locale.getString("pluginLoader.const.loadJars.badURL", file.getName() + '\n' + Exceptions.getStackTraceAsString(e)));
+                    logger.severe(locale.getString("pluginLoader.const.loadJars.jarMalformedURL", file.getName() + '\n' + Exceptions.getStackTraceAsString(e)));
                 }
             }
         }
@@ -85,11 +85,11 @@ public final class PluginLoader {
                 final URL yml = Objects.requireNonNull(loader.findResource(Vars.Plugin.pluginYml));
                 pluginYMLs.put(file,yml);
             }catch(final SecurityException e){
-                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.classLoaderSecurity", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final NullPointerException ignored){
-                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.null", file.getName()));
+                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.missingYML", file.getName()));
             }catch(final IOException e){
-                logger.warning(locale.getString("pluginLoader.const.loadPluginYML.closeIO", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pluginLoader.const.loadPluginYML.classLoaderCloseIO", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 
@@ -109,21 +109,21 @@ public final class PluginLoader {
                 yml = new ConfigurationSectionImpl((Map) IN.read());
                 // test if yml has all required keys
                 pluginYml = new PluginYmlImpl(yml);
-            }catch(final NullPointerException e){
-                logger.severe(locale.getString("pluginLoader.const.loadValid.missingReq", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
-                return;
             }catch(final ClassCastException | YamlException e){
                 logger.severe(locale.getString("pluginLoader.const.loadValid.malformedYML", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                 return;
+            }catch(final NullPointerException e){
+                logger.severe(locale.getString("pluginLoader.const.loadValid.missingRequiredKV", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                return;
             }catch(final IOException e){
-                logger.severe(locale.getString("pluginLoader.const.loadValid.openIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadValid.openStreamFailed", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                 return;
             }finally{
                 if(IN != null)
                     try{
                         IN.close();
                     }catch(final IOException e){
-                        logger.warning(locale.getString("pluginLoader.const.loadValid.closeIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pluginLoader.const.loadValid.closeStreamFailed", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
             }
 
@@ -131,13 +131,15 @@ public final class PluginLoader {
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
                 pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(Vars.Plugin.mainClassKey))), yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
-                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.UCLSec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("pluginLoader.const.loadJars.jarMalformedURL", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+            }catch(final SecurityException e){
+                logger.severe(locale.getString("pluginLoader.const.loadPluginYML.classLoaderSecurity", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final ClassNotFoundException | NullPointerException e){
-                logger.severe(locale.getString("pluginLoader.const.loadValidMain.notFound", pluginName));
+                logger.severe(locale.getString("pluginLoader.const.loadValidMain.missingMain", pluginName));
             }catch(final ClassCastException ignored){
-                logger.severe(locale.getString("pluginLoader.const.loadValidMain.badCast", pluginName));
+                logger.severe(locale.getString("pluginLoader.const.loadValidMain.mainDidNotExtends", pluginName));
             }catch(final IOException e){
-                logger.warning(locale.getString("pluginLoader.const.loadPluginYML.closeIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pluginLoader.const.loadPluginYML.classLoaderCloseIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 
@@ -148,9 +150,9 @@ public final class PluginLoader {
             final List<String> dependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
             pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
             if(!dependencies.isEmpty())
-                logger.severe(locale.getString("pluginLoader.const.loadValidDeps.missingDep", entry.getPluginYml().getPluginName(), Arrays.toString(entry.getPluginYml().getDependencies())));
+                logger.severe(locale.getString("pluginLoader.const.loadValidDeps.missingDependencies", entry.getPluginYml().getPluginName(), Arrays.toString(entry.getPluginYml().getDependencies())));
             else if(new CircularDependencyChecker(entry,pluginsValid).test(entry))
-                logger.severe(locale.getString("pluginLoader.const.loadValidDeps.circleDep", entry.getPluginYml().getPluginName()));
+                logger.severe(locale.getString("pluginLoader.const.loadValidDeps.circularDependency", entry.getPluginYml().getPluginName()));
             else
                 pluginsValidDep.add(entry);
         });
@@ -210,11 +212,11 @@ public final class PluginLoader {
                     }catch(final InstantiationException ignored){
                         logger.severe(locale.getString("pluginLoader.const.enable.abstract", pluginName));
                     }catch(final IllegalAccessException ignored){
-                        logger.severe(locale.getString("pluginLoader.const.enable.scope", pluginName));
+                        logger.severe(locale.getString("pluginLoader.const.enable.constScope", pluginName));
                     }catch(final NoSuchMethodException | IllegalArgumentException ignored){
                         logger.severe(locale.getString("pluginLoader.const.enable.constArgs", pluginName));
                     }catch(final ExceptionInInitializerError | InvocationTargetException e){
-                        logger.severe(locale.getString("pluginLoader.const.enable.const", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.severe(locale.getString("pluginLoader.const.enable.constExcep", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
                         logger.severe(locale.getString("pluginLoader.const.enable.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }

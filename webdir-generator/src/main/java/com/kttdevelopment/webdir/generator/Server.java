@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 public final class Server {
 
     Server(final int port, final File source, final File rendered) throws IOException{
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
+        final LocaleService locale  = Main.getLocaleService();
+        final Logger logger         = Main.getLoggerService().getLogger(locale.getString("server"));
         logger.info(locale.getString("server.const"));
 
         final SimpleHttpServer server;
@@ -29,12 +29,12 @@ public final class Server {
             logger.severe(locale.getString("server.const.invalidPort",port));
             throw e;
         }catch(final IOException e){
-            logger.severe(locale.getString("server.const.IO") + '\n' + Exceptions.getStackTraceAsString(e));
+            logger.severe(locale.getString("server.const.failedCreate") + '\n' + Exceptions.getStackTraceAsString(e));
             throw e;
         }
 
         // re-render watch service
-
+        logger.info(locale.getString("server.const.watch.init"));
         final WatchService watchService = FileSystems.getDefault().newWatchService();
         final Path watching = source.toPath();
 
@@ -57,9 +57,10 @@ public final class Server {
                     key.reset();
                 }
             }catch(final InterruptedException e){
-                logger.severe(locale.getString("server.const.watchInterrupt") + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("server.const.watch.interrupt") + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }).start();
+        logger.info(locale.getString("server.const.watch.loaded"));
 
         // server
         final FileHandler handler = new FileHandler(new HTMLNameAdapter());
@@ -82,11 +83,11 @@ public final class Server {
                     p.register(watchService,StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.ENTRY_DELETE);
                     // created watch service debug
                 }catch(final IOException e){
-                    logger.severe(locale.getString("server.cws.failedWatch",p) + '\n' + Exceptions.getStackTraceAsString(e));
+                    logger.severe(locale.getString("server.createWatchService.failedRegister", p) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             });
         }catch(final IOException e){
-            logger.severe(locale.getString("server.cws.failedWalk",target) + '\n' + Exceptions.getStackTraceAsString(e));
+            logger.severe(locale.getString("server.createWatchService.failedWalk", target) + '\n' + Exceptions.getStackTraceAsString(e));
         }
     }
 

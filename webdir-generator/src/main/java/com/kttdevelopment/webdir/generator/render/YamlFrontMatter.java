@@ -52,12 +52,12 @@ public abstract class YamlFrontMatter {
             if(!Vars.Test.testmode)
                 // IntelliJ defect; locale will not be null while not in test mode
                 //noinspection ConstantConditions
-                logger.warning(locale.getString("pageRenderer.yfm.notFound",file.getAbsolutePath()));
+                logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.notFound", file.getAbsolutePath()));
         }catch(final ClassCastException |  YamlException e){
             if(!Vars.Test.testmode)
                 // IntelliJ defect; locale will not be null while not in test mode
                 //noinspection ConstantConditions
-                logger.warning(locale.getString("pageRenderer.yfm.badYMLSyntax",file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.malformedYML", file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
         }
         return new ConfigurationSectionImpl();
     }
@@ -99,7 +99,7 @@ public abstract class YamlFrontMatter {
             }else if(!Vars.Test.testmode){
                 // IntelliJ defect; locale will not be null while not in test mode
                 //noinspection ConstantConditions
-                logger.warning(locale.getString("pageRenderer.yfm.duplImport",IN.getPath()));
+                logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.circularImport", IN.getPath()));
             }
         }));
 
@@ -129,7 +129,7 @@ public abstract class YamlFrontMatter {
                         Objects.requireNonNull(map.get(Vars.Renderer.rendererKey)).toString()
                     );
                 }catch(final NullPointerException ignored){
-                    logger.warning(locale.getString("pageRenderer.rdr.missingKV",obj));
+                    logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getRenderers.missingKV", obj));
                     continue;
                 }
             }

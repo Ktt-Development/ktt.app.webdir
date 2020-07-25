@@ -33,27 +33,27 @@ public final class DefaultFrontMatterLoader {
 
                 try{
                     defaultConfigurations.put(Objects.requireNonNull(config.get(Vars.Renderer.Default.defaultKey)).getList(Vars.Renderer.Default.scopeKey, new ArrayList<>()),config);
-                }catch(final ClassCastException ignored){
-                    if(!Vars.Test.testmode)
-                        // IntelliJ defect; locale will not be null while not in test mode
-                        //noinspection ConstantConditions
-                        logger.warning(locale.getString("pageRenderer.default.badDefault",file.getPath()));
                 }catch(final NullPointerException ignored){
                     if(!Vars.Test.testmode)
                         // IntelliJ defect; locale will not be null while not in test mode
                         //noinspection ConstantConditions
-                        logger.warning(locale.getString("pageRenderer.default.noDefault",file.getPath()));
+                        logger.warning(locale.getString("pageRenderer.default.missingDefault", file.getPath()));
+                }catch(final ClassCastException ignored){
+                    if(!Vars.Test.testmode)
+                        // IntelliJ defect; locale will not be null while not in test mode
+                        //noinspection ConstantConditions
+                        logger.warning(locale.getString("pageRenderer.default.invalidDefaultType", file.getPath()));
                 }
             }catch(final FileNotFoundException ignored){
                 if(!Vars.Test.testmode)
                     // IntelliJ defect; locale will not be null while not in test mode
                     //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.default.noFile",file.getPath()));
+                    logger.warning(locale.getString("pageRenderer.default.noDefaultFile", file.getPath()));
             }catch(final ClassCastException | YamlException e){
                 if(!Vars.Test.testmode)
                     // IntelliJ defect; locale will not be null while not in test mode
                     //noinspection ConstantConditions
-                    logger.warning(locale.getString("pageRenderer.default.malformed",file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                    logger.warning(locale.getString("pageRenderer.default.malformedYML", file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }
     }
@@ -70,7 +70,7 @@ public final class DefaultFrontMatterLoader {
                 final String context = negative ? scope.substring(1) : scope;
 
                 // make string literal but replace '*' with '.*' for regex
-                final String regex = "\\Q" + context.replace("*","\\E.*\\Q") + "\\E";
+                final String regex = "^\\Q" + context.replace("*","\\E.*\\Q") + "\\E$";
 
                 final Matcher matcher = Pattern.compile(regex).matcher(path);
                 if(matcher.matches()){
