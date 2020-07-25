@@ -55,7 +55,7 @@ public abstract class Main {
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){
             try{
-                Exceptions.runIgnoreException(() -> loggerService.getLogger("Crash").severe(Exceptions.getStackTraceAsString(e)));
+                Exceptions.runIgnoreException(() -> loggerService.getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));
                 Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(final IOException e2){
                 e2.printStackTrace();

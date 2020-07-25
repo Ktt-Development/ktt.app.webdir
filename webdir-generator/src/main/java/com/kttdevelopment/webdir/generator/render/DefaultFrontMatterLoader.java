@@ -59,7 +59,7 @@ public final class DefaultFrontMatterLoader {
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final File file){
-        final String path = sourcesDir.toPath().relativize(file.toPath()).toString().replace('\\','/');
+        final String path = sourcesDir.getAbsoluteFile().toPath().relativize(file.getAbsoluteFile().toPath()).toString().replace('\\','/');
         final List<ConfigurationSection> configs = new ArrayList<>();
 
         defaultConfigurations.forEach((strings, configurationSection) -> {

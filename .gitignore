@@ -26,3 +26,4 @@ target
 webdir-generator/_site
 webdir-generator/*.yml
 webdir-generator/*.log
+webdir-generator/crash-*.txt
