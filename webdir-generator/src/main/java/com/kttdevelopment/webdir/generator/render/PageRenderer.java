@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 
 public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
 
+    private final DefaultRenderer defaultRenderer = new DefaultRenderer();
+
     @Override
     public final byte[] apply(final File file, final byte[] bytes){
         final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
@@ -31,6 +33,9 @@ public final class PageRenderer implements BiFunction<File,byte[],byte[]> {
         final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
 
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
+
+        content.set(defaultRenderer.apply(file,content.get()));
+
         renderers.forEach(renderer -> {
             try{
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, content.get()));

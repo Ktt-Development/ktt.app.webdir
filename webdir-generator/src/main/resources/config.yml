@@ -21,6 +21,10 @@ plugins_dir: .plugins
 # Default: .root
 source_dir: .root
 
+# The folder where default templates will be loaded from.
+# Default: .default
+default_dir: .default
+
 # The output folder where rendered files will be saved.
 # Default: _site
 output_dir: _site

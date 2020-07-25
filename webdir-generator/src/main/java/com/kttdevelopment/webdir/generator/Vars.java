@@ -32,6 +32,9 @@ public abstract class Vars {
         public static final String outputKey        = "output_dir";
         public static final String defaultOutput    = "_site";
 
+        public static final String defaultsKey      = "default_dir";
+        public static final String defaultsDir      = ".default";
+
         public static final String pluginsKey       = "plugins_dir";
         public static final String defaultPlugins   = ".plugins";
 
@@ -65,7 +68,15 @@ public abstract class Vars {
         public static final String importRelativeKey    = "import_relative";
 
         public static final String pluginKey    = "plugin";
-        public static final String rendererKey   = "renderer";
+        public static final String rendererKey  = "renderer";
+
+        public static final class Default {
+
+            public static final String defaultKey    = "default";
+            public static final String extensionsKey = "extensions";
+            public static final String contextsKey   = "contexts";
+
+        }
 
     }
 

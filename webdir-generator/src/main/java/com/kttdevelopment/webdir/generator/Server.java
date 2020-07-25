@@ -22,7 +22,7 @@ public final class Server {
         final SimpleHttpServer server;
 
         try{
-            server = SimpleHttpServer.create(port);
+            server = SimpleHttpServer.create(!Vars.Test.server ? port : 8080);
         }catch(final BindException e){
             logger.severe(locale.getString("server.const.blockedPort",port));
             throw e;
