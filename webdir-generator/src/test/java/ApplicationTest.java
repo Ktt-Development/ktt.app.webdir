@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
 
 public class ApplicationTest {
 
@@ -205,12 +204,13 @@ public class ApplicationTest {
 
         if(!testRoot.getParentFile().exists() && !testRoot.getParentFile().mkdirs())
             Assert.fail("Failed to create test root directory");
-        if(!testRoot.exists())
-            Files.createFile(testRoot.toPath());
+        if(!testRoot.exists() && !testRoot.createNewFile())
+            Assert.fail("Failed to create test file");
         Main.main(null);
         Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
 
-        Files.delete(testRoot.toPath());
+        if(!testRoot.delete())
+            Assert.fail("Failed to delete test file from root");
         Vars.Test.clear = true;
         Main.main(null);
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
