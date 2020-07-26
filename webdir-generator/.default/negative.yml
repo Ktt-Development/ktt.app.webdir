@@ -1,0 +1,5 @@
+default:
+  scope:
+    - /default/negative.html
+    - "!/default/negative.html"
+renderer: first

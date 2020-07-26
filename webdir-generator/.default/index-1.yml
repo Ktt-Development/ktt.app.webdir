@@ -1,0 +1,6 @@
+default:
+  index: -1
+  scope:
+     - /default/index.html
+     - /default/index1.html
+renderer: second

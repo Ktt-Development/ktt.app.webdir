@@ -1,11 +1,13 @@
 package com.kttdevelopment.webdir.generator.render;
 
 import com.esotericsoftware.yamlbeans.YamlException;
+import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.object.Tuple2;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,8 +18,7 @@ import java.util.regex.Pattern;
 
 public final class DefaultFrontMatterLoader {
 
-
-    private final Map<List<String>,ConfigurationSection> defaultConfigurations = new HashMap<>();
+    private final List<Tuple2<List<String>,ConfigurationSection>> defaultConfigurations = new ArrayList<>();
 
     private final File sourcesDir;
 
@@ -32,7 +33,10 @@ public final class DefaultFrontMatterLoader {
                 config.load(file);
 
                 try{
-                    defaultConfigurations.put(Objects.requireNonNull(config.get(Vars.Renderer.Default.defaultKey)).getList(Vars.Renderer.Default.scopeKey, new ArrayList<>()),config);
+                    defaultConfigurations.add(new Tuple2<>(
+                        Objects.requireNonNull(config.get(Vars.Renderer.Default.defaultKey)).getList(Vars.Renderer.Default.scopeKey, new ArrayList<>()),
+                        config
+                    ));
                 }catch(final NullPointerException ignored){
                     if(!Vars.Test.testmode)
                         // IntelliJ defect; locale will not be null while not in test mode
@@ -59,15 +63,14 @@ public final class DefaultFrontMatterLoader {
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final File file){
-        final String path = sourcesDir.getAbsoluteFile().toPath().relativize(file.getAbsoluteFile().toPath()).toString().replace('\\','/');
+        final String path = ContextUtil.getContext(sourcesDir.getAbsoluteFile().toPath().relativize(file.getAbsoluteFile().toPath()).toString(),true,false);
         final List<ConfigurationSection> configs = new ArrayList<>();
 
-        defaultConfigurations.forEach((strings, configurationSection) -> {
+        defaultConfigurations.forEach((tuple) -> {
             boolean canUseConfig = false;
-            for(final String string : strings){
-                final String scope = string.replace('\\','/');
-                final boolean negative = !scope.isEmpty() && scope.charAt(0) == '!';
-                final String context = negative ? scope.substring(1) : scope;
+            for(final String string : tuple.getVar1()){
+                final boolean negative = !string.isEmpty() && string.charAt(0) == '!';
+                final String context = ContextUtil.getContext(negative ? string.substring(1) : string,true,false);
 
                 // make string literal but replace '*' with '.*' for regex
                 final String regex = "^\\Q" + context.replace("*","\\E.*\\Q") + "\\E$";
@@ -75,11 +78,11 @@ public final class DefaultFrontMatterLoader {
                 final Matcher matcher = Pattern.compile(regex).matcher(path);
                 if(matcher.matches()){
                     canUseConfig = !negative;
-                    if(negative)
+                    if(negative) // negative ('!') overrides true state
                         break;
                 }
             }
-            if(canUseConfig) configs.add(configurationSection);
+            if(canUseConfig) configs.add(tuple.getVar2());
         });
 
         // sort so lower indexes are at the top (see next)

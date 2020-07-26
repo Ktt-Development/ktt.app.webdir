@@ -5,10 +5,11 @@ import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
+import java.net.URI;
 import java.net.http.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ApplicationTest {
@@ -91,9 +92,59 @@ public class ApplicationTest {
         Assert.assertEquals("exact-duplicate.html specifically calls for duplicate renderer but returned first","DUPLICATE", Files.readString(new File("_site/exact-duplicate.html").toPath()));
     }
 
+    /*
+        default {
+            index int
+            scope []
+        }
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test @Ignore // fixme
+    public void testDefaultRenderer() throws IOException{
+        Vars.Test.safemode = false;
+        Vars.Test.server = false;
+
+        // test files
+        final File def = new File(".root/default");
+        if(!def.exists() && !def.mkdirs())
+            Assert.fail("Failed to create test directory default");
+        List.of(
+            new File(".root/default/exact.txt"),
+            new File(".root/default/file.txt"),
+            new File(".root/default/index.html"),
+            new File(".root/default/index1.html"),
+            new File(".root/default/negative.html"),
+            new File(".root/default/test.cfg"),
+            new File(".root/default/test.log")
+        ).forEach(file -> {
+            try{
+                file.createNewFile();
+                file.deleteOnExit();
+            }catch(final IOException e){
+                e.printStackTrace();
+                Assert.fail("Failed to create test file " + file);
+            }
+        });
+
+        Main.main(null);
+
+        // test index and no index
+        Assert.assertEquals("Default with index 1 should override default with index -1","first", Files.readString(new File("_site/default/index1.html").toPath()));
+        Assert.assertEquals("Default with no index (0) should override default with index -1","first", Files.readString(new File("_site/default/index.html").toPath()));
+
+        // test scope
+        Assert.assertEquals("File in default exact scope should use default","first", Files.readString(new File("_site/default/exact.txt").toPath()));
+        Assert.assertEquals("Default with *.cfg should accept test config for default","first", Files.readString(new File("_site/default/test.cfg").toPath()));
+        Assert.assertEquals("Default with file.* should accept test file for default","first", Files.readString(new File("_site/default/test.cfg").toPath()));
+        Assert.assertEquals("Default with *.log should accept test log for default","first", Files.readString(new File("_site/default/test.log").toPath()));
+
+        // test negative scope
+        Assert.assertEquals("Default with negation ! should not use default","", Files.readString(new File("_site/default/negative.html").toPath()));
+    }
+
     @Test
     public void testClear() throws IOException{
-        Vars.Test.safemode = false;
+        Vars.Test.safemode = true;
         Vars.Test.server = false;
 
         final File testRoot = new File(".root/test.html");
@@ -136,6 +187,7 @@ public class ApplicationTest {
     
     @Test
     public void testServer() throws ExecutionException, InterruptedException, IOException{
+        Vars.Test.safemode = true;
         Vars.Test.server = true;
         Main.main(null);
 
