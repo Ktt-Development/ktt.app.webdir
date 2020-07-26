@@ -198,6 +198,7 @@ public class ApplicationTest {
     public void testClear() throws IOException{
         Vars.Test.safemode = true;
         Vars.Test.server = false;
+        Vars.Test.clear = false;
 
         final File testRoot = new File(".root/testClear.html");
         final File testOutput = new File("_site/" + testRoot.getName());
@@ -211,9 +212,11 @@ public class ApplicationTest {
 
         if(!testRoot.delete())
             Assert.fail("Failed to delete test file from root");
+        System.out.println("src[1]: " + new File(".root/testClear.html").exists());
         Vars.Test.clear = true;
         Main.main(null);
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
+        Vars.Test.clear = false;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

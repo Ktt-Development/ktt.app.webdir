@@ -10,6 +10,7 @@ import java.nio.file.*;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -36,11 +37,13 @@ public final class PageRenderingService {
         final AtomicInteger total = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
 
+        final boolean clean = Vars.Test.clear || (output.exists() && config.getConfig().getBoolean(Vars.Config.cleanKey) && output.getAbsolutePath().startsWith(new File("").getAbsolutePath()));
+
         // render files
-        if(source.exists() && Objects.requireNonNullElse(source.list(),new File[0]).length != 0){
-            // clean output
+        if(clean || Objects.requireNonNullElse(source.list(), new File[0]).length != 0){
+            // ^ clean output must run regardless if root folder is empty
             // make sure that only files in the web dir domain will be considered for deletion
-            if(Vars.Test.clear || (output.exists() && config.getConfig().getBoolean(Vars.Config.cleanKey) && output.getAbsolutePath().startsWith(new File("").getAbsolutePath())))
+            if(clean)
                 // Files must be delete recursively because for some reason java doesn't allow deletion of a folder with contents
                 try(Stream<Path> walk = Files.walk(output.toPath())){
                     //noinspection ResultOfMethodCallIgnored
