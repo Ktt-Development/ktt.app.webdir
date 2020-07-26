@@ -199,8 +199,8 @@ public class ApplicationTest {
         Vars.Test.safemode = true;
         Vars.Test.server = false;
 
-        final File testRoot = new File(".root/test.html");
-        final File testOutput = new File("_site/test.html");
+        final File testRoot = new File(".root/testClear.html");
+        final File testOutput = new File("_site/" + testRoot.getName());
 
         if(!testRoot.getParentFile().exists() && !testRoot.getParentFile().mkdirs())
             Assert.fail("Failed to create test root directory");
