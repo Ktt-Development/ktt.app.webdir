@@ -1,5 +1,0 @@
-default:
-  index: 1
-  scope:
-     - /default/index1.html
-renderer: first

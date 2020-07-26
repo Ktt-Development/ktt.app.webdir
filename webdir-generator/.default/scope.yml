@@ -1,7 +1,0 @@
-default:
-  scope:
-    - /default/exact.txt
-    - /default/*.cfg
-    - /default/file.*
-    - "*.log"
-renderer: first

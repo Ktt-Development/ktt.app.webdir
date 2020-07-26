@@ -1,4 +1,0 @@
-default:
-  scope:
-     - /default/index.html
-renderer: first

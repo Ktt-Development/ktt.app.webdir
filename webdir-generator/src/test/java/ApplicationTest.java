@@ -10,13 +10,20 @@ import java.net.http.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ApplicationTest {
 
-    @Before
-    public void before(){
+    @BeforeClass
+    public static void before(){
         Vars.Test.testmode = false;
+    }
+    
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @AfterClass
+    public static void after(){
+        new File(".plugins/Valid").delete();
     }
 
     @Test
@@ -53,13 +60,12 @@ public class ApplicationTest {
         final PluginLoader pluginLoader = Main.getPluginLoader();
 
         for(final String badPlugin : badPlugins)
-            Assert.assertNull("Server should not have loaded plugin " + badPlugin,pluginLoader.getPlugin(badPlugin));
+            Assert.assertNull("Server should not have loaded plugin: " + badPlugin,pluginLoader.getPlugin(badPlugin));
 
         for(final String goodPlugin : goodPlugins)
-            Assert.assertNotNull("Server should have loaded plugin " + goodPlugin,pluginLoader.getPlugin(goodPlugin));
+            Assert.assertNotNull("Server should have loaded plugin: " + goodPlugin,pluginLoader.getPlugin(goodPlugin));
 
-        Assert.assertEquals("Server should have only loaded " + goodPlugins.length + " plugins",goodPlugins.length,pluginLoader.getPlugins().size());
-
+        Assert.assertEquals("Server should have only loaded: " + goodPlugins.length + " plugins",goodPlugins.length,pluginLoader.getPlugins().size());
     }
 
     @Test
@@ -98,48 +104,71 @@ public class ApplicationTest {
             scope []
         }
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testDefaultRenderer() throws IOException{
         Vars.Test.safemode = false;
         Vars.Test.server = false;
 
+        Map.of(
+            new File(".default/index.yml"), 
+            "default:\n" +
+            "  scope:\n" +
+            "     - /defaultTests/index.html\n" +
+            "renderer: first",
+            new File(".default/index1.yml"),
+            "default:\n" +
+            "  index: 1\n" +
+            "  scope:\n" +
+            "     - /defaultTests/index1.html\n" +
+            "renderer: first",
+            new File(".default/index-1.yml"),
+            "default:\n" +
+            "  index: -1\n" +
+            "  scope:\n" +
+            "     - /defaultTests/index.html\n" +
+            "     - /defaultTests/index1.html\n" +
+            "renderer: second",
+            new File(".default/negative.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "    - /defaultTests/negative.html\n" +
+            "    - \"!/defaultTests/negative.html\"\n" +
+            "renderer: first",
+            new File(".default/scope.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "    - /defaultTests/exact.txt\n" +
+            "    - /defaultTests/*.cfg\n" +
+            "    - /defaultTests/file.*\n" +
+            "    - \"*.log\"\n" +
+            "renderer: first"
+        ).forEach(TestFile::createTestFile);
+        
         // test files
-        final File def = new File(".root/default");
-        if(!def.exists() && !def.mkdirs())
-            Assert.fail("Failed to create test directory default");
         List.of(
-            new File(".root/default/exact.txt"),
-            new File(".root/default/file.txt"),
-            new File(".root/default/index.html"),
-            new File(".root/default/index1.html"),
-            new File(".root/default/negative.html"),
-            new File(".root/default/test.cfg"),
-            new File(".root/default/test.log")
-        ).forEach(file -> {
-            try{
-                file.createNewFile();
-                file.deleteOnExit();
-            }catch(final IOException e){
-                e.printStackTrace();
-                Assert.fail("Failed to create test file " + file);
-            }
-        });
+            new File(".root/defaultTests/exact.txt"),
+            new File(".root/defaultTests/file.txt"),
+            new File(".root/defaultTests/index.html"),
+            new File(".root/defaultTests/index1.html"),
+            new File(".root/defaultTests/negative.html"),
+            new File(".root/defaultTests/test.cfg"),
+            new File(".root/defaultTests/test.log")
+        ).forEach(file -> TestFile.createTestFile(file, ""));
 
         Main.main(null);
 
         // test index and no index
-        Assert.assertEquals("Default with index 1 should override default with index -1","first", Files.readString(new File("_site/default/index1.html").toPath()));
-        Assert.assertEquals("Default with no index (0) should override default with index -1","first", Files.readString(new File("_site/default/index.html").toPath()));
+        Assert.assertEquals("Default with index 1 should override default with index -1","first", Files.readString(new File("_site/defaultTests/index1.html").toPath()));
+        Assert.assertEquals("Default with no index (0) should override default with index -1","first", Files.readString(new File("_site/defaultTests/index.html").toPath()));
 
         // test scope
-        Assert.assertEquals("File in default exact scope should use default","first", Files.readString(new File("_site/default/exact.txt").toPath()));
-        Assert.assertEquals("Default with *.cfg should accept test config for default","first", Files.readString(new File("_site/default/test.cfg").toPath()));
-        Assert.assertEquals("Default with file.* should accept test file for default","first", Files.readString(new File("_site/default/test.cfg").toPath()));
-        Assert.assertEquals("Default with *.log should accept test log for default","first", Files.readString(new File("_site/default/test.log").toPath()));
+        Assert.assertEquals("File in default exact scope should use default","first", Files.readString(new File("_site/defaultTests/exact.txt").toPath()));
+        Assert.assertEquals("Default with *.cfg should accept test config for default","first", Files.readString(new File("_site/defaultTests/test.cfg").toPath()));
+        Assert.assertEquals("Default with file.* should accept test file for default","first", Files.readString(new File("_site/defaultTests/test.cfg").toPath()));
+        Assert.assertEquals("Default with *.log should accept test log for default","first", Files.readString(new File("_site/defaultTests/test.log").toPath()));
 
         // test negative scope
-        Assert.assertEquals("Default with negation ! should not use default","", Files.readString(new File("_site/default/negative.html").toPath()));
+        Assert.assertEquals("Default with negation ! should not use default","", Files.readString(new File("_site/defaultTests/negative.html").toPath()));
     }
 
     @Test
