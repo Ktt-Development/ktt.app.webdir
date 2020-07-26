@@ -4,40 +4,48 @@ import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class ConfigServiceTests {
 
-    @Before
-    public void before(){
+    @BeforeClass
+    public static void before(){
         Vars.Test.testmode = true;
+    }
+
+    @AfterClass
+    public static void after(){
+        Vars.Test.testmode = false;
     }
 
     @Test
     public void testValid() throws IOException{
         final String key = "key", value = "value";
         final String defaultKey = "default", defaultValue = "value";
-        final File configFile = new File("src/test/resources/config/valid/config.yml");
-        final String defaultResource = "/config/valid/default.yml";
+        final File configFile = new File("src/test/resources/configTests/testConfig.yml");
+        TestFile.createTestFile(configFile,key + ": " + value);
+
+        final String defaultResource = "/configTests/defaultConfig.yml";
 
         final ConfigService config = new ConfigService(configFile,defaultResource);
 
         Assert.assertEquals("Valid config file did not return the correct value",value,config.getConfig().getString(key));
-        Assert.assertEquals("Config did not return default value for missing key",defaultValue,config.getConfig().getString(defaultKey));
+        Assert.assertEquals("Config service did not return default value when using a config with missing key",defaultValue,config.getConfig().getString(defaultKey));
     }
 
     @Test
     public void testMissingDef() throws IOException{
-        final String defaultResource = "/config/null.yml";
+        final String defaultResource = "/configTests/missingDefault.yml";
 
         try{
             new ConfigService(null, defaultResource);
-            Assert.fail("Config Service failed to throw null for missing default config");
+            Assert.fail("Config Service failed to throw null exception for missing default config");
         }catch(final NullPointerException ignored){ }
     }
 
     @Test
     public void testMalformedDef() throws IOException{
-        final String defaultResource = "/config/malformed.yml";
+        final String defaultResource = "/configTests/malformedDefault.yml";
 
         try{
             new ConfigService(null,defaultResource);
@@ -45,37 +53,33 @@ public class ConfigServiceTests {
         }catch(final ClassCastException | YamlException ignored){ }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testMissingConfig() throws IOException{
-        final String key = "default", value = "value";
-        final File configFile = new File("src/test/resources/config/missing/config.yml");
-
-        if(!configFile.getParentFile().exists() && !configFile.getParentFile().mkdirs())
-            Assert.fail("Failed to create empty directory for missing config tests");
-
-        final String defaultResource = "/config/defaultConfig.yml";
-
-        if(configFile.exists() && !configFile.delete())
+        final String defaultKey = "default", defaultValue = "value";
+        final String defaultResource = "/configTests/defaultConfig.yml";
+        final File missingConfig = new File("src/test/resources/configTests/missing.yml");
+        if(missingConfig.exists() && !missingConfig.delete())
             Assert.fail("Failed to delete config file for testing");
 
-        final ConfigService config = new ConfigService(configFile,defaultResource);
+        final ConfigService config = new ConfigService(missingConfig,defaultResource);
 
-        Assert.assertEquals("New config did not return correct value for key",value,config.getConfig().getString(key));
-        Assert.assertTrue("Config service did not create a new file",configFile.exists());
-        if(configFile.exists())
-            //noinspection ResultOfMethodCallIgnored
-            configFile.delete();
+        Assert.assertEquals("Config service did not return default value when using a missing config",defaultValue,config.getConfig().getString(defaultKey));
+        Assert.assertTrue("Config service did not create a new config file when using a missing config",missingConfig.exists());
+        Assert.assertEquals("New file created by config service did not match default config", defaultKey + ": " + defaultValue, Files.readString(missingConfig.toPath()));
+
+        missingConfig.delete();
     }
 
     @Test
     public void testMalformedConfig() throws IOException{
-        final String key = "default", value = "value";
-        final File configFile = new File("src/test/resources/config/malformed.yml");
-        final String defaultResource = "/config/defaultConfig.yml";
+        final String defaultKey = "default", defaultValue = "value";
+        final String defaultResource = "/configTests/defaultConfig.yml";
+        final File malformedConfig = new File("src/test/resources/configTests/malformed.yml");
+        TestFile.createTestFile(malformedConfig, String.valueOf(System.currentTimeMillis()));
 
-        final ConfigService config = new ConfigService(configFile,defaultResource);
-
-        Assert.assertEquals("Malformed config did not return default value",value,config.getConfig().getString(key));
+        final ConfigService config = new ConfigService(malformedConfig,defaultResource);
+        Assert.assertEquals("Malformed config did not return default value",defaultValue,config.getConfig().getString(defaultKey));
     }
 
 }

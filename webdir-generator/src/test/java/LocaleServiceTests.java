@@ -7,41 +7,52 @@ import java.util.Locale;
 
 public class LocaleServiceTests {
 
-    @Test
-    public void testWatching(){
+    private static final Locale def = Locale.getDefault();
+
+    private static final String noSFKey = "noSF", SFKey = "SF";
+    private static final String noSFContentEN = "[English] string with no format", SFContentEN = "[English] String with two formats %s %s";
+
+    private static final String bundle = "localeTests/bundle";
+
+    @BeforeClass // resources folder can not be added to for #getResource
+    public static void before(){
         Vars.Test.testmode = true;
         Locale.setDefault(Locale.US);
-        final LocaleService locale = new LocaleService("locale/bundle");
-        locale.setLocale(Locale.JAPAN);
+    }
 
-        final LocaleBundleImpl bundle = new LocaleBundleImpl("locale/bundle");
-
-        final String testKey = "noSF";
-
-        Assert.assertNotEquals("Unchanged bundle should not have same locale as changed bundle",locale.getString(testKey),bundle.getString(testKey));
-        locale.addWatchedLocale(bundle);
-        Assert.assertEquals("After adding to watch both bundles should have same locale",locale.getString(testKey),bundle.getString(testKey));
-        locale.setLocale(Locale.US);
-        Assert.assertEquals("After changing locale both bundles should have same locale",locale.getString(testKey),bundle.getString(testKey));
-
+    @AfterClass
+    public static void after(){
+        Vars.Test.testmode = false;
+        Locale.setDefault(def);
     }
 
     @Test
-    public void testGetString(){
-        Locale.setDefault(Locale.US);
-        final LocaleBundle bundle = new LocaleBundleImpl("locale/bundle");
+    public void testWatching(){
+        final LocaleService locale = new LocaleService(bundle);
+        locale.setLocale(Locale.JAPAN);
 
-        final String literalKey = "noSF";
-        final String literalValue = "[English] string with no format";
-        final String formatKey = "SF";
-        final String formatValue = "[English] String with two formats %s %s";
+        final LocaleBundleImpl testBundle = new LocaleBundleImpl(bundle);
+
+        Assert.assertNotEquals("Bundle that has not been added to locale service should not switch to locale used by that service",locale.getString(noSFKey),testBundle.getString(noSFKey));
+        locale.addWatchedLocale(testBundle);
+        Assert.assertEquals("Bundle that was added to locale service should switch to locale used by that service",locale.getString(noSFKey),testBundle.getString(noSFKey));
+        locale.setLocale(Locale.US);
+        Assert.assertEquals("Bundle that was added to locale service should switch to locale used by the service when the service changes locale",locale.getString(noSFKey),testBundle.getString(noSFKey));
+
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    @Test
+    public void testGetString(){
+        final LocaleBundle testBundle = new LocaleBundleImpl(bundle);
+
         final String formatArg = "this", formatArg2 = "and";
 
-        Assert.assertEquals("Get string on key should return correct value",literalValue,bundle.getString(literalKey));
+        Assert.assertEquals("Using #getString for " + noSFKey + " did not return correct value for EN",noSFContentEN,testBundle.getString(noSFKey));
 
-        Assert.assertEquals("Formatted string should return literal value given no parameters",formatValue,bundle.getString(formatKey));
-        Assert.assertEquals("Formatted string should return value with format applied", String.format(formatValue, formatArg,formatArg2),bundle.getString(formatKey,formatArg,formatArg2));
-        Assert.assertEquals("Formatted string with insufficient args should return literal value", formatValue,bundle.getString(formatKey,formatArg));
+        Assert.assertEquals("Using #getString for " + SFKey + " should return unformatted string",SFContentEN,testBundle.getString(SFKey));
+        Assert.assertEquals("Using #getString for " + SFKey + " with args [" + formatArg + ", " + formatArg2 + "] should return formatted string", String.format(SFContentEN, formatArg,formatArg2),testBundle.getString(SFKey,formatArg,formatArg2));
+        Assert.assertEquals("Using #getString with one format arg for " + SFKey + " (requires two) should return unformatted string", SFContentEN,testBundle.getString(SFKey,formatArg));
     }
 
 }

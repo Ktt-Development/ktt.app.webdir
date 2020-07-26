@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator.render;
 
 import com.esotericsoftware.yamlbeans.YamlException;
+import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
@@ -87,7 +88,7 @@ public abstract class YamlFrontMatter {
 
         repeat.forEach(list -> list.forEach(s -> {
             // if has no extension assume .yml
-            final String fileName = s + (hasExtension.matcher(s).matches() ? "" : ".yml");
+            final String fileName = ContextUtil.getContext(s + (hasExtension.matcher(s).matches() ? "" : ".yml"),true,false);
             final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
