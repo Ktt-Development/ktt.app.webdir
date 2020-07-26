@@ -99,7 +99,7 @@ public class ApplicationTest {
         }
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Test @Ignore // fixme
+    @Test
     public void testDefaultRenderer() throws IOException{
         Vars.Test.safemode = false;
         Vars.Test.server = false;

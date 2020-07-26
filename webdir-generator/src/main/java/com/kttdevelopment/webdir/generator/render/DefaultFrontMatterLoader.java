@@ -91,8 +91,9 @@ public final class DefaultFrontMatterLoader {
                .getInteger(Vars.Renderer.Default.indexKey, Vars.Renderer.Default.defaultIndex)));
 
         // populate configuration by lower index first so higher ones override
-        final ConfigurationSection config = new ConfigurationSectionImpl();
-        configs.forEach(config::setDefault);
+        final ConfigurationSection def = new ConfigurationSectionImpl();
+        configs.forEach(def::setDefault);
+        final ConfigurationSection config = new ConfigurationSectionImpl(def.toMapWithDefaults());
         return config.toMap().isEmpty() ? null : config;
     }
 

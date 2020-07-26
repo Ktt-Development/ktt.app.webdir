@@ -1,4 +1,4 @@
 default:
   scope:
-     - /default/index1.html
+     - /default/index.html
 renderer: first
