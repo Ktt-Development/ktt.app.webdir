@@ -203,6 +203,8 @@ public class ApplicationTest {
         final File testRoot = new File(".root/test.html");
         final File testOutput = new File("_site/test.html");
 
+        if(!testRoot.getParentFile().exists() && !testRoot.getParentFile().mkdirs())
+            Assert.fail("Failed to create test root directory");
         if(!testRoot.exists())
             Files.createFile(testRoot.toPath());
         Main.main(null);
