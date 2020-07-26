@@ -12,18 +12,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 
 public class ApplicationTest {
 
     @BeforeClass
     public static void before(){
         Vars.Test.testmode = false;
-    }
-    
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @AfterClass
-    public static void after(){
-        new File(".plugins/Valid").delete();
     }
 
     @Test
@@ -90,12 +85,41 @@ public class ApplicationTest {
     public void testRenderer() throws IOException{
         Vars.Test.safemode = false;
         Vars.Test.server = false;
+
+        Map.of(
+            new File(".root/renderTests/renderOrder.html"),
+            "---\n" +
+            "renderer:\n" +
+            "  - first\n" +
+            "  - second\n" +
+            "  - exception\n" +
+            "---",
+            new File(".root/renderTests/renderReverseOrder.html"),
+            "---\n" +
+            "renderer:\n" +
+            "  - second\n" +
+            "  - first\n" +
+            "---",
+            new File(".root/renderTests/renderExactFirst.html"),
+            "---\n" +
+            "renderer:\n" +
+            "  - plugin: RenderTests\n" +
+            "    renderer: first\n" +
+            "---",
+            new File(".root/renderTests/renderExactDuplicate.html"),
+            "---\n" +
+            "renderer:\n" +
+            "  - plugin: DuplicateRenderTests\n" +
+            "    renderer: first\n" +
+            "---"
+        ).forEach(TestFile::createTestFile);
+
         Main.main(null);
 
-        Assert.assertEquals("order.html has second listed as the final renderer but result was incorrect (returns first render or exception)","second", Files.readString(new File("_site/order.html").toPath()));
-        Assert.assertEquals("order-reverse.html has first listed as the final renderer but result was incorrect","first", Files.readString(new File("_site/order-reverse.html").toPath()));
-        Assert.assertEquals("exact-first.html specifically calls for first renderer but returned duplicate","first", Files.readString(new File("_site/exact-first.html").toPath()));
-        Assert.assertEquals("exact-duplicate.html specifically calls for duplicate renderer but returned first","DUPLICATE", Files.readString(new File("_site/exact-duplicate.html").toPath()));
+        Assert.assertEquals("Renders lower on the list are expected to run last (thus overriding any content)","second", Files.readString(new File("_site/renderTests/renderOrder.html").toPath()));
+        Assert.assertEquals("Renders lower on the list are expected to run last (thus overriding any content)","first", Files.readString(new File("_site/renderTests/renderReverseOrder.html").toPath()));
+        Assert.assertEquals("Render specifying plugin and renderer are expected to use that renderer","first", Files.readString(new File("_site/renderTests/renderExactFirst.html").toPath()));
+        Assert.assertEquals("Render specifying plugin and renderer are expected to use that renderer","DUPLICATE", Files.readString(new File("_site/renderTests/renderExactDuplicate.html").toPath()));
     }
 
     /*
@@ -158,17 +182,17 @@ public class ApplicationTest {
         Main.main(null);
 
         // test index and no index
-        Assert.assertEquals("Default with index 1 should override default with index -1","first", Files.readString(new File("_site/defaultTests/index1.html").toPath()));
-        Assert.assertEquals("Default with no index (0) should override default with index -1","first", Files.readString(new File("_site/defaultTests/index.html").toPath()));
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)","first", Files.readString(new File("_site/defaultTests/index1.html").toPath()));
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","first", Files.readString(new File("_site/defaultTests/index.html").toPath()));
 
         // test scope
-        Assert.assertEquals("File in default exact scope should use default","first", Files.readString(new File("_site/defaultTests/exact.txt").toPath()));
-        Assert.assertEquals("Default with *.cfg should accept test config for default","first", Files.readString(new File("_site/defaultTests/test.cfg").toPath()));
-        Assert.assertEquals("Default with file.* should accept test file for default","first", Files.readString(new File("_site/defaultTests/test.cfg").toPath()));
-        Assert.assertEquals("Default with *.log should accept test log for default","first", Files.readString(new File("_site/defaultTests/test.log").toPath()));
+        Assert.assertEquals("Default with exact scope should render file","first", Files.readString(new File("_site/defaultTests/exact.txt").toPath()));
+        Assert.assertEquals("Default with *.cfg scope should render file","first", Files.readString(new File("_site/defaultTests/test.cfg").toPath()));
+        Assert.assertEquals("Default with file.* scope should render file","first", Files.readString(new File("_site/defaultTests/test.cfg").toPath()));
+        Assert.assertEquals("Default with *.log scope should render file","first", Files.readString(new File("_site/defaultTests/test.log").toPath()));
 
         // test negative scope
-        Assert.assertEquals("Default with negation ! should not use default","", Files.readString(new File("_site/defaultTests/negative.html").toPath()));
+        Assert.assertEquals("Default with negation ! scope should not render file","", Files.readString(new File("_site/defaultTests/negative.html").toPath()));
     }
 
     @Test
@@ -190,6 +214,7 @@ public class ApplicationTest {
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testImpl(){
         Vars.Test.safemode = false;
@@ -212,6 +237,7 @@ public class ApplicationTest {
         Assert.assertTrue("Using getPluginFolder should create a folder if it does not exist",new File(".plugins/Valid").exists());
         Assert.assertEquals("Plugin logger name should be plugin name",pluginYml.getPluginName(),plugin.getLogger().getName());
 
+        new File(".plugins/Valid").delete();
     }
     
     @Test
@@ -260,12 +286,12 @@ public class ApplicationTest {
         Files.delete(targetFile);
         try{
             Assert.assertNull(
-                "Referencing a deleted page should null content",
+                "Referencing a deleted page should return null content",
                 getResponseContent(URI.create(String.format(url, port, System.currentTimeMillis())))
             );
         }catch(final Exception e){
             if(!e.getMessage().contains("header parser received no bytes"))
-                Assert.fail("Referencing a non-existent page should return no content");
+                Assert.fail("Referencing a deleted page should return null content");
         }
     }
 
