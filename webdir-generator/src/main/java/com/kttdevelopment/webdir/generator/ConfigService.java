@@ -27,6 +27,7 @@ public final class ConfigService {
 
         // load default
         final ConfigurationFile def;
+        logger.finer("Loading default configuration from resource " + defaultConfigResource);
         try(final InputStream IN = getClass().getResourceAsStream(Objects.requireNonNull( defaultConfigResource))){
             final ConfigurationFile impl = new ConfigurationFile();
             impl.load(IN);
@@ -46,6 +47,7 @@ public final class ConfigService {
         final ConfigurationFile config = new ConfigurationFile();
         config.setDefault(def);
         try{
+            logger.finer("Loading configuration file from " + configFile.getAbsolutePath());
             config.load(configFile);
         }catch(final FileNotFoundException ignored){
             logger.warning("Configuration file not found, creating a new configuration file");
@@ -70,6 +72,8 @@ public final class ConfigService {
 
         config.setDefault(def);
         this.config = config;
+
+        logger.fine("Loaded configuration:\n" + config);
 
         if(Main.getLoggerService() != null)
             Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));

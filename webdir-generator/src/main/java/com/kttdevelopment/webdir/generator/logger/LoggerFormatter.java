@@ -10,6 +10,8 @@ import java.util.logging.LogRecord;
 
 public final class LoggerFormatter extends Formatter {
 
+
+
     private final boolean hasTimestamp;
     @SuppressWarnings("SpellCheckingInspection")
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSSaa zzz");
@@ -23,6 +25,17 @@ public final class LoggerFormatter extends Formatter {
         this.hasTimestamp = hasTimestamp;
         this.hasTrace = hasTrace;
     }
+
+    @SuppressWarnings("unused") // this is to prevent locale files from listing these as unused
+    private static final String[] levelKeys = new String[]{
+        "logger.level.SEVERE",
+        "logger.level.WARNING",
+        "logger.level.INFO",
+        "logger.level.CONFIG",
+        "logger.level.FINE",
+        "logger.level.FINER",
+        "logger.level.FINEST",
+    };
 
     @Override
     public final String format(final LogRecord record){

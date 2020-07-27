@@ -19,8 +19,16 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         final LocaleService locale  = Main.getLocaleService();
         final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
+        final String fabs = file.getAbsolutePath();
         final String str = new String(bytes);
+
+        if(locale != null)
+            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.render",fabs,defaultFrontMatter,str));
+
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
+
+        if(locale != null)
+            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.frontMatter",fabs,frontMatter));
 
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
 
@@ -33,6 +41,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,masterFrontMatter);
         final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.rendererKey,String.class);
 
+        // if no renderers then return given bytes
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
 
         final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
@@ -41,7 +50,10 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
 
         renderers.forEach(renderer -> {
             try{
-                content.set(renderer.getRenderer().render(file, finalFrontMatter, content.get()));
+                final String ct = content.get();
+                content.set(renderer.getRenderer().render(file, finalFrontMatter, ct));
+                if(locale != null)
+                    logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.apply",fabs,renderer,ct,content.get()));
             }catch(final Throwable e){
                 if(locale != null)
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));

@@ -45,6 +45,7 @@ public abstract class YamlFrontMatter {
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
         final LocaleService locale  = Main.getLocaleService();
         final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+
         final ConfigurationFile config = new ConfigurationFile();
         try{
             config.load(file);
@@ -69,6 +70,9 @@ public abstract class YamlFrontMatter {
         final LocaleService locale  = Main.getLocaleService() ;
         final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
+        if(locale != null)
+            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",source.getAbsolutePath(),config,checkedImports));
+
         // reverse lists so top imports#putAll will override lower imports
         final List<String> imports = config.getList(Vars.Renderer.importKey, new ArrayList<>());
         Collections.reverse(imports);
@@ -86,6 +90,9 @@ public abstract class YamlFrontMatter {
             // if has no extension assume .yml
             final String fileName = ContextUtil.getContext(s + (hasExtension.matcher(s).matches() ? "" : ".yml"),true,false);
             final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
+
+            if(locale != null)
+                logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,source.getAbsolutePath()));
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
@@ -112,7 +119,10 @@ public abstract class YamlFrontMatter {
         final List<PluginRendererEntry> installedRenderers = Main.getPluginLoader().getRenderers();
         final List<PluginRendererEntry> out = new ArrayList<>();
 
+        logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getRenderers",renderers));
+
         for(final Object obj : renderers){
+            logger.fine(locale.getString("pageRenderer.debug.yamlFrontMatter.getRenderers.map",obj));
             PluginRenderer renderer = null;
             if(obj instanceof String){
                 renderer = new PluginRenderer(null, obj.toString());
@@ -133,6 +143,7 @@ public abstract class YamlFrontMatter {
             if(renderer == null) continue;
 
             for(final PluginRendererEntry entry : installedRenderers){
+                logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getRenderers.match",renderer,entry));
                 if(
                     (renderer.getPluginName() == null &&
                      renderer.getRendererName().equals(entry.getRendererName())) ||

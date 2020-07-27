@@ -55,6 +55,7 @@ public final class PluginLoader {
         logger.info(locale.getString("pluginLoader.const"));
 
         final File pluginsFolder = new File(config.getConfig().getString(Vars.Config.pluginsKey,Vars.Config.defaultPlugins));
+        logger.fine(locale.getString("pluginLoader.debug.const.pluginFolder",pluginsFolder.getAbsolutePath()));
 
         if(Vars.Test.safemode || config.getConfig().getBoolean("safemode")){
             logger.info(locale.getString("pluginLoader.const.skippedReasonSafeMode"));
@@ -62,6 +63,7 @@ public final class PluginLoader {
         }
 
     // load files that a jars
+        logger.finer(locale.getString("pluginLoader.debug.const.loadJars"));
         final Map<File,URL> pluginsIsJar = new HashMap<>();
         {
             final File[] plugins =  Objects.requireNonNullElse(
@@ -70,17 +72,21 @@ public final class PluginLoader {
             );
             for(final File file : plugins){
                 try{
+                    logger.finest(locale.getString("pluginLoader.debug.const.loadJars.plugin",file.getAbsolutePath()));
                     pluginsIsJar.put(file,file.toURI().toURL());
                 }catch(final MalformedURLException | IllegalArgumentException e){
                     logger.severe(locale.getString("pluginLoader.const.loadJars.jarMalformedURL", file.getName() + '\n' + Exceptions.getStackTraceAsString(e)));
                 }
             }
+            logger.finer(locale.getString("pluginLoader.debug.const.loadJars.count",pluginsIsJar.size(),plugins.length));
         }
         final int initialPluginCount = pluginsIsJar.size();
 
     // load plugins that have a plugin.yml
+        logger.finer(locale.getString("pluginLoader.debug.const.loadPluginYML"));
         final Map<File,URL> pluginYMLs = new HashMap<>();
         pluginsIsJar.forEach((file, url) -> {
+            logger.finest(locale.getString("pluginLoader.debug.const.loadPluginYML.load",file.getAbsolutePath(),url.getPath()));
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{url})){
                 final URL yml = Objects.requireNonNull(loader.findResource(Vars.Plugin.pluginYml));
                 pluginYMLs.put(file,yml);
@@ -92,11 +98,14 @@ public final class PluginLoader {
                 logger.warning(locale.getString("pluginLoader.const.loadPluginYML.classLoaderCloseIO", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
+        logger.finer(locale.getString("pluginLoader.debug.const.loadPluginYML.count",pluginYMLs.size()-pluginsIsJar.size()));
 
     // load plugins that have valid plugin.yml, required paramters, and correct main class
+        logger.finer(locale.getString("pluginLoader.debug.const.loadValid"));
         final List<PluginLoaderEntry> pluginsValid = new ArrayList<>();
         pluginYMLs.forEach((plugin, ymlURL) -> {
             final String pluginName = plugin.getName();
+            logger.finest(locale.getString("pluginLoader.debug.const.loadValid.read",pluginName,ymlURL.getPath()));
 
             final ConfigurationSection yml;
             final PluginYml pluginYml;
@@ -128,6 +137,7 @@ public final class PluginLoader {
             }
 
             // test if main class can be loaded
+            logger.finest(locale.getString("pluginLoader.debug.const.loadValidMain",pluginName,yml.getString(Vars.Plugin.mainClassKey)));
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
                 pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(Vars.Plugin.mainClassKey))), yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
@@ -142,10 +152,15 @@ public final class PluginLoader {
                 logger.warning(locale.getString("pluginLoader.const.loadPluginYML.classLoaderCloseIO", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
+        logger.finer(locale.getString("pluginLoader.debug.const.loadValid.count",pluginsValid.size(),pluginsValid.size()-pluginYMLs.size()));
+
+        pluginsValid.forEach(entry -> logger.finest(String.format("[%s]: %s", entry.getPluginFile().getAbsolutePath(), entry.getPluginYml().getPluginName())));
 
     // load plugins with no missing dependencies and no circular dependencies
+        logger.finer(locale.getString("pluginLoader.debug.const.loadValidDeps"));
         final List<PluginLoaderEntry> pluginsValidDep = new ArrayList<>();
         pluginsValid.forEach(entry -> {
+            logger.finest(locale.getString("pluginLoader.debug.const.loadValidDepsCheck",entry.getPluginYml().getPluginName()));
             // remove dependencies that will be loaded in this for loop
             final List<String> dependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
             pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
@@ -156,9 +171,11 @@ public final class PluginLoader {
             else
                 pluginsValidDep.add(entry);
         });
+        logger.finer(locale.getString("pluginLoader.debug.const.loadValidDeps.count",pluginsValidDep.size(),pluginsValidDep.size()-pluginsValid.size()));
 
     // sort so dependencies are first
-        // load each in given order, and if dependency has not yet loaded in move it to the end of the list
+        // load each in given order, and if dependency has not yet loaded in move it to the end of the list'
+        logger.finer(locale.getString("pluginLoader.debug.const.sortDeps"));
         final List<PluginLoaderEntry> pluginsSortedDep = new ArrayList<>();
         {
             final int pluginsToLoad = pluginsValidDep.size();
@@ -180,34 +197,38 @@ public final class PluginLoader {
                     });
                     // if all required dependencies have already been read add to loading
                     // else add to end of queue to try again
-                    if(unloadedDependencies.isEmpty())
-                        pluginsSortedDep.add(entry);
-                    else
-                        pluginLoadingQueue.add(entry);
+                    (unloadedDependencies.isEmpty() ? pluginsSortedDep : pluginLoadingQueue).add(entry);
+
                     index++;
                     hasNext = pluginsSortedDep.size() != pluginsToLoad;
+                    // iterator can not be used because it does not add to end of list
                 }
+            logger.finer(locale.getString("pluginLoader.debug.const.sortDeps.loaded"));
         }
 
     // execute #onEnable for each plugin
+        logger.finer(locale.getString("pluginLoader.debug.const.enable"));
         final ExecutorService executor = Executors.newSingleThreadExecutor();
 
         final AtomicInteger loadedPlugins = new AtomicInteger();
         final Iterator<PluginLoaderEntry> iterator = pluginsSortedDep.iterator();
         while(iterator.hasNext()){
             final PluginLoaderEntry entry = iterator.next();
+            final String pluginName = entry.getPluginYml().getPluginName();
+            logger.finest(locale.getString("pluginLoader.debug.const.enable.plugin",pluginName));
             // check dependencies
-            final List<String> dependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
-            pluginsValid.forEach(testPlugin -> dependencies.remove(testPlugin.getPluginYml().getPluginName()));
-            if(!dependencies.isEmpty()){
+            final List<String> missingDependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
+            pluginsValid.forEach(testPlugin -> missingDependencies.remove(testPlugin.getPluginYml().getPluginName()));
+            if(!missingDependencies.isEmpty()){
+                logger.finest(locale.getString("pluginLoader.debug.const.enable.missingDep", entry.getPluginYml().getPluginName(), missingDependencies));
                 iterator.remove();
             }else{
                 // run main function
                 final Future<WebDirPlugin> future = executor.submit(() -> {
                     final PluginService provider = new PluginServiceImpl(entry.getYml(),pluginsFolder);
-                    final String pluginName = entry.getPluginYml().getPluginName();
                     WebDirPlugin plugin = null;
                     try{
+                        logger.finest(locale.getString("pluginLoader.debug.const.enable.load",pluginName));
                         plugin = entry.getMainClass().getDeclaredConstructor(PluginService.class).newInstance(provider);
                     }catch(final InstantiationException ignored){
                         logger.severe(locale.getString("pluginLoader.const.enable.abstract", pluginName));
@@ -221,16 +242,18 @@ public final class PluginLoader {
                         logger.severe(locale.getString("pluginLoader.const.enable.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
 
-                    if(plugin != null){
+                    if(plugin != null)
                         plugin.onEnable();
-                        return plugin;
-                    }
-                    return null;
+                    return plugin;
                 });
 
                 try{
+                    logger.finest(locale.getString("pluginLoader.debug.const.loader",pluginName));
                     final WebDirPlugin plugin = future.get(Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
-                    plugin.getRenderers().forEach((rendererName, renderer) -> renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer)));
+                    plugin.getRenderers().forEach((rendererName, renderer) -> {
+                        renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer));
+                        logger.finest(locale.getString("pluginLoader.debug.const.loader.addRenderer",pluginName,rendererName));
+                    });
                     plugins.add(plugin);
                     loadedPlugins.incrementAndGet();
                 }catch(final Throwable e){
@@ -244,6 +267,7 @@ public final class PluginLoader {
                 }
             }
         }
+        logger.finer(locale.getString("pluginLoader.debug.const.loader.loaded", loadedPlugins.get(), loadedPlugins.get() - pluginsSortedDep.size()));
 
         logger.info(locale.getString("pluginLoader.const.loaded",loadedPlugins.get(),initialPluginCount));
     }

@@ -26,8 +26,14 @@ public final class DefaultFrontMatterLoader {
         final LocaleService locale  = Main.getLocaleService();
         final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
+        if(locale != null)
+            logger.fine(locale.getString("pageRenderer.debug.default.dir",defaultDir.getAbsolutePath(),sourcesDir.getAbsolutePath()));
+
         this.sourcesDir = sourcesDir;
         for(final File file : Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])){
+            if(locale != null)
+                logger.finest(locale.getString("pageRenderer.debug.default.file",file.getAbsolutePath()));
+
             try{
                 final ConfigurationFile config = new ConfigurationFile();
                 config.load(file);
@@ -52,10 +58,22 @@ public final class DefaultFrontMatterLoader {
                     logger.warning(locale.getString("pageRenderer.default.malformedYML", file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }
+        if(locale != null)
+            logger.fine(locale.getString("pageRenderer.debug.default.loaded",defaultConfigurations.size(),Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])));
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final File file){
+        final LocaleService locale  = Main.getLocaleService();
+        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final String fabs = file.getAbsolutePath();
+        if(locale != null)
+            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.file",fabs));
+
         final String path = ContextUtil.getContext(sourcesDir.getAbsoluteFile().toPath().relativize(file.getAbsoluteFile().toPath()).toString(),true,false);
+
+        if(locale != null)
+            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.path",path));
+
         final List<ConfigurationSection> configs = new ArrayList<>();
 
         defaultConfigurations.forEach((tuple) -> {
@@ -67,12 +85,18 @@ public final class DefaultFrontMatterLoader {
                 // make string literal but replace '*' with '.*' for regex
                 final String regex = "^\\Q" + context.replace("*","\\E.*\\Q") + "\\E$";
 
+                if(locale != null)
+                    logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.scope",fabs,regex,tuple.getVar2()));
+
                 final Matcher matcher = Pattern.compile(regex).matcher(path);
                 if(matcher.matches()){
                     canUseConfig = !negative;
                     if(negative) // negative ('!') overrides true state
                         break;
                 }
+
+                if(locale != null)
+                    logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.match",matcher.matches(),fabs));
             }
             if(canUseConfig) configs.add(tuple.getVar2());
         });
@@ -81,6 +105,9 @@ public final class DefaultFrontMatterLoader {
         configs.sort( // the constructor asserts that a valid map 'default' exists, #getInteger with default is safe
             Comparator.comparingInt(o -> Objects.requireNonNull(o.get(Vars.Renderer.Default.defaultKey))
                .getInteger(Vars.Renderer.Default.indexKey, Vars.Renderer.Default.defaultIndex)));
+
+        if(locale != null)
+            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.sort",fabs,configs));
 
         // populate configuration by lower index first so higher ones override
         final ConfigurationSection def = new ConfigurationSectionImpl();

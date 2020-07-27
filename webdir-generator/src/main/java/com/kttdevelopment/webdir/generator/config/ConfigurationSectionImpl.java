@@ -10,7 +10,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
     private final ConfigurationSection root;
     private final ConfigurationSection parent;
 
-    protected Map def;
+    private final Map def;
     protected Map config;
 
     public ConfigurationSectionImpl(){

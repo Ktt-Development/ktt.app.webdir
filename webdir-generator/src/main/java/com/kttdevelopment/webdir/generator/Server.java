@@ -80,6 +80,7 @@ public final class Server {
         try{
             Files.walk(target).filter(path -> path.toFile().isDirectory()).forEach(p -> {
                 try{
+                    logger.finest(locale.getString("server.debug.createWatchService",p.toFile().getAbsolutePath()));
                     p.register(watchService,StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.ENTRY_DELETE);
                     // created watch service debug
                 }catch(final IOException e){

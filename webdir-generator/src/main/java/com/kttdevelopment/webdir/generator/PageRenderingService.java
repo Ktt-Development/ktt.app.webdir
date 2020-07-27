@@ -10,7 +10,6 @@ import java.nio.file.*;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -28,11 +27,17 @@ public final class PageRenderingService {
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
 
+        final String dabs = defaults.getAbsolutePath();
+        logger.fine(locale.getString("pageRenderer.debug.const.default",dabs));
+
         defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
 
         final Path sourcePath = source.getAbsoluteFile().toPath();
         this.source = source;
         this.output = output;
+
+        logger.fine(locale.getString("pageRenderer.debug.const.source",dabs));
+        logger.fine(locale.getString("pageRenderer.debug.const.output",dabs));
 
         final AtomicInteger total = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
@@ -77,6 +82,8 @@ public final class PageRenderingService {
     public final boolean render(final File target){
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final String tabs = target.getAbsolutePath();
+        logger.finest(locale.getString("pageRenderer.debug.render",tabs));
 
         if(target.isDirectory()){
             logger.warning(locale.getString("pageRenderer.render.noRenderDirectory", target));
@@ -89,6 +96,7 @@ public final class PageRenderingService {
 
         if(!target.exists()){
             try{
+                logger.finest(locale.getString("pageRenderer.debug.render.delete", tabs));
                 Files.delete(out);
                 return true;
             }catch(final IOException e){
@@ -101,6 +109,7 @@ public final class PageRenderingService {
                 try{
                     final byte[] bytes = Files.readAllBytes(path);
                     try{
+                        logger.finest(locale.getString("pageRenderer.debug.render.write",out.toFile().getAbsolutePath()));
                         Files.write(out, render.apply(target,defaultFrontMatterLoader.getDefaultFrontMatter(target),bytes));
                         return true;
                     }catch(final IOException e){
@@ -111,6 +120,8 @@ public final class PageRenderingService {
                 }catch(final IOException e){
                     logger.warning(locale.getString("pageRenderer.render.failedRead", path) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
+            else
+                logger.finest(locale.getString("pageRenderer.debug.render.missingDir",tabs,parent.getAbsolutePath()));
         }
         return false;
     }
