@@ -23,8 +23,8 @@ public final class DefaultFrontMatterLoader {
     private final File sourcesDir;
 
     public DefaultFrontMatterLoader(final File defaultDir, final File sourcesDir){
-        final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
-        final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final LocaleService locale  = Main.getLocaleService();
+        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
         this.sourcesDir = sourcesDir;
         for(final File file : Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])){
@@ -38,25 +38,17 @@ public final class DefaultFrontMatterLoader {
                         config
                     ));
                 }catch(final NullPointerException ignored){
-                    if(!Vars.Test.testmode)
-                        // IntelliJ defect; locale will not be null while not in test mode
-                        //noinspection ConstantConditions
+                    if(locale != null)
                         logger.warning(locale.getString("pageRenderer.default.missingDefault", file.getPath()));
                 }catch(final ClassCastException ignored){
-                    if(!Vars.Test.testmode)
-                        // IntelliJ defect; locale will not be null while not in test mode
-                        //noinspection ConstantConditions
+                    if(locale != null)
                         logger.warning(locale.getString("pageRenderer.default.invalidDefaultType", file.getPath()));
                 }
             }catch(final FileNotFoundException ignored){
-                if(!Vars.Test.testmode)
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
+                if(locale != null)
                     logger.warning(locale.getString("pageRenderer.default.noDefaultFile", file.getPath()));
             }catch(final ClassCastException | YamlException e){
-                if(!Vars.Test.testmode)
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
+                if(locale != null)
                     logger.warning(locale.getString("pageRenderer.default.malformedYML", file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }

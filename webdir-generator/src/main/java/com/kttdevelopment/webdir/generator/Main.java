@@ -9,29 +9,29 @@ import java.nio.file.Files;
 
 public abstract class Main {
 
-    private static LoggerService loggerService;
+    private static LoggerService loggerService = null;
 
     public static LoggerService getLoggerService(){ return loggerService; }
 
-    private static LocaleService localeService;
+    private static LocaleService localeService = null;
 
     public static LocaleService getLocaleService(){ return localeService; }
 
-    private static ConfigService configService;
+    private static ConfigService configService = null;
 
     public static ConfigService getConfigService(){ return configService; }
 
-    private static PluginLoader pluginLoader;
+    private static PluginLoader pluginLoader = null;
 
     public static PluginLoader getPluginLoader(){ return pluginLoader; }
 
-    private static PageRenderingService pageRenderingService;
+    private static PageRenderingService pageRenderingService = null;
 
     public static PageRenderingService getPageRenderingService(){ return pageRenderingService; }
 
     //
 
-    private static Server server;
+    private static Server server = null;
 
     public static Server getServer(){ return server; }
 

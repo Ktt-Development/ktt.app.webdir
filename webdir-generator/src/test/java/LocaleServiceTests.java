@@ -16,13 +16,11 @@ public class LocaleServiceTests {
 
     @BeforeClass // resources folder can not be added to for #getResource
     public static void before(){
-        Vars.Test.testmode = true;
         Locale.setDefault(Locale.US);
     }
 
     @AfterClass
     public static void after(){
-        Vars.Test.testmode = false;
         Locale.setDefault(def);
     }
 

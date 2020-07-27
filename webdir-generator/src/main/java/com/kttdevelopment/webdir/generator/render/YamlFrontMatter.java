@@ -43,21 +43,17 @@ public abstract class YamlFrontMatter {
 
     // load imports via file → loads both, may be empty if bad file
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
-        final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
-        final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final LocaleService locale  = Main.getLocaleService();
+        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
         final ConfigurationFile config = new ConfigurationFile();
         try{
             config.load(file);
             return loadImports(file,config, checkedImports);
         }catch(final FileNotFoundException ignored){
-            if(!Vars.Test.testmode)
-                // IntelliJ defect; locale will not be null while not in test mode
-                //noinspection ConstantConditions
+            if(locale != null)
                 logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.notFound", file.getAbsolutePath()));
         }catch(final ClassCastException |  YamlException e){
-            if(!Vars.Test.testmode)
-                // IntelliJ defect; locale will not be null while not in test mode
-                //noinspection ConstantConditions
+            if(locale != null)
                 logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.malformedYML", file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
         }
         return new ConfigurationSectionImpl();
@@ -70,8 +66,8 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports){
-        final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
-        final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final LocaleService locale  = Main.getLocaleService() ;
+        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
         // reverse lists so top imports#putAll will override lower imports
         final List<String> imports = config.getList(Vars.Renderer.importKey, new ArrayList<>());
@@ -97,9 +93,7 @@ public abstract class YamlFrontMatter {
                 imported.remove(Vars.Renderer.importKey);
                 imported.remove(Vars.Renderer.importRelativeKey);
                 out.putAll(imported);
-            }else if(!Vars.Test.testmode){
-                // IntelliJ defect; locale will not be null while not in test mode
-                //noinspection ConstantConditions
+            }else if(locale != null){
                 logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.circularImport", IN.getPath()));
             }
         }));

@@ -37,7 +37,12 @@ public final class PageRenderingService {
         final AtomicInteger total = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
 
-        final boolean clean = Vars.Test.clear || (output.exists() && config.getConfig().getBoolean(Vars.Config.cleanKey) && output.getAbsolutePath().startsWith(new File("").getAbsolutePath()));
+        final boolean clean =
+            Vars.Test.clear ||
+            (output.exists() &&
+             config.getConfig().getBoolean(Vars.Config.cleanKey) &&
+             output.getAbsolutePath().startsWith(new File("").getAbsolutePath())
+            );
 
         // render files
         if(clean || Objects.requireNonNullElse(source.list(), new File[0]).length != 0){

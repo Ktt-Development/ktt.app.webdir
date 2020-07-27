@@ -9,16 +9,6 @@ import java.util.Map;
 
 public class YamlFrontMatterTests {
 
-    @BeforeClass
-    public static void before(){
-        Vars.Test.testmode = true;
-    }
-
-    @AfterClass
-    public static void after(){
-        Vars.Test.testmode = false;
-    }
-
     @Test
     public void testValidRead(){
         final String frontMatter = getFrontMatter(Map.of(

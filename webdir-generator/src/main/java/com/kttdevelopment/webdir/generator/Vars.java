@@ -11,7 +11,8 @@ public abstract class Vars {
         public static boolean safemode = false;
         public static boolean clear = false;
         public static boolean server = false;
-        public static boolean testmode = false;
+
+        public static int testPort = 8080;
 
     }
 

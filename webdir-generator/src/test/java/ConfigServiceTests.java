@@ -8,16 +8,6 @@ import java.nio.file.Files;
 
 public class ConfigServiceTests {
 
-    @BeforeClass
-    public static void before(){
-        Vars.Test.testmode = true;
-    }
-
-    @AfterClass
-    public static void after(){
-        Vars.Test.testmode = false;
-    }
-
     @Test
     public void testValid() throws IOException{
         final String key = "key", value = "value";

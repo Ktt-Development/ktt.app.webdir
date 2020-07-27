@@ -15,11 +15,6 @@ import java.util.concurrent.ExecutionException;
 
 public class ApplicationTest {
 
-    @BeforeClass
-    public static void before(){
-        Vars.Test.testmode = false;
-    }
-
     @Test
     public void testPluginLoading(){
         Vars.Test.safemode = false;
@@ -252,7 +247,7 @@ public class ApplicationTest {
         Main.main(null);
 
         final String url = "http://localhost:%s/%s";
-        final int port = 8080;
+        final int port = Vars.Test.testPort;
         final String target = String.valueOf(System.currentTimeMillis());
         final Path targetFile = new File(".root/" + target + ".html").toPath();
 

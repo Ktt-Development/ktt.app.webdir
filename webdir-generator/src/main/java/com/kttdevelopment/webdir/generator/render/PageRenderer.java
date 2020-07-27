@@ -16,8 +16,8 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
 
     @Override
     public final byte[] apply(final File file, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = !Vars.Test.testmode ? Main.getLocaleService() : null;
-        final Logger logger         = !Vars.Test.testmode ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final LocaleService locale  = Main.getLocaleService();
+        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
         final String str = new String(bytes);
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
@@ -43,9 +43,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
             try{
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, content.get()));
             }catch(final Throwable e){
-                if(!Vars.Test.testmode)
-                    // IntelliJ defect; locale will not be null while not in test mode
-                    //noinspection ConstantConditions
+                if(locale != null)
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });

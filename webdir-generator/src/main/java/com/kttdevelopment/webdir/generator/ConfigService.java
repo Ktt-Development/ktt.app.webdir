@@ -21,7 +21,8 @@ public final class ConfigService {
     }
 
     public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
-        final Logger logger = !Vars.Test.testmode ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
+        final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
+
         logger.info("Started configuration initialization");
 
         // load default
@@ -70,7 +71,7 @@ public final class ConfigService {
         config.setDefault(def);
         this.config = config;
 
-        if(!Vars.Test.testmode)
+        if(Main.getLoggerService() != null)
             Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
         logger.info("Finished configuration service initialization");
     }
