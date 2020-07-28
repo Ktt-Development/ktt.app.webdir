@@ -98,7 +98,7 @@ public final class PluginLoader {
                 logger.warning(locale.getString("pluginLoader.const.loadPluginYML.classLoaderCloseIO", file.getName()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
-        logger.finer(locale.getString("pluginLoader.debug.const.loadPluginYML.count",pluginYMLs.size()-pluginsIsJar.size()));
+        logger.finer(locale.getString("pluginLoader.debug.const.loadPluginYML.count",pluginYMLs.size(),pluginYMLs.size()-pluginsIsJar.size()));
 
     // load plugins that have valid plugin.yml, required paramters, and correct main class
         logger.finer(locale.getString("pluginLoader.debug.const.loadValid"));
@@ -249,7 +249,7 @@ public final class PluginLoader {
 
                 try{
                     logger.finest(locale.getString("pluginLoader.debug.const.loader",pluginName));
-                    final WebDirPlugin plugin = future.get(Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
+                    final WebDirPlugin plugin = future.get(Vars.Test.plugin ? 5 : Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
                     plugin.getRenderers().forEach((rendererName, renderer) -> {
                         renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer));
                         logger.finest(locale.getString("pluginLoader.debug.const.loader.addRenderer",pluginName,rendererName));

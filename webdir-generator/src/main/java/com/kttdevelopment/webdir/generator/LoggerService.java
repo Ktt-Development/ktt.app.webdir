@@ -45,7 +45,7 @@ public final class LoggerService {
     }
 
     public final Logger getLogger(final String loggerName){
-        final Logger logger = Logger.getLogger(loggerName);
+        final Logger logger = loggerName != null ? Logger.getLogger(loggerName) : Logger.getAnonymousLogger();
         final List<Handler> handlers = Arrays.asList(logger.getHandlers());
         for(final Handler handler : this.handlers)
             if(!handlers.contains(handler))

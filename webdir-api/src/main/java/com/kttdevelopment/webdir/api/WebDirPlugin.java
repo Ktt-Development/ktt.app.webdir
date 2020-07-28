@@ -88,6 +88,7 @@ public class WebDirPlugin {
      * Returns a casted plugin from the server or null if it is not found. This method can be used to access features of other plugins.
      *
      * @param pluginName name of the plugin
+     * @param <T> plugin class type
      * @param pluginClass plugin class
      * @return casted plugin
      * @throws ClassCastException plugin does not extend class provided

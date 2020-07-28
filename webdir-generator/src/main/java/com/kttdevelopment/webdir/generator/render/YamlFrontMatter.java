@@ -70,8 +70,10 @@ public abstract class YamlFrontMatter {
         final LocaleService locale  = Main.getLocaleService() ;
         final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
+        final String sabs = source != null ? source.getAbsolutePath() : null;
+
         if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",source.getAbsolutePath(),config,checkedImports));
+            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",sabs,config,checkedImports));
 
         // reverse lists so top imports#putAll will override lower imports
         final List<String> imports = config.getList(Vars.Renderer.importKey, new ArrayList<>());
@@ -92,7 +94,7 @@ public abstract class YamlFrontMatter {
             final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
 
             if(locale != null)
-                logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,source.getAbsolutePath()));
+                logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,sabs));
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
