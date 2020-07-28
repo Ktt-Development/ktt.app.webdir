@@ -45,9 +45,8 @@ public final class LocaleService {
 
         final String value = locale.getString(key);
         if(value == null)
-            logger.warning(Exceptions.requireNonExceptionElse(
-                () -> getString("locale.getString.notFound"),
-                String.format("Failed to get localized string for key %s (not found)", key))
+            logger.warning(
+                String.format(Objects.requireNonNullElse(locale.getString("locale.getString.notFound"),"Failed to get localized string for key '%s' (not found)"),key)
             );
         return value;
     }
@@ -56,11 +55,14 @@ public final class LocaleService {
         final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(getString("locale")) : Logger.getLogger("Locale");
 
         final String value = locale.getString(key,args);
-        if(value.equals(getString(key)))
-            logger.warning(Exceptions.requireNonExceptionElse(
-                    () -> getString("locale.getString.missingParams"),
-                    String.format("Failed to get localized string for key %s (insufficient parameters)", key))
-                );
+        if(value == null)
+            logger.warning(
+                String.format(Objects.requireNonNullElse(locale.getString("locale.getString.notFound"),"Failed to get localized string for key '%s' (not found)"),key)
+            );
+        else if(value.equals(getString(key)))
+            logger.warning(
+                String.format(Objects.requireNonNullElse(locale.getString("locale.getString.missingParams"),"Failed to get localized string for key '%s' (insufficient parameters)"),key)
+            );
         return value;
     }
 
