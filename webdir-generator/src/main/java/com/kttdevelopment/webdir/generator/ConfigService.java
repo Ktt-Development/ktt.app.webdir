@@ -24,7 +24,7 @@ public final class ConfigService {
     }
 
     public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
-        this.configFile = configFile.getAbsolutePath();
+        this.configFile = configFile != null ? configFile.getAbsolutePath() : null;
         this.defaultConfigResource = defaultConfigResource;
         final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
 
