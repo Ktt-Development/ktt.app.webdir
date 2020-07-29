@@ -1,29 +1,29 @@
 package com.kttdevelopment.webdir.server.permissions;
 
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.object.Tuple4;
 import com.kttdevelopment.webdir.server.ServerVars;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
-public final class PermissionsGroup extends Tuple4<String,List<String>,Map,List<String>> {
+public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]> {
 
 
     @SuppressWarnings("unchecked")
     public PermissionsGroup(final String group, final Map value){
         super(
             group,
-            ((Supplier<List<String>>) () -> {
+            ((Supplier<String[]>) () -> {
                 try{
                     final Object inheritance = Objects.requireNonNull(value.get(ServerVars.Permissions.inheritanceKey));
                     if(inheritance instanceof List)
-                        return Collections.unmodifiableList(((List) inheritance));
+                        return Arrays.copyOf(((List<?>) inheritance).toArray(), ((List<?>) inheritance).size(), String[].class);
                     else
-                        return Collections.singletonList(inheritance.toString());
+                        return new String[]{inheritance.toString()};
                 }catch(final ClassCastException | NullPointerException ignored){
-                    return new ArrayList<>();
+                    return new String[0];
                 }
             }).get(),
             ((Supplier<Map>) () -> {
@@ -33,14 +33,15 @@ public final class PermissionsGroup extends Tuple4<String,List<String>,Map,List<
                     return new HashMap();
                 }
             }).get(),
-            ((Supplier<List<String>>) () -> {
+            ((Supplier<String[]>) () -> {
                 try{
                     return
                         ((List<String>) Objects.requireNonNull(value.get(ServerVars.Permissions.permissionsKey)))
                             .stream()
-                            .map(String::toLowerCase).collect(Collectors.toList());
+                            .map(String::toLowerCase)
+                            .toArray(String[]::new);
                 }catch(final ClassCastException | NullPointerException ignored){
-                    return new ArrayList<>();
+                    return new String[0];
                 }
             }).get()
         );
@@ -50,7 +51,7 @@ public final class PermissionsGroup extends Tuple4<String,List<String>,Map,List<
         return getVar1();
     }
 
-    public final List<String> getInheritance(){
+    public final String[] getInheritance(){
         return getVar2();
     }
 
@@ -58,7 +59,7 @@ public final class PermissionsGroup extends Tuple4<String,List<String>,Map,List<
         return getVar3();
     }
 
-    public final List<String> getPermissions(){
+    public final String[] getPermissions(){
         return getVar4();
     }
 
@@ -66,13 +67,12 @@ public final class PermissionsGroup extends Tuple4<String,List<String>,Map,List<
 
     @Override
     public String toString(){
-        return
-            "PermissionsGroup" + '{' +
-            "group"         + '=' + getVar1() + ", " +
-            "inheritance"   + '=' + getVar2() + ", " +
-            "options"       + '=' + getVar3() + ", " +
-            "permissions"   + '=' + getVar4() +
-            '}';
+        return new toStringBuilder("PermissionsGroup")
+            .addObject("group",getGroup())
+            .addObject("inheritance",getInheritance())
+            .addObject("options",getOptions())
+            .addObject("permissions",getPermissions())
+            .toString();
     }
 
 }

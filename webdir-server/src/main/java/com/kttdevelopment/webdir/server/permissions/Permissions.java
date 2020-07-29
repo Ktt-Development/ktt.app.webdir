@@ -64,7 +64,7 @@ public final class Permissions {
         Object def = null;
         for(final PermissionsGroup group : groups)
             if(group.getOptions().containsKey(option)) // if group contains option
-                if(user != null && user.getGroups().contains(group.getGroup())) // if user is a member of the group
+                if(user != null && Arrays.asList(user.getGroups()).contains(group.getGroup())) // if user is a member of the group
                     return group.getOptions().get(option);
                 else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false)) // if group is default use set default option
                     def = group.getOptions().get(option);
@@ -90,7 +90,7 @@ public final class Permissions {
                     Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()), false) ||
                     (
                         user != null &&
-                        user.getGroups().contains(group.getGroup())
+                        Arrays.asList(user.getGroups()).contains(group.getGroup())
                     )
                 ) && hasPermission(group,permission)
             )
@@ -125,7 +125,7 @@ public final class Permissions {
     private List<PermissionsGroup> getInheritedGroups(final PermissionsGroup group, final List<PermissionsGroup> read){
         final List<PermissionsGroup> OUT = new LinkedList<>(read);
         OUT.add(group);
-        final List<String> inheritance = group.getInheritance();
+        final List<String> inheritance = Arrays.asList(group.getInheritance());
         final List<PermissionsGroup> queue = new LinkedList<>();
         for(final PermissionsGroup g : this.groups)
             if(!read.contains(g) && inheritance.contains(g.getGroup()))
