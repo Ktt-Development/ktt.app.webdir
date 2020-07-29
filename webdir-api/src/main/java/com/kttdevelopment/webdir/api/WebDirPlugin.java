@@ -209,4 +209,15 @@ public class WebDirPlugin {
     @SuppressWarnings("EmptyMethod")
     public void onDisable(){}
 
+    //
+
+
+    @Override
+    public String toString(){
+        return "WebDirPlugin{" +
+               "pluginService=" + service +
+               ", renderers=" + renderers +
+               '}';
+    }
+
 }

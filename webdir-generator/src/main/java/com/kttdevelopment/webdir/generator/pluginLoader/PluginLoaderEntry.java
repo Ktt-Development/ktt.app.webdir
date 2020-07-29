@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.object.Tuple4;
 
 import java.io.File;
@@ -31,13 +32,12 @@ public final class PluginLoaderEntry extends Tuple4<File,Class<WebDirPlugin>,Con
 
     @Override
     public String toString(){
-        return
-            "PluginLoaderEntry" + '{' +
-            "pluginFile"    + '=' + getVar1() + ", " +
-            "mainClass"     + '=' + getVar2() + ", " +
-            "yml"           + '=' + getVar3() + ", " +
-            "pluginYml"     + '=' + getVar4() +
-            '}';
+        return new toStringBuilder("PluginLoaderEntry")
+            .addObject("pluginFile",getPluginFile())
+            .addObject("mainClass",getMainClass())
+            .addObject("yml",getPluginYml())
+            .addObject("pluginYml",getPluginYml())
+            .toString();
     }
 
 }

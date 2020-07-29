@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator.pluginLoader;
 
 import com.kttdevelopment.webdir.api.Renderer;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.object.Tuple3;
 
 public final class PluginRendererEntry extends Tuple3<String,String,Renderer> {
@@ -23,12 +24,11 @@ public final class PluginRendererEntry extends Tuple3<String,String,Renderer> {
 
     @Override
     public String toString(){
-        return
-            "PluginRenderEntry" + '{' +
-            "pluginName"    + '=' + getVar1() + ", " +
-            "rendererName"  + '=' + getVar2() + ", " +
-            "renderer"      + '=' + getVar3() +
-            '}';
+        return new toStringBuilder("PluginRenderEntry")
+            .addObject("pluginName",getPluginName())
+            .addObject("rendererName",getRendererName())
+            .addObject("renderer",getRenderer())
+            .toString();
     }
 
 }

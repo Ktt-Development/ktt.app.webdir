@@ -4,6 +4,7 @@ import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.util.*;
 
@@ -51,6 +52,20 @@ public final class PluginYmlImpl extends PluginYml {
     @Override
     public final ConfigurationSection getConfiguration(){
         return new ConfigurationSectionImpl(config.toMap());
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("PluginYml")
+            .addObject("pluginName",pluginName)
+            .addObject("pluginVersion",pluginVersion)
+            .addObject("authors",authors)
+            .addObject("dependencies",dependencies)
+            .addObject("configuration",config)
+            .toString();
     }
 
 }

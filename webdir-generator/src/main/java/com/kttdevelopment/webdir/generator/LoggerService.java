@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.logger.LoggerFormatter;
 import com.kttdevelopment.webdir.generator.object.Tuple3;
 
@@ -51,6 +52,16 @@ public final class LoggerService {
             if(!handlers.contains(handler))
                 logger.addHandler(handler);
         return logger;
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("LoggerService")
+            .addObject("handlers",handlers)
+            .toString();
     }
 
 }

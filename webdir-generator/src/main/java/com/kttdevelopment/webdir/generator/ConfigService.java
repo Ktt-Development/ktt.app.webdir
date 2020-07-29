@@ -4,6 +4,7 @@ import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -14,6 +15,8 @@ import java.util.logging.Logger;
 
 public final class ConfigService {
 
+    private final String configFile, defaultConfigResource;
+
     private final ConfigurationSection config;
 
     public final ConfigurationSection getConfig(){
@@ -21,6 +24,8 @@ public final class ConfigService {
     }
 
     public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
+        this.configFile = configFile.getAbsolutePath();
+        this.defaultConfigResource = defaultConfigResource;
         final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
 
         logger.info("Started configuration initialization");
@@ -78,6 +83,18 @@ public final class ConfigService {
         if(Main.getLoggerService() != null)
             Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
         logger.info("Finished configuration service initialization");
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("ConfigService")
+            .addObject("configurationFile",configFile)
+            .addObject("defaultConfigurationResource",defaultConfigResource)
+            .addObject("configuration",config)
+            .toString();
     }
 
 }

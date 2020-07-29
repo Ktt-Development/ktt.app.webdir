@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.generator;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
 
 import java.io.File;
@@ -13,15 +14,22 @@ import java.util.logging.Logger;
 
 public final class Server {
 
-    Server(final int port, final File source, final File rendered) throws IOException{
+    private final String source, output;
+    private final int port;
+
+    private final SimpleHttpServer server;
+
+    Server(final int port, final File source, final File output) throws IOException{
+        this.source = source.getAbsolutePath();
+        this.output = output.getAbsolutePath();
+
         final LocaleService locale  = Main.getLocaleService();
         final Logger logger         = Main.getLoggerService().getLogger(locale.getString("server"));
         logger.info(locale.getString("server.const"));
 
-        final SimpleHttpServer server;
-
         try{
             server = SimpleHttpServer.create(!Vars.Test.server ? port : Vars.Test.port);
+            this.port = server.getAddress().getPort();
         }catch(final BindException e){
             logger.severe(locale.getString("server.const.blockedPort",port));
             throw e;
@@ -64,7 +72,7 @@ public final class Server {
 
         // server
         final FileHandler handler = new FileHandler(new HTMLNameAdapter());
-        handler.addDirectory(rendered,"",true);
+        handler.addDirectory(output,"",true);
 
         server.createContext("",handler);
 
@@ -90,6 +98,19 @@ public final class Server {
         }catch(final IOException e){
             logger.severe(locale.getString("server.createWatchService.failedWalk", target) + '\n' + Exceptions.getStackTraceAsString(e));
         }
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("Server")
+            .addObject("source",source)
+            .addObject("output",output)
+            .addObject("port",port)
+            .addObject("server",server)
+            .toString();
     }
 
 }

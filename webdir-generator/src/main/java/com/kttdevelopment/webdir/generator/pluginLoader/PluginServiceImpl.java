@@ -4,6 +4,7 @@ import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.*;
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.config.*;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
 import java.io.*;
@@ -83,6 +84,18 @@ public final class PluginServiceImpl extends PluginService {
     @Override
     public LocaleBundle getLocaleBundle(final String resource){
         return new LocaleBundleImpl(Main.getLocaleService(),resource);
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("PluginService")
+            .addObject("logger",logger.getName())
+            .addObject("badFileCharsRegex",badFileChars)
+            .addObject("pluginFolder",pluginFolder.getAbsolutePath())
+            .addObject("pluginYML",pluginYml)
+            .toString();
     }
 
 }

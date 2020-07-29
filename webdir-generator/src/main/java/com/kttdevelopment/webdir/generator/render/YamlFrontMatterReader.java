@@ -4,6 +4,7 @@ import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.io.IOException;
 import java.util.Map;
@@ -81,4 +82,16 @@ public final class YamlFrontMatterReader {
             }
         };
     }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("YamLFrontMatterReader")
+            .addObject("frontMatterRegex",pattern.pattern())
+            .addObject("content",content)
+            .toString();
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
 import com.kttdevelopment.webdir.generator.render.PageRenderer;
 
@@ -124,6 +125,19 @@ public final class PageRenderingService {
                 logger.finest(locale.getString("pageRenderer.debug.render.missingDir",tabs,parent.getAbsolutePath()));
         }
         return false;
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("PageRenderingService")
+            .addObject("defaultFrontMatterLoader",defaultFrontMatterLoader)
+            .addObject("pageRenderer",render)
+            .addObject("source",source.getAbsolutePath())
+            .addObject("output",output.getAbsolutePath())
+            .toString();
     }
 
 }

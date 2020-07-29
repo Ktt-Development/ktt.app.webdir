@@ -1,13 +1,15 @@
 package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
-import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
 import java.util.*;
 import java.util.logging.Logger;
 
 public final class LocaleService {
+
+    private final String resource;
 
     private final LocaleBundleImpl locale;
     private Locale currentLocale;
@@ -66,7 +68,10 @@ public final class LocaleService {
         return value;
     }
 
+    //
+
     public LocaleService(String resource_prefix){
+        this.resource = resource_prefix;
         final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Locale") : Logger.getLogger("Locale");
         logger.info("Started locale initialization");
 
@@ -75,6 +80,20 @@ public final class LocaleService {
         locale = new LocaleBundleImpl(resource_prefix);
 
         logger.info("Finished locale initialization");
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("LocaleService")
+            .addObject("resource",resource)
+            .addObject("localeBundle",locale)
+            .addObject("currentLocale (English)",currentLocale.getDisplayName(Locale.US))
+            .addObject("currentLocale",currentLocale.getDisplayName(currentLocale))
+            .addObject("watching",watching)
+            .toString();
     }
 
 }

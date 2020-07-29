@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.generator.pluginLoader;
 
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -40,6 +42,17 @@ public class CircularDependencyChecker implements Predicate<PluginLoaderEntry> {
             if(deps.contains(entry.getPluginYml().getPluginName()))
                 dependencies.add(entry);
         return dependencies;
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("CircularDependencyChecker")
+            .addObject("plugins",plugins)
+            .addObject("checked",checked)
+            .toString();
     }
 
 }

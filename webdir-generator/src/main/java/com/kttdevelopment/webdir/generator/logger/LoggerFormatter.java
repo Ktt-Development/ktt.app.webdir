@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator.logger;
 
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Objects;
@@ -10,10 +11,7 @@ import java.util.logging.LogRecord;
 
 public final class LoggerFormatter extends Formatter {
 
-
-
     private final boolean hasTimestamp;
-    @SuppressWarnings("SpellCheckingInspection")
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSSaa zzz");
 
     private final boolean hasTrace;
@@ -46,6 +44,20 @@ public final class LoggerFormatter extends Formatter {
             (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") +
             String.format(name,record.getLoggerName()) + ' ' +
             record.getMessage() + '\n';
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("LoggerFormatter")
+            .addObject("hasTimestamp",hasTimestamp)
+            .addObject("timestampSDF",sdf.toPattern())
+            .addObject("hasTrace",hasTrace)
+            .addObject("traceString",trace)
+            .addObject("nameString",name)
+            .toString();
     }
 
 }

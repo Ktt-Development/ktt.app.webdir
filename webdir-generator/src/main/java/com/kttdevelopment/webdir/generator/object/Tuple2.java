@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.generator.object;
 
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+
 public class Tuple2<X,Y> {
 
     private final X var1;
@@ -20,11 +22,10 @@ public class Tuple2<X,Y> {
 
     @Override
     public String toString(){
-        return
-            "Tuple2" + '{' +
-            "var1"  + '=' + getVar1() + ", " +
-            "var2"  + '=' + getVar2() + ", " +
-            '}';
+        return new toStringBuilder("Tuple2")
+            .addObject("var1",getVar1())
+            .addObject("var2",getVar2())
+            .toString();
     }
 
 }

@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +62,20 @@ public abstract class Main {
                 e2.printStackTrace();
             }
         }
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("Main")
+            .addObject("loggerService",loggerService)
+            .addObject("localeService",localeService)
+            .addObject("configService",configService)
+            .addObject("pluginLoader",pluginLoader)
+            .addObject("pageRenderingService",pageRenderingService)
+            .addObject("server",server)
+            .toString();
     }
 
 }

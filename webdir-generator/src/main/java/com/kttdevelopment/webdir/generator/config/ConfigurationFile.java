@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator.config;
 
 import com.esotericsoftware.yamlbeans.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.io.*;
 import java.util.Map;
@@ -41,6 +42,13 @@ public class ConfigurationFile extends ConfigurationSectionImpl implements Confi
             try{ IN.close();
             }catch(final IOException ignored){ }
         }
+    }
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("ConfigurationFile")
+            .addObject("configuration",config)
+            .toString();
     }
 
 }

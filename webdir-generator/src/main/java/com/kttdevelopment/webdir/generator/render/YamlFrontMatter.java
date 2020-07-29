@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
@@ -125,15 +126,16 @@ public abstract class YamlFrontMatter {
 
         for(final Object obj : renderers){
             logger.fine(locale.getString("pageRenderer.debug.yamlFrontMatter.getRenderers.map",obj));
-            PluginRenderer renderer = null;
+            PluginRendererEntry renderer = null;
             if(obj instanceof String){
-                renderer = new PluginRenderer(null, obj.toString());
+                renderer = new PluginRendererEntry(null, obj.toString(),null);
             }else if(obj instanceof Map){
                 final Map map = (Map) obj;
                 try{
-                    renderer = new PluginRenderer(
+                    renderer = new PluginRendererEntry(
                         Objects.requireNonNull(map.get(Vars.Renderer.pluginKey)).toString(),
-                        Objects.requireNonNull(map.get(Vars.Renderer.rendererKey)).toString()
+                        Objects.requireNonNull(map.get(Vars.Renderer.rendererKey)).toString(),
+                        null
                     );
                 }catch(final NullPointerException ignored){
                     logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getRenderers.missingKV", obj));
@@ -159,6 +161,20 @@ public abstract class YamlFrontMatter {
             }
         }
         return Collections.unmodifiableList(out);
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("YamlFrontMatter")
+            .addObject("hasExtensionRegex",hasExtension.pattern())
+            .addObject("hasFrontMatter",hasFrontMatter())
+            .addObject("frontMatter",getFrontMatter())
+            .addObject("frontMatterString",getFrontMatterAsString())
+            .addObject("content",getContent())
+            .toString();
     }
 
 }

@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.object.Tuple2;
 
 import java.io.File;
@@ -114,6 +115,17 @@ public final class DefaultFrontMatterLoader {
         configs.forEach(def::setDefault);
         final ConfigurationSection config = new ConfigurationSectionImpl(def.toMapWithDefaults());
         return config.toMap().isEmpty() ? null : config;
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("DefaultFrontMatterLoader")
+            .addObject("sourcesDir",sourcesDir.getAbsolutePath())
+            .addObject("defaultConfiguration",defaultConfigurations)
+            .toString();
     }
 
 }

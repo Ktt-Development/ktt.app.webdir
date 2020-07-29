@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.generator.config;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.util.*;
 
@@ -284,13 +285,12 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public String toString(){
-        return
-            "ConfigurationSection" + '{' +
-            "root"      + '=' +     (root == this ? "this" : root)    + ", " +
-            "parent"    + '=' +     parent  + ", " +
-            "config"    + '=' +     config  + ", " +
-            "def"       + '=' +     def     +
-            '}';
+        return new toStringBuilder("ConfigurationSection")
+            .addObject("root",root == this ? "this" : root)
+            .addObject("parent",parent)
+            .addObject("config",config)
+            .addObject("def",def)
+            .toString();
     }
 
 }

@@ -10,9 +10,6 @@ import java.util.logging.Logger;
 
 public final class ShutdownThread extends Thread{
 
-    private static final int timeout = 30;
-    private static final TimeUnit unit = TimeUnit.SECONDS;
-
     @Override
     public final void run(){
         final LocaleService locale = Main.getLocaleService();
@@ -25,13 +22,13 @@ public final class ShutdownThread extends Thread{
             final Future<?> future = executor.submit(plugin::onDisable);
 
             try{
-                future.get(timeout,unit);
+                future.get(Vars.Plugin.loadTimeout,Vars.Plugin.loadTimeoutUnit);
                 success.incrementAndGet();
             }catch(final Throwable e){
                 future.cancel(true);
                 logger.severe(
                     e instanceof TimeoutException
-                    ? locale.getString("shutdown.run.timedOut",plugin.getPluginYml().getPluginName(),timeout + " " + unit.name().toLowerCase())
+                    ? locale.getString("shutdown.run.timedOut",plugin.getPluginYml().getPluginName(),Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
                     : locale.getString("shutdown.run.unknown",plugin.getPluginYml().getPluginName()) + '\n' + Exceptions.getStackTraceAsString(e)
                 );
             }

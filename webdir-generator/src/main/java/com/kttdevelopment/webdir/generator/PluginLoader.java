@@ -6,6 +6,7 @@ import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.pluginLoader.*;
 
 import java.io.*;
@@ -46,6 +47,10 @@ public final class PluginLoader {
 
     //
 
+    private final String pluginsFolder;
+    @SuppressWarnings("SpellCheckingInspection")
+    private final boolean safemode;
+
     @SuppressWarnings({"unchecked", "SpellCheckingInspection"})
     public PluginLoader(){
         final LocaleService locale = Main.getLocaleService();
@@ -56,8 +61,9 @@ public final class PluginLoader {
 
         final File pluginsFolder = new File(config.getConfig().getString(Vars.Config.pluginsKey,Vars.Config.defaultPlugins));
         logger.fine(locale.getString("pluginLoader.debug.const.pluginFolder",pluginsFolder.getAbsolutePath()));
+        this.pluginsFolder = pluginsFolder.getAbsolutePath();
 
-        if(Vars.Test.safemode || config.getConfig().getBoolean("safemode")){
+        if(safemode = Vars.Test.safemode || config.getConfig().getBoolean("safemode")){
             logger.info(locale.getString("pluginLoader.const.skippedReasonSafeMode"));
             return;
         }
@@ -270,6 +276,19 @@ public final class PluginLoader {
         logger.finer(locale.getString("pluginLoader.debug.const.loader.loaded", loadedPlugins.get(), loadedPlugins.get() - pluginsSortedDep.size()));
 
         logger.info(locale.getString("pluginLoader.const.loaded",loadedPlugins.get(),initialPluginCount));
+    }
+
+    //
+
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("PluginLoader")
+            .addObject("pluginsFolder",pluginsFolder)
+            .addObject("safe-mode",safemode)
+            .addObject("plugins",plugins)
+            .addObject("renderers",renderers)
+            .toString();
     }
 
 }
