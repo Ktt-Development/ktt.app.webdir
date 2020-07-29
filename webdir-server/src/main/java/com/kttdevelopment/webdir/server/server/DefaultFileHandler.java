@@ -2,22 +2,28 @@ package com.kttdevelopment.webdir.server.server;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.webdir.api.ExchangeRenderer;
+import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultFileHandler extends FileHandler {
 
-    @Override
-    public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
+    private final DefaultFrontMatterLoader defaultFrontMatterLoader;
+    private final ExchangePageRenderer render = new ExchangePageRenderer();
+    private final List<ExchangeRenderer> renderers = new ArrayList<>();
 
-        // todo:
-        // find handler that passes test
-        // check if permission
-        // apply with unmodifiable version
-        // send (do not allow more than one handler to process)
+    public DefaultFileHandler(final File defaults, final File source){
+        this.defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
+    }
 
-        super.handle(exchange, source, bytes);
+    @Override // target file refers to file in output folder
+    public final void handle(final SimpleHttpExchange exchange, final File target, final byte[] bytes) throws IOException{
+        final File source = null; // todo
+        exchange.send(render.apply(source,defaultFrontMatterLoader.getDefaultFrontMatter(source),bytes));
     }
 
 }

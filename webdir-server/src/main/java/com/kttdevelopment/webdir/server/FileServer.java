@@ -40,7 +40,7 @@ public class FileServer {
 
         server.createContext("",new ThrottledHandler(staticFileHandler,throttler));
 
-        final FileHandler sysFileHandler = new DefaultFileHandler();
+        final FileHandler sysFileHandler = new DefaultFileHandler(null,null);// todo
         // todo: add drives & watch add/remove
         server.createContext(Main.getConfigService().getConfig().getString("files_context"),new ThrottledHandler(sysFileHandler,throttler));
 

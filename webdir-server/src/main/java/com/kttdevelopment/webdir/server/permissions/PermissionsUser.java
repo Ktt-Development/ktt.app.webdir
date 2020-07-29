@@ -1,14 +1,17 @@
 package com.kttdevelopment.webdir.server.permissions;
 
+import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.object.Tuple4;
+import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 @SuppressWarnings("rawtypes")
 public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,String[]> {
@@ -22,6 +25,9 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
         super( // if user uses loop back address (127.0.0.1) then use local address instead; (server uses machine address instead of 127.0.0.1)
             Exceptions.requireNonExceptionElse(() -> user.isLoopbackAddress() ? InetAddress.getLocalHost() : user, user),
             ((Supplier<String[]>) () -> {
+                final LocaleService locale = Main.getLocaleService();
+                final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+
                 try{
                     final Object groups = Objects.requireNonNull(value.get(ServerVars.Permissions.groupsKey));
                     if(groups instanceof List)
@@ -29,17 +35,27 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                     else
                         return new String[]{groups.toString()};
                 }catch(final ClassCastException | NullPointerException ignored){
+                    if(locale != null)
+                        logger.warning(locale.getString("permissions.PermissionsUser.missingGroups",user));
                     return new String[0];
                 }
             }).get(),
             ((Supplier<Map>) () -> {
+                final LocaleService locale = Main.getLocaleService();
+                final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+
                 try{
                     return Collections.unmodifiableMap((Map) Objects.requireNonNull(value.get(ServerVars.Permissions.optionsKey)));
                 }catch(final ClassCastException | NullPointerException ignored){
+                    if(locale != null)
+                        logger.warning(locale.getString("permissions.PermissionsUser.missingOptions",user));
                     return new HashMap();
                 }
             }).get(),
             ((Supplier<String[]>) () -> {
+                final LocaleService locale = Main.getLocaleService();
+                final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+
                 try{
                     return
                         ((List<String>) Objects.requireNonNull(value.get(ServerVars.Permissions.permissionsKey)))
@@ -47,6 +63,8 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                             .map(String::toLowerCase)
                             .toArray(String[]::new);
                 }catch(final ClassCastException | NullPointerException ignored){
+                    if(locale != null)
+                        logger.warning(locale.getString("permissions.PermissionsUser.missingPermissions",user));
                     return new String[0];
                 }
             }).get()

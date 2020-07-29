@@ -32,6 +32,12 @@ public abstract class Main {
 
     //
 
+    private static PermissionsService permissions = null;
+
+    public static PermissionsService getPermissions(){
+        return permissions;
+    }
+
     private static FileServer server;
 
     public static FileServer getServer(){ return server; }
@@ -53,8 +59,8 @@ public abstract class Main {
             final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
             pageRenderingService = new PageRenderingService(defaults,source,output);
 
-            if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))
-                server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),output);
+            permissions = new PermissionsService(new File(config.getString(ServerVars.Config.permissionsKey,ServerVars.Config.defaultPermissions)),ServerVars.Config.defaultPermissions);
+            server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){

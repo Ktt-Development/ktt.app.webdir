@@ -47,3 +47,8 @@ port: 80
 # Ex: setting this to 'files' would put files from C://* at http://localhost/files/C/*    ← here
 # Default: files
 files_context: files
+
+# The permissions file.
+# (WebDir - Server only)
+# Default: permissions.yml
+permissions: permissions.yml

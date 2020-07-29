@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.*;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 @SuppressWarnings("rawtypes")
@@ -25,7 +26,7 @@ public final class PermissionsService {
 
     //
 
-    PermissionsService(final File permissionsFile, final File defaultPermissionsFile) throws FileNotFoundException, YamlException{
+    PermissionsService(final File permissionsFile, final String defaultPermissionsResource) throws YamlException{
         this.permissionsFile = permissionsFile;
 
         final LocaleService locale = Main.getLocaleService();
@@ -35,9 +36,9 @@ public final class PermissionsService {
 
         YamlReader IN = null;
         try{ // default
-            IN = new YamlReader(new FileReader(defaultPermissionsFile));
+            IN = new YamlReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(defaultPermissionsResource))));
             defaultPermissions = new Permissions((Map) IN.read());
-        }catch(final ClassCastException | FileNotFoundException | YamlException e){
+        }catch(final ClassCastException | NullPointerException | YamlException e){
             logger.severe(locale.getString("permissions.init.notFound"));
             throw e;
         }finally{

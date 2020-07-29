@@ -1,3 +1,5 @@
+package permissions;
+
 import com.kttdevelopment.webdir.server.ServerVars;
 import com.kttdevelopment.webdir.server.permissions.PermissionsGroup;
 import com.kttdevelopment.webdir.server.permissions.PermissionsUser;
@@ -9,7 +11,7 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PermissionsTests {
+public class PermissionsSchemaTests {
 
     @Test
     public void testUserSchema() throws UnknownHostException{

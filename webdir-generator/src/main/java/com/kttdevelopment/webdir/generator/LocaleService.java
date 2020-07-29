@@ -19,7 +19,7 @@ public final class LocaleService {
     private final List<LocaleBundle> watching = Collections.synchronizedList(new ArrayList<>());
 
     public synchronized final void setLocale(final Locale locale){
-        (Main.getLoggerService() != null ? Main.getLoggerService().getLogger("locale") : Logger.getLogger("Locale")).fine(getString("locale.debug.setLocale",locale.getDisplayName(Locale.getDefault()),locale.getDisplayName(locale)));
+        (Main.getLoggerService() != null ? Main.getLoggerService().getLogger(getString("locale")) : Logger.getLogger("Locale")).fine(getString("locale.debug.setLocale",locale.getDisplayName(Locale.getDefault()),locale.getDisplayName(locale)));
 
         this.locale.setLocale(locale);
         currentLocale = locale;
@@ -27,7 +27,7 @@ public final class LocaleService {
     }
 
     public synchronized final void addWatchedLocale(final LocaleBundle localeBundle){
-        (Main.getLoggerService() != null ? Main.getLoggerService().getLogger("locale") : Logger.getLogger("Locale")).finer(getString("locale.debug.addWatchedLocale",localeBundle));
+        (Main.getLoggerService() != null ? Main.getLoggerService().getLogger(getString("locale")) : Logger.getLogger("Locale")).finer(getString("locale.debug.addWatchedLocale",localeBundle));
 
         watching.add(localeBundle);
         ((LocaleBundleImpl) localeBundle).setLocale(currentLocale);
