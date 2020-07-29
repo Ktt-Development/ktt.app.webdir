@@ -1,5 +1,8 @@
 package com.kttdevelopment.webdir.server.permissions;
 
+import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.server.ServerVars;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -17,7 +20,7 @@ public final class Permissions {
         this.obj = obj;
 
         try{
-            final Map g = (Map) Objects.requireNonNull(obj.get("groups"));
+            final Map g = (Map) Objects.requireNonNull(obj.get(ServerVars.Permissions.groupsKey));
             g.forEach((k, v) -> {
                 try{ groups.add(new PermissionsGroup(k.toString(), (Map) v));
                 }catch(final ClassCastException ignored){ }
@@ -25,7 +28,7 @@ public final class Permissions {
         }catch(final ClassCastException | NullPointerException ignored){ }
 
         try{
-            final Map u = (Map) Objects.requireNonNull(obj.get("users"));
+            final Map u = (Map) Objects.requireNonNull(obj.get(ServerVars.Permissions.usersKey));
             u.forEach((k, v) -> {
                 try{ users.add(new PermissionsUser(k.toString(), (Map) v));
                 }catch(final ClassCastException | UnknownHostException ignored){ }
@@ -44,10 +47,8 @@ public final class Permissions {
     }
 
     public final PermissionsUser getUser(final InetAddress address){
-        for(final PermissionsUser u : users)
-            if(u.getUser().equals(address) ||
-               ((u.getUser().isAnyLocalAddress() || u.getUser().isLoopbackAddress()) && (address.isAnyLocalAddress() || address.isLoopbackAddress()))
-            )
+        for(final PermissionsUser u : users) // if user happens to use 127.0.0.1 wildcard address resolve to local machine address
+            if(u.getUser().equals(address) || Exceptions.requireNonExceptionElse(() -> address.isLoopbackAddress() && u.getUser().equals(InetAddress.getLocalHost()), false))
                 return u;
         return null;
     }
@@ -116,7 +117,7 @@ public final class Permissions {
         return getInheritedGroups(Collections.singletonList(group));
     }
 
-    public final List<PermissionsGroup> getInheritedGroups(final List<PermissionsGroup> groups){
+    public final List<PermissionsGroup> getInheritedGroups(final List<PermissionsGroup> groups){ // this code needs infinite loop prevention
         final List<PermissionsGroup> OUT = new LinkedList<>();
         groups.forEach(permissionsGroup -> OUT.addAll(getInheritedGroups(permissionsGroup, OUT)));
         return OUT;

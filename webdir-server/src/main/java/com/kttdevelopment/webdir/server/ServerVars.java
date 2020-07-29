@@ -4,6 +4,8 @@ public abstract class ServerVars {
 
     public static class Permissions {
 
+        public static final String usersKey = "users";
+
         public static final String groupsKey        = "groups";
         public static final String optionsKey       = "options";
         public static final String permissionsKey   = "permissions";

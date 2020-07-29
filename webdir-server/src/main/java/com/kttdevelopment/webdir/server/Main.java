@@ -10,23 +10,23 @@ import java.nio.file.Files;
 
 public abstract class Main {
 
-    private static LoggerService loggerService;
+    private static LoggerService loggerService = null;
 
     public static LoggerService getLoggerService(){ return loggerService; }
 
-    private static LocaleService localeService;
+    private static LocaleService localeService = null;
 
     public static LocaleService getLocaleService(){ return localeService; }
 
-    private static ConfigService configService;
+    private static ConfigService configService = null;
 
     public static ConfigService getConfigService(){ return configService; }
 
-    private static PluginLoader pluginLoader;
+    private static PluginLoader pluginLoader = null;
 
     public static PluginLoader getPluginLoader(){ return pluginLoader; }
 
-    private static PageRenderingService pageRenderingService;
+    private static PageRenderingService pageRenderingService = null;
 
     public static PageRenderingService getPageRenderingService(){ return pageRenderingService; }
 
@@ -36,28 +36,34 @@ public abstract class Main {
 
     public static FileServer getServer(){ return server; }
 
-    // todo | have application run main from generator and hook into the active server to add handlers
+    // todo | have application run main from generator and hook into the active server to add handlers [x]
+    // todo | ^ this approach can not be used because the handler for static files must be overridden to allow exchange renderers to operate
 
     public static void main(String[] args){
         try{
             loggerService = new LoggerService();
-            localeService = new LocaleService("lang/bundle");
-            configService = new ConfigService(new File("config.yml"), "/config.yml");
+            localeService = new LocaleService(Vars.Main.localeResource);
+            configService = new ConfigService(Vars.Main.configFile,Vars.Main.configResource);
 
             final ConfigurationSection config = configService.getConfig();
 
             pluginLoader = new PluginLoader();
-            final File output = new File(config.getString("output_dir","_site"));
-            pageRenderingService = new PageRenderingService(null,new File(config.getString("source_dir",".root")),new File(config.getString("output_dir","_site")));
+            final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
+            final File source = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
+            final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
+            pageRenderingService = new PageRenderingService(defaults,source,output);
 
-            if(config.getBoolean("preview",false))
-                server = new FileServer(config.getInteger("port",80),output);
+            if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))
+                server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
-        }catch(final Exception e){
+        }catch(final Throwable e){
             try{
-                Files.write(new File("crash-" + System.currentTimeMillis()).toPath(), Exceptions.getStackTraceAsString(e).getBytes());
-            }catch(IOException ignored){ }
+                Exceptions.runIgnoreException(() -> loggerService.getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));
+                Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
+            }catch(final IOException e2){
+                e2.printStackTrace();
+            }
         }
     }
 
