@@ -284,6 +284,16 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
 
     @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof ConfigurationSection))
+            return false;
+        final ConfigurationSection other = (ConfigurationSection) o;
+        return other.toMapWithDefaults().equals(toMapWithDefaults());
+    }
+
+    @Override
     public String toString(){
         return new toStringBuilder("ConfigurationSection")
             .addObject("root",root == this ? "this" : root)

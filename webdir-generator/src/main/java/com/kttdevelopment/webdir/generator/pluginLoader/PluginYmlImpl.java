@@ -58,6 +58,21 @@ public final class PluginYmlImpl extends PluginYml {
 
 
     @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof PluginYml))
+            return false;
+        final PluginYml other = ((PluginYml) o);
+        return other.getPluginName().equals(pluginName) &&
+               other.getPluginVersion().equals(pluginVersion) &&
+               Arrays.equals(other.getAuthors(),authors) &&
+               Arrays.equals(other.getDependencies(),dependencies) &&
+               other.getConfiguration().equals(config);
+    }
+
+
+    @Override
     public String toString(){
         return new toStringBuilder("PluginYml")
             .addObject("pluginName",pluginName)

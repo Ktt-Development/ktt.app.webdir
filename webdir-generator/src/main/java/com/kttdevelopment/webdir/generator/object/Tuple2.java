@@ -20,6 +20,20 @@ public class Tuple2<X,Y> {
         return var2;
     }
 
+    //
+
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof Tuple2))
+            return false;
+        final Tuple2<?,?> other = (Tuple2<?,?>) o;
+        return other.getVar1().equals(getVar1()) &&
+               other.getVar2().equals(getVar2());
+    }
+
     @Override
     public String toString(){
         return new toStringBuilder("Tuple2")

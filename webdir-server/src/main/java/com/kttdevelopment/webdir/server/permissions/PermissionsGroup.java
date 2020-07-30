@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 @SuppressWarnings("rawtypes")
 public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]> {
 
-
     @SuppressWarnings("unchecked")
     public PermissionsGroup(final String group, final Map value){
         super(
@@ -78,6 +77,20 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
     }
 
     //
+
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(o == null || getClass() != o.getClass())
+            return false;
+        final PermissionsGroup other = ((PermissionsGroup) o);
+        return other.getGroup().equals(getGroup()) &&
+               Arrays.equals(other.getInheritance(),getInheritance()) &&
+               other.getOptions().equals(getOptions()) &&
+               Arrays.equals(other.getPermissions(),getPermissions());
+    }
 
     @Override
     public String toString(){

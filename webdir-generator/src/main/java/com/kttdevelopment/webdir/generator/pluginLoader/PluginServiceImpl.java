@@ -1,13 +1,15 @@
 package com.kttdevelopment.webdir.generator.pluginLoader;
 
 import com.kttdevelopment.webdir.api.*;
-import com.kttdevelopment.webdir.api.serviceprovider.*;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
+import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.generator.Main;
-import com.kttdevelopment.webdir.generator.config.*;
+import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
@@ -87,6 +89,19 @@ public final class PluginServiceImpl extends PluginService {
     }
 
     //
+
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof PluginService))
+            return false;
+        final PluginService other = ((PluginService) o);
+        return other.getLogger().getName().equals(logger.getName()) &&
+            other.getPluginFolder().getAbsolutePath().equals(pluginFolder.getAbsolutePath()) &&
+            other.getPluginYml().equals(pluginYml);
+    }
 
     @Override
     public String toString(){

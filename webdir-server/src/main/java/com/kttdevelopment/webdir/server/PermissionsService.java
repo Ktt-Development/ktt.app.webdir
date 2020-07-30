@@ -93,7 +93,7 @@ public final class PermissionsService {
         YamlWriter OUT = null;
         try{
             OUT = new YamlWriter(new FileWriter(permissionsFile));
-            OUT.write(permissions.toMap());
+            //OUT.write(permissions.toMap());
             logger.info(locale.getString("permissions.write.finished"));
             return true;
         }catch(final IOException e){

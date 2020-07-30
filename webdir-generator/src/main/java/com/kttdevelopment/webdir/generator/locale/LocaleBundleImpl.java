@@ -56,6 +56,16 @@ public final class LocaleBundleImpl implements LocaleBundle {
 
 
     @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof LocaleBundle))
+            return false;
+        final LocaleBundle other = (LocaleBundle) o;
+        return other.toString().equals(toString());
+    }
+
+    @Override
     public String toString(){
         return new toStringBuilder("LocaleBundle")
             .addObject("locale (English)",bundle.getLocale().getDisplayName(Locale.US))

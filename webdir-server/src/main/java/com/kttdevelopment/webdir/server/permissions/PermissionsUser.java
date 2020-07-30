@@ -85,6 +85,20 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
 
     //
 
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(o == null || getClass() != o.getClass())
+            return false;
+        final PermissionsUser other = ((PermissionsUser) o);
+        return (other.getUser().equals(getUser()) || (other.getUser().isLoopbackAddress() && getUser().isLoopbackAddress())) &&
+               Arrays.equals(other.getGroups(),getGroups()) &&
+               other.getOptions().equals(getOptions()) &&
+               Arrays.equals(other.getPermissions(),getPermissions());
+    }
+
     @Override
     public String toString(){
         return new toStringBuilder("PermissionsUser")

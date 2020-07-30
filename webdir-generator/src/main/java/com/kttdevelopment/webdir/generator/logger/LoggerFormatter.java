@@ -50,6 +50,17 @@ public final class LoggerFormatter extends Formatter {
 
 
     @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(o == null || getClass() != o.getClass())
+            return false;
+        final LoggerFormatter other = (LoggerFormatter) o;
+        return hasTimestamp == other.hasTimestamp &&
+               hasTrace == other.hasTrace;
+    }
+
+    @Override
     public String toString(){
         return new toStringBuilder("LoggerFormatter")
             .addObject("hasTimestamp",hasTimestamp)

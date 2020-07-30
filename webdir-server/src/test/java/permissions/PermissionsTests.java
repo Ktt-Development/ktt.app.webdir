@@ -1,34 +1,46 @@
 package permissions;
 
 import com.kttdevelopment.webdir.server.ServerVars;
-import org.junit.Ignore;
-import org.junit.Test;
+import com.kttdevelopment.webdir.server.permissions.*;
+import org.junit.*;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("rawtypes")
 public class PermissionsTests {
 
-    @Test @Ignore
-    public void testSchema(){
+    @Test
+    public void testSchema() throws UnknownHostException{
+        final String testUser = "localhost";
         final String testGroup = "testGroup", testOption = "testOp", testPermission = "testPermission";
 
-        final Map test = Map.of(
-                ServerVars.Permissions.groupsKey, Map.of(
-                "testGroup", Map.of(
+        final Map map = Map.of(
+            ServerVars.Permissions.groupsKey, Map.of(
+                testGroup, Map.of(
                     ServerVars.Permissions.inheritanceKey, testGroup,
                     ServerVars.Permissions.optionsKey, Map.of(
-                    "testOp",true
+                        testOption,true
+                        ),
+                    ServerVars.Permissions.permissionsKey, List.of(testPermission)
+                )
+            ),
+            ServerVars.Permissions.usersKey, Map.of(
+                testUser, Map.of(
+                    ServerVars.Permissions.groupsKey,List.of(testGroup),
+                    ServerVars.Permissions.optionsKey,Map.of(
+                        testOption,true
                     ),
-                    ServerVars.Permissions.permissionsKey, List.of("testPermission")
+                    ServerVars.Permissions.permissionsKey,List.of(testPermission)
                 )
             )
         );
 
-        // test that groups and users map correctly to objects
+        final Permissions permissions = new Permissions(map);
 
-        // test toMap equals source
+        Assert.assertEquals("Permissions did not map group object", new PermissionsGroup(testGroup, (Map) ((Map) map.get(ServerVars.Permissions.groupsKey)).get(testGroup)), permissions.getGroups().get(0));
+        Assert.assertEquals("Permissions did not map user object",new PermissionsUser(testUser, ((Map) ((Map) map.get(ServerVars.Permissions.usersKey)).get(testUser))),permissions.getUsers().get(0));
     }
 
     @Test @Ignore

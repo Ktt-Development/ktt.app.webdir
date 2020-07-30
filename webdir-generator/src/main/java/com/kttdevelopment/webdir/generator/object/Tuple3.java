@@ -15,6 +15,20 @@ public class Tuple3<X,Y,Z> extends Tuple2<X,Y> {
         return var3;
     }
 
+    //
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof Tuple3))
+            return false;
+        final Tuple3<?,?,?> other = (Tuple3<?,?,?>) o;
+        return other.getVar1().equals(getVar1()) &&
+               other.getVar2().equals(getVar2()) &&
+               other.getVar3().equals(getVar3());
+    }
+
     @Override
     public String toString(){
         return new toStringBuilder("Tuple3")

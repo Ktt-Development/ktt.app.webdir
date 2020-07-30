@@ -168,6 +168,19 @@ public abstract class YamlFrontMatter {
 
 
     @Override
+    public boolean equals(final Object obj){
+        if(this == obj)
+            return true;
+        else if(!(obj instanceof YamlFrontMatter))
+            return false;
+        final YamlFrontMatter other = ((YamlFrontMatter) obj);
+        return other.hasFrontMatter() == hasFrontMatter() &&
+               other.getFrontMatter().equals(getFrontMatter()) &&
+               other.getFrontMatterAsString().equals(getFrontMatterAsString()) &&
+               other.getContent().equals(getContent());
+    }
+
+    @Override
     public String toString(){
         return new toStringBuilder("YamlFrontMatter")
             .addObject("hasExtensionRegex",hasExtension.pattern())

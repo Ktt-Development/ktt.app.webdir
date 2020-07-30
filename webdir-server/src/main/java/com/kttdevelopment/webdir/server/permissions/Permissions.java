@@ -14,15 +14,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 public final class Permissions {
 
-    private final Map obj;
-
     private final List<PermissionsGroup> groups = new ArrayList<>();
     private final List<PermissionsUser>  users = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     public Permissions(final Map obj){
-        this.obj = obj;
-
         final LocaleService locale = Main.getLocaleService();
         final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
@@ -31,12 +27,13 @@ public final class Permissions {
             g.forEach((k, v) -> {
                 try{ groups.add(new PermissionsGroup(k.toString(), (Map) v));
                 }catch(final ClassCastException ignored){
-                    // fixme
+                    if(locale != null)
+                        logger.severe(locale.getString("permissions.Permissions.invalidGroupType",k));
                 }
             });
         }catch(final ClassCastException ignored){
             if(locale != null)
-                logger.severe(locale.getString("permissions.Permissions.badGroups"));
+                logger.severe(locale.getString("permissions.Permissions.invalidGroups"));
         }catch(final NullPointerException ignored){
             if(locale != null)
                 logger.severe(locale.getString("permissions.Permissions.missingGroups"));
@@ -48,14 +45,18 @@ public final class Permissions {
                 try{ users.add(new PermissionsUser(k.toString(), (Map) v));
                 }catch(final ClassCastException ignored){
                     if(locale != null)
-                        logger.severe(locale.getString("permissions.Permissions.badUser",k));
+                        logger.severe(locale.getString("permissions.Permissions.invalidUserType",k));
                 }catch(final UnknownHostException e){
                     if(locale != null)
-                        logger.severe(locale.getString("permissions.Permissions.missingUser",k) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.severe(locale.getString("permissions.Permissions.invalidUser",k) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             });
-        }catch(final ClassCastException | NullPointerException ignored){
-            // fixme
+        }catch(final ClassCastException ignored){
+            if(locale != null)
+                logger.severe(locale.getString("permissions.Permissions.invalidUsers"));
+        }catch(final NullPointerException ignored){
+            if(locale != null)
+                logger.severe(locale.getString("permissions.Permissions.missingUsers"));
         }
     }
 
@@ -74,10 +75,6 @@ public final class Permissions {
             if(u.getUser().equals(address) || Exceptions.requireNonExceptionElse(() -> address.isLoopbackAddress() && u.getUser().equals(InetAddress.getLocalHost()), false))
                 return u;
         return null;
-    }
-
-    public final Map toMap(){
-        return Collections.unmodifiableMap(obj);
     }
 
 //
@@ -194,5 +191,9 @@ public final class Permissions {
         }
         return OUT;
     }
+
+    //
+
+    // todo: equals and toString
 
 }
