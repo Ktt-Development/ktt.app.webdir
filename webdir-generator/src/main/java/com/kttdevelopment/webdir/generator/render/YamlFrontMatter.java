@@ -100,6 +100,7 @@ public abstract class YamlFrontMatter {
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
                 final Map imported = loadImports(IN,checkedImports).toMap();
+
                 imported.remove(Vars.Renderer.importKey);
                 imported.remove(Vars.Renderer.importRelativeKey);
                 out.putAll(imported);
@@ -115,7 +116,7 @@ public abstract class YamlFrontMatter {
     // renderer
 
     @SuppressWarnings("rawtypes")
-    public static List<PluginRendererEntry> getRenderers(List renderers){
+    public static List<PluginRendererEntry> getRenderers(final String renderKey, final List renderers){
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
@@ -134,7 +135,7 @@ public abstract class YamlFrontMatter {
                 try{
                     renderer = new PluginRendererEntry(
                         Objects.requireNonNull(map.get(Vars.Renderer.pluginKey)).toString(),
-                        Objects.requireNonNull(map.get(Vars.Renderer.rendererKey)).toString(),
+                        Objects.requireNonNull(map.get(renderKey)).toString(),
                         null
                     );
                 }catch(final NullPointerException ignored){

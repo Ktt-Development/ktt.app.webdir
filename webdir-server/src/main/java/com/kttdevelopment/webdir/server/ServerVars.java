@@ -21,4 +21,10 @@ public abstract class ServerVars {
 
     }
 
+    public static class Renderer {
+
+        public static final String exchangeRendererKey = "exchangeRenderer";
+
+    }
+
 }

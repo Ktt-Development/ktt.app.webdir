@@ -5,10 +5,12 @@ import com.kttdevelopment.webdir.api.ExchangeRenderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
-import com.kttdevelopment.webdir.generator.function.*;
+import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.QuinFunction;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
+import com.kttdevelopment.webdir.server.ServerVars;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +44,12 @@ public class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,Fil
 
         final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(source,mergedFrontMatter);
     // render page
-        final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.rendererKey,String.class);
+        final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRendererKey,String.class);
 
         // if no renderers then return given bytes
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
 
-        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
+        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, renderersStr);
 
         final AtomicReference<String> content = new AtomicReference<>(new String(bytes));
 

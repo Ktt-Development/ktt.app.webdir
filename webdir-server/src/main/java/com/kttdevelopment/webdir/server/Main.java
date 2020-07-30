@@ -60,7 +60,7 @@ public abstract class Main {
             pageRenderingService = new PageRenderingService(defaults,source,output);
 
             permissions = new PermissionsService(new File(config.getString(ServerVars.Config.permissionsKey,ServerVars.Config.defaultPermissions)),ServerVars.Config.defaultPermissions);
-            server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),output);
+            server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),defaults,source,output);
 
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){

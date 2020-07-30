@@ -46,7 +46,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         // if no renderers then return given bytes
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
 
-        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
+        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(Vars.Renderer.rendererKey,renderersStr);
 
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 
