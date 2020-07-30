@@ -30,7 +30,9 @@ public final class Permissions {
             final Map g = (Map) Objects.requireNonNull(obj.get(ServerVars.Permissions.groupsKey));
             g.forEach((k, v) -> {
                 try{ groups.add(new PermissionsGroup(k.toString(), (Map) v));
-                }catch(final ClassCastException ignored){ }
+                }catch(final ClassCastException ignored){
+                    // fixme
+                }
             });
         }catch(final ClassCastException ignored){
             if(locale != null)
@@ -52,7 +54,9 @@ public final class Permissions {
                         logger.severe(locale.getString("permissions.Permissions.missingUser",k) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             });
-        }catch(final ClassCastException | NullPointerException ignored){ }
+        }catch(final ClassCastException | NullPointerException ignored){
+            // fixme
+        }
     }
 
     //
@@ -78,7 +82,6 @@ public final class Permissions {
 
 //
 
-    // todo: optimize
     public final Object getOption(final InetAddress address, final String option){
         final PermissionsUser user = getUser(address);
 
