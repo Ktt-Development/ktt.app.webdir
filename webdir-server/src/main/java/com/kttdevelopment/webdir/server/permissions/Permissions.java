@@ -1,11 +1,15 @@
 package com.kttdevelopment.webdir.server.permissions;
 
+import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
 public final class Permissions {
@@ -19,19 +23,34 @@ public final class Permissions {
     public Permissions(final Map obj){
         this.obj = obj;
 
+        final LocaleService locale = Main.getLocaleService();
+        final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+
         try{
             final Map g = (Map) Objects.requireNonNull(obj.get(ServerVars.Permissions.groupsKey));
             g.forEach((k, v) -> {
                 try{ groups.add(new PermissionsGroup(k.toString(), (Map) v));
                 }catch(final ClassCastException ignored){ }
             });
-        }catch(final ClassCastException | NullPointerException ignored){ }
+        }catch(final ClassCastException ignored){
+            if(locale != null)
+                logger.severe(locale.getString("permissions.Permissions.badGroups"));
+        }catch(final NullPointerException ignored){
+            if(locale != null)
+                logger.severe(locale.getString("permissions.Permissions.missingGroups"));
+        }
 
         try{
             final Map u = (Map) Objects.requireNonNull(obj.get(ServerVars.Permissions.usersKey));
             u.forEach((k, v) -> {
                 try{ users.add(new PermissionsUser(k.toString(), (Map) v));
-                }catch(final ClassCastException | UnknownHostException ignored){ }
+                }catch(final ClassCastException ignored){
+                    if(locale != null)
+                        logger.severe(locale.getString("permissions.Permissions.badUser",k));
+                }catch(final UnknownHostException e){
+                    if(locale != null)
+                        logger.severe(locale.getString("permissions.Permissions.missingUser",k) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
             });
         }catch(final ClassCastException | NullPointerException ignored){ }
     }
@@ -53,14 +72,18 @@ public final class Permissions {
         return null;
     }
 
-    //
+    public final Map toMap(){
+        return Collections.unmodifiableMap(obj);
+    }
 
+//
+
+    // todo: optimize
     public final Object getOption(final InetAddress address, final String option){
         final PermissionsUser user = getUser(address);
 
-        if(user != null) // test options directly assigned to user
-            if(user.getOptions().containsKey(option))
-                return user.getOptions().get(option);
+        if(user != null && user.getOptions().containsKey(option)) // user option is most specific one available
+            return user.getOptions().get(option);
 
         Object def = null;
         for(final PermissionsGroup group : groups)
@@ -75,67 +98,98 @@ public final class Permissions {
     public final boolean hasPermission(final InetAddress address, final String permission){
         final PermissionsUser user = getUser(address);
 
-        boolean hasPerm = false;
-        if(user != null)
-            for(final String perm : user.getPermissions())
-                if(perm.equals('!' + permission) || (perm.startsWith('!' + permission) && perm.endsWith("*")))
-                    return false;
-                else if(perm.equals(permission) || (perm.startsWith(permission) && perm.endsWith("*")))
-                    hasPerm = true;
+        boolean hasDefaultPermission = false;
+        for(final PermissionsGroup group : getDefaultGroupsAndInherited())
+            if(hasPermission(group,permission))
+                hasDefaultPermission = true;
 
-        if(hasPerm) return true;
+        if(user == null) return hasDefaultPermission;
 
-        for(final PermissionsGroup group : groups)
-            if(
-                (
-                    Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()), false) ||
-                    (
-                        user != null &&
-                        Arrays.asList(user.getGroups()).contains(group.getGroup())
-                    )
-                ) && hasPermission(group,permission)
-            )
+        if(hasPermission(permission,user.getPermissions()))
+            return true;
+
+        for(final PermissionsGroup group : getGroupsAndInherited(user.getGroups()))
+            if(hasPermission(permission,group.getPermissions()))
+                return true;
+        return hasDefaultPermission;
+    }
+
+    public final boolean hasPermission(final PermissionsGroup group, final String permission){
+        for(final PermissionsGroup g : getGroupsAndInherited(Collections.singletonList(group.getGroup())))
+            if(hasPermission(permission,g.getPermissions()))
                 return true;
         return false;
     }
 
-    public final boolean hasPermission(final PermissionsGroup group, final String permission){
-        for(final PermissionsGroup g : getInheritedGroups(group))
-            for(final String perm : g.getPermissions())
-                if(perm.equals(permission) || (permission.endsWith("*") && perm.startsWith(permission)))
-                    return true;
-        return false;
+    public final boolean hasPermission(final String permission, final String[] permissions){
+        return hasPermission(permission,Arrays.asList(permissions));
     }
 
-    public final Map toMap(){
-        return Collections.unmodifiableMap(obj);
+    public final boolean hasPermission(final String permission, final List<String> permissions){
+        boolean hasPermission = false;
+        for(final String perm : permissions)
+            if(perm.equals('!' + permission) || (perm.startsWith("!") && perm.endsWith(".*") && permission.startsWith(perm.substring(1,perm.length()-2))))
+                return false;
+            else if(perm.equals(permission) || perm.endsWith(".*") && permission.startsWith(perm.substring(0,perm.length()-2)))
+                hasPermission = true;
+        return hasPermission;
+    }
+
+//
+
+    public final List<PermissionsGroup> getDefaultGroupsAndInherited(){
+        final List<PermissionsGroup> defaultGroups = new ArrayList<>();
+
+        for(final PermissionsGroup group : groups){
+            if(group.getOptions().containsKey("default") && Boolean.parseBoolean(group.getOptions().get("default").toString())){
+                defaultGroups.add(group);
+                defaultGroups.addAll(getInheritedGroups(group)); // if default group inherits another group the default option doesn't matter, sub inheritance as well
+            }
+        }
+        return defaultGroups.stream().distinct().collect(Collectors.toList());
     }
 
     //
 
-    public final List<PermissionsGroup> getInheritedGroups(final PermissionsGroup group){
+    public final List<PermissionsGroup> getGroupsAndInherited(final String[] groups){
+        return getGroupsAndInherited(Arrays.asList(groups));
+    }
+
+    public final List<PermissionsGroup> getGroupsAndInherited(final List<String> groups){
+        final List<PermissionsGroup> fullGroups = new ArrayList<>();
+        for(final PermissionsGroup group : this.groups){
+            if(groups.contains(group.getGroup())){
+                fullGroups.add(group);
+                fullGroups.addAll(getInheritedGroups(group));
+            }
+        }
+        return fullGroups.stream().distinct().collect(Collectors.toList());
+    }
+
+    //
+
+    private List<PermissionsGroup> getInheritedGroups(final PermissionsGroup group){
         return getInheritedGroups(Collections.singletonList(group));
     }
 
-    public final List<PermissionsGroup> getInheritedGroups(final List<PermissionsGroup> groups){ // this code needs infinite loop prevention
+    private List<PermissionsGroup> getInheritedGroups(final List<PermissionsGroup> groups){
         final List<PermissionsGroup> OUT = new LinkedList<>();
         groups.forEach(permissionsGroup -> OUT.addAll(getInheritedGroups(permissionsGroup, OUT)));
         return OUT;
     }
 
     private List<PermissionsGroup> getInheritedGroups(final PermissionsGroup group, final List<PermissionsGroup> read){
-        final List<PermissionsGroup> OUT = new LinkedList<>(read);
+        final List<PermissionsGroup> OUT = new ArrayList<>(read);
         OUT.add(group);
+
         final List<String> inheritance = Arrays.asList(group.getInheritance());
-        final List<PermissionsGroup> queue = new LinkedList<>();
-        for(final PermissionsGroup g : this.groups)
-            if(!read.contains(g) && inheritance.contains(g.getGroup()))
-                queue.add(g);
-
-        for(final PermissionsGroup g : queue)
-            OUT.addAll(getInheritedGroups(g,Collections.unmodifiableList(OUT)));
-
-        return Collections.unmodifiableList(OUT);
+        for(final PermissionsGroup g : this.groups){
+            if(!read.contains(g) && inheritance.contains(g.getGroup())){
+                read.add(g);
+                read.addAll(getInheritedGroups(g,read));
+            }
+        }
+        return OUT;
     }
 
 }

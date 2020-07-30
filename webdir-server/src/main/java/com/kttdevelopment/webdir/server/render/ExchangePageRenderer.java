@@ -1,9 +1,10 @@
 package com.kttdevelopment.webdir.server.render;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
-import com.kttdevelopment.webdir.api.ExchangeRenderer;
+import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.*;
+import com.kttdevelopment.webdir.generator.LocaleService;
+import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.QuinFunction;
@@ -11,9 +12,11 @@ import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import com.kttdevelopment.webdir.server.ServerVars;
+import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -53,16 +56,14 @@ public class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,Fil
 
         final AtomicReference<String> content = new AtomicReference<>(new String(bytes));
 
+        final InetAddress address     = exchange.getPublicAddress().getAddress();
+        final Permissions permissions = Main.getPermissions().getPermissions();
         renderers.forEach(renderer -> {
             try{
-                final String ct = content.get();
-                content.set(renderer.getRenderer().render(rendered, finalFrontMatter, ct));
-            }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-            }
-            try{
-                if(renderer.getRenderer() instanceof ExchangeRenderer /* && permissions check */) // todo
-                    content.set(((ExchangeRenderer) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
+                final Renderer render = renderer.getRenderer();
+                // if is an adapter but not a class (adapter has no permissions) or is class and has permission
+                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address,((ExchangeRenderer) render).getPermission())) // todo
+                    content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }

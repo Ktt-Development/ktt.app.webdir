@@ -57,11 +57,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
-                    return
-                        ((List<String>) Objects.requireNonNull(value.get(ServerVars.Permissions.permissionsKey)))
-                            .stream()
-                            .map(String::toLowerCase)
-                            .toArray(String[]::new);
+                    return ((List<String>) value.get(ServerVars.Permissions.permissionsKey)).toArray(new String[0]);
                 }catch(final ClassCastException | NullPointerException ignored){
                     if(locale != null)
                         logger.warning(locale.getString("permissions.PermissionsUser.missingPermissions",user));

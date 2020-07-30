@@ -51,11 +51,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
-                    return
-                        ((List<String>) Objects.requireNonNull(value.get(ServerVars.Permissions.permissionsKey)))
-                            .stream()
-                            .map(String::toLowerCase)
-                            .toArray(String[]::new);
+                    return ((List<String>) value.get(ServerVars.Permissions.permissionsKey)).toArray(new String[0]);
                 }catch(final ClassCastException | NullPointerException ignored){
                     if(locale != null)
                         logger.warning(locale.getString("permissions.PermissionsGroup.missingPermissions",group));

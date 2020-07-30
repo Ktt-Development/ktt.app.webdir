@@ -10,7 +10,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class PermissionsSchemaTests {
 
     @Test
@@ -40,18 +40,6 @@ public class PermissionsSchemaTests {
         final PermissionsUser user = new PermissionsUser(address,map);
 
         Assert.assertEquals("User group did not match map group",map.get(ServerVars.Permissions.groupsKey),user.getGroups()[0]);
-    }
-
-    @Test
-    public void testUserSchemaPermissionLower() throws UnknownHostException{
-        final Map map = Map.of(
-            ServerVars.Permissions.permissionsKey, List.of("testPermissions")
-        );
-
-        final InetAddress address = InetAddress.getLocalHost();
-        final PermissionsUser user = new PermissionsUser(address,map);
-
-        Assert.assertEquals("User permissions did not match map permissions", ((List<String>) map.get(ServerVars.Permissions.permissionsKey)).get(0).toLowerCase(), user.getPermissions()[0]);
     }
 
     @Test
@@ -90,17 +78,6 @@ public class PermissionsSchemaTests {
         final PermissionsGroup group = new PermissionsGroup("testGroup",map);
 
         Assert.assertEquals("Group inheritance did not match map inheritance",map.get("inheritance"),group.getInheritance()[0]);
-    }
-
-    @Test
-    public void testGroupSchemaPermissionsLower(){
-        final Map map = Map.of(
-            ServerVars.Permissions.permissionsKey, List.of("testPermissions")
-        );
-
-        final PermissionsGroup group = new PermissionsGroup("testGroup",map);
-
-        Assert.assertEquals("User permissions did not match map permissions", ((List<String>) map.get(ServerVars.Permissions.permissionsKey)).get(0).toLowerCase(), group.getPermissions()[0]);
     }
 
 }
