@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.server.permissions;
 
 import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 
@@ -14,8 +15,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 public final class Permissions {
 
-    private final List<PermissionsGroup> groups = new ArrayList<>();
-    private final List<PermissionsUser>  users = new ArrayList<>();
+    private final Set<PermissionsGroup> groups = new HashSet<>();
+    private final Set<PermissionsUser>  users = new HashSet<>();
 
     @SuppressWarnings("unchecked")
     public Permissions(final Map obj){
@@ -63,11 +64,11 @@ public final class Permissions {
     //
 
     public final List<PermissionsGroup> getGroups(){
-        return Collections.unmodifiableList(groups);
+        return new ArrayList<>(groups);
     }
 
     public final List<PermissionsUser> getUsers(){
-        return Collections.unmodifiableList(users);
+        return new ArrayList<>(users);
     }
 
     public final PermissionsUser getUser(final InetAddress address){
@@ -85,12 +86,14 @@ public final class Permissions {
         if(user != null && user.getOptions().containsKey(option)) // user option is most specific one available
             return user.getOptions().get(option);
 
+        if(option.equals("option")) return null; // should not inherit option 'default' from groups, this value just tells permissions which ones are default groups.
+
         Object def = null;
         for(final PermissionsGroup group : groups)
             if(group.getOptions().containsKey(option)) // if group contains option
                 if(user != null && Arrays.asList(user.getGroups()).contains(group.getGroup())) // if user is a member of the group
                     return group.getOptions().get(option);
-                else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get("default").toString()),false)) // if group is default use set default option
+                else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get(ServerVars.Permissions.defaultKeys).toString()),false)) // if group is default use set default option
                     def = group.getOptions().get(option);
         return def;
     }
@@ -114,18 +117,18 @@ public final class Permissions {
         return hasDefaultPermission;
     }
 
-    public final boolean hasPermission(final PermissionsGroup group, final String permission){
+    private boolean hasPermission(final PermissionsGroup group, final String permission){
         for(final PermissionsGroup g : getGroupsAndInherited(Collections.singletonList(group.getGroup())))
             if(hasPermission(permission,g.getPermissions()))
                 return true;
         return false;
     }
 
-    public final boolean hasPermission(final String permission, final String[] permissions){
+    private boolean hasPermission(final String permission, final String[] permissions){
         return hasPermission(permission,Arrays.asList(permissions));
     }
 
-    public final boolean hasPermission(final String permission, final List<String> permissions){
+    private boolean hasPermission(final String permission, final List<String> permissions){
         boolean hasPermission = false;
         for(final String perm : permissions)
             if(perm.equals('!' + permission) || (perm.startsWith("!") && perm.endsWith(".*") && permission.startsWith(perm.substring(1,perm.length()-2))))
@@ -194,6 +197,24 @@ public final class Permissions {
 
     //
 
-    // todo: equals and toString
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o)
+            return true;
+        else if(!(o instanceof Permissions))
+            return false;
+        final Permissions other = ((Permissions) o);
+        return other.groups.equals(groups) &&
+               other.users.equals(users);
+    }
+
+    @Override
+    public String toString(){
+        return new toStringBuilder("Permissions")
+            .addObject("groups",groups)
+            .addObject("users",users)
+            .toString();
+    }
 
 }

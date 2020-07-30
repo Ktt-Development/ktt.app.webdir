@@ -19,6 +19,8 @@ public abstract class ServerVars {
 
         public static final String inheritanceKey   = "inheritance";
 
+        public static final String defaultKeys     = "default";
+
     }
 
     public static class Renderer {
