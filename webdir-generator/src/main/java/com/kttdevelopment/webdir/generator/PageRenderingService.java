@@ -25,7 +25,7 @@ public final class PageRenderingService {
     public PageRenderingService(final File defaults, final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final ConfigService config = Main.getConfigService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final Logger logger        = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
 
         final String dabs = defaults.getAbsolutePath();

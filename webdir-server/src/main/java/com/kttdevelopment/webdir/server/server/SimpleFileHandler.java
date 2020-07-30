@@ -4,6 +4,7 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 
 import java.io.File;
 
+// todo: move to WDP
 public interface SimpleFileHandler {
 
     boolean canFormat(SimpleHttpExchange exchange, File file);

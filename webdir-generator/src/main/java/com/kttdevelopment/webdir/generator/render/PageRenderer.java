@@ -19,6 +19,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         final LocaleService locale  = Main.getLocaleService();
         final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
 
+        @SuppressWarnings("SpellCheckingInspection")
         final String fabs = file.getAbsolutePath();
         final String str = new String(bytes);
 
@@ -31,14 +32,15 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
             logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.frontMatter",fabs,frontMatter));
 
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
-
-        final ConfigurationSection masterFrontMatter = new ConfigurationSectionImpl();
+    // create front matter
+        final ConfigurationSection mergedFrontMatter = new ConfigurationSectionImpl();
         if(defaultFrontMatter != null)
-            masterFrontMatter.setDefault(defaultFrontMatter);
+            mergedFrontMatter.setDefault(defaultFrontMatter);
         if(frontMatter.hasFrontMatter()) // file front matter overrides default
-            masterFrontMatter.setDefault(frontMatter.getFrontMatter());
+            mergedFrontMatter.setDefault(frontMatter.getFrontMatter());
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,masterFrontMatter);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,mergedFrontMatter);
+    // render page
         final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.rendererKey,String.class);
 
         // if no renderers then return given bytes

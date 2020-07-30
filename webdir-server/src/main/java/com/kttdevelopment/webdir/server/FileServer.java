@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class FileServer {
 
-    FileServer(final int port, final File rendered) throws IOException{
+    FileServer(final int port, final File defaults, final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
         final SimpleHttpServer server;
@@ -35,14 +35,15 @@ public class FileServer {
 
         // todo: context from config
 
-        final FileHandler staticFileHandler = new StaticFileHandler();
-        staticFileHandler.addDirectory(rendered, ByteLoadingOption.WATCHLOAD,true);
+        final FileHandler staticFileHandler = new StaticFileHandler(defaults,source,output);
+        staticFileHandler.addDirectory(output, ByteLoadingOption.PRELOAD,true);
 
         server.createContext("",new ThrottledHandler(staticFileHandler,throttler));
 
-        final FileHandler sysFileHandler = new DefaultFileHandler(null,null);// todo
+        // todo: fix file handler
+        //final FileHandler sysFileHandler = new StaticFileHandler(defaults, source, output);
         // todo: add drives & watch add/remove
-        server.createContext(Main.getConfigService().getConfig().getString("files_context"),new ThrottledHandler(sysFileHandler,throttler));
+        // server.createContext(Main.getConfigService().getConfig().getString("files_context"),new ThrottledHandler(sysFileHandler,throttler));
 
         server.start();
 

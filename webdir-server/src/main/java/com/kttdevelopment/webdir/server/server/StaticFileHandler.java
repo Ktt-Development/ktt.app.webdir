@@ -2,55 +2,53 @@ package com.kttdevelopment.webdir.server.server;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
-import com.kttdevelopment.webdir.api.ExchangeRenderer;
-import com.kttdevelopment.webdir.api.Renderer;
-import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
-import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
-import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
+import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
+import com.kttdevelopment.webdir.server.httpserver.SimpleHttpExchangeUnmodifiable;
+import com.kttdevelopment.webdir.server.render.ExchangePageRenderer;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class StaticFileHandler extends FileHandler {
 
-    public StaticFileHandler(){
-        super(new HTMLNameAdapter());
+    private final DefaultFrontMatterLoader defaultFrontMatterLoader;
+    private final ExchangePageRenderer render = new ExchangePageRenderer();
+
+    private final File defaults, source, output;
+
+    public StaticFileHandler(final File defaults, final File source, final File output){
+        this.defaults = defaults; this.source = source; this.output = output;
+        this.defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
     }
 
+    @Override // target file refers to file in output folder
+    public final void handle(final SimpleHttpExchange exchange, final File target, final byte[] bytes) throws IOException{
+        final Path rel = target.toPath().relativize(output.toPath());
+        final File sourceFile = Paths.get(source.getAbsolutePath(),rel.toString()).toFile();
+        exchange.send(render.apply(
+            new SimpleHttpExchangeUnmodifiable(exchange),
+            sourceFile,
+            target,
+            defaultFrontMatterLoader.getDefaultFrontMatter(sourceFile),
+            bytes
+        ));
+    }
+
+    //
+
+
     @Override
-    public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{ // handle exchange render only
-        final String str = new String(bytes);
-        final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
-
-        if(!frontMatter.hasFrontMatter()){
-            exchange.send(bytes);
-            return;
-        }
-
-        final InetAddress address = exchange.getPublicAddress().getAddress();
-
-        ConfigurationSection tFrontMatter = frontMatter.getFrontMatter();
-        tFrontMatter = YamlFrontMatter.loadImports(tFrontMatter);
-        final ConfigurationSection finalFrontMatter = tFrontMatter;
-
-        final AtomicReference<String> content = new AtomicReference<>(str);
-        final List<Renderer> renderers = null; // YamlFrontMatter.getRenderers(finalFrontMatter.getList("renderers"));
-        renderers.forEach(r -> {
-            if(!(r instanceof ExchangeRenderer)) return;
-
-            final ExchangeRenderer renderer = (ExchangeRenderer) r;
-
-            //noinspection ConstantConditions
-            if(/* todo: hasPermission*/ true)
-                content.set(renderer.render(exchange, source, finalFrontMatter, content.get()));
-        });
-
-        exchange.send(content.get());
-        exchange.close();
+    public String toString(){
+        return new toStringBuilder("DefaultFileHandler")
+            .addObject("defaultFrontMatterLoader",defaultFrontMatterLoader)
+            .addObject("render",render)
+            .addObject("defaults",defaults.getAbsolutePath())
+            .addObject("source",source.getAbsolutePath())
+            .addObject("output",output.getAbsolutePath())
+            .toString();
     }
 
 }
