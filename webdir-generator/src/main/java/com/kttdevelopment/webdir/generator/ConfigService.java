@@ -19,18 +19,23 @@ public final class ConfigService {
 
     private final ConfigurationSection config;
 
+    //
+
     public final ConfigurationSection getConfig(){
         return config;
     }
 
+    //
+
     public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
-        this.configFile = configFile != null ? configFile.getAbsolutePath() : null;
+        Objects.requireNonNull(configFile);
+        this.configFile = configFile.getAbsolutePath();
         this.defaultConfigResource = defaultConfigResource;
         final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
 
         logger.info("Started configuration initialization");
 
-        // load default
+    // load default
         final ConfigurationFile def;
         logger.finer("Loading default configuration from resource " + defaultConfigResource);
         try(final InputStream IN = getClass().getResourceAsStream(Objects.requireNonNull( defaultConfigResource))){
@@ -48,7 +53,7 @@ public final class ConfigService {
             throw e;
         }
 
-        // load config
+    // load config
         final ConfigurationFile config = new ConfigurationFile();
         config.setDefault(def);
         try{
@@ -58,19 +63,13 @@ public final class ConfigService {
             logger.warning("Configuration file not found, creating a new configuration file");
             if(!configFile.exists())
                 try(final InputStream IN = getClass().getResourceAsStream(defaultConfigResource)){
-                    Files.copy(Objects.requireNonNull(IN), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(IN, configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Created default configuration file");
-                }catch(final NullPointerException e){
-                    logger.severe("Failed to save default configuration file (not found)" + '\n' + Exceptions.getStackTraceAsString(e));
-                }catch(final IOException e){
-                    logger.severe("Failed to save default configuration file (I/O exception)" + '\n' + Exceptions.getStackTraceAsString(e));
                 }catch(final Throwable e){
                     logger.severe("Failed to save default configuration" + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             else
                 logger.warning("Failed to create default configuration file (file already exists)");
-        }catch(final NullPointerException ignored){
-            logger.severe("Failed to load configuration file (none specified)");
         }catch(final ClassCastException | YamlException e){
             logger.severe("Failed to load configuration file (invalid syntax)" + '\n' + Exceptions.getStackTraceAsString(e));
         }

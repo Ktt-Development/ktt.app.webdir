@@ -243,7 +243,7 @@ public final class PluginLoader {
                     }catch(final NoSuchMethodException | IllegalArgumentException ignored){
                         logger.severe(locale.getString("pluginLoader.const.enable.constArgs", pluginName));
                     }catch(final ExceptionInInitializerError | InvocationTargetException e){
-                        logger.severe(locale.getString("pluginLoader.const.enable.constExcep", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.severe(locale.getString("pluginLoader.const.enable.constExceptions", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
                         logger.severe(locale.getString("pluginLoader.const.enable.sec", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
                     }

@@ -1,11 +1,14 @@
 package com.kttdevelopment.webdir.server;
 
-import com.esotericsoftware.yamlbeans.*;
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -13,10 +16,8 @@ import java.util.logging.Logger;
 @SuppressWarnings("rawtypes")
 public final class PermissionsService {
 
-    private final File permissionsFile;
-    private Permissions permissions;
-
-    private final Permissions defaultPermissions;
+    private final String permissionsFile, defaultPermissionsResource;
+    private final Permissions permissions;
 
     //
 
@@ -27,85 +28,88 @@ public final class PermissionsService {
     //
 
     PermissionsService(final File permissionsFile, final String defaultPermissionsResource) throws YamlException{
-        this.permissionsFile = permissionsFile;
+        Objects.requireNonNull(permissionsFile);
+        this.permissionsFile = permissionsFile.getAbsolutePath();
+        this.defaultPermissionsResource = defaultPermissionsResource;
 
         final LocaleService locale = Main.getLocaleService();
-        Logger logger = Main.getLoggerService().getLogger("Permissions");
-        
-        logger.info(locale.getString("permissions.init.start"));
+        final Logger logger        = locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("permissions");
 
-        YamlReader IN = null;
-        try{ // default
-            IN = new YamlReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(defaultPermissionsResource))));
-            defaultPermissions = new Permissions((Map) IN.read());
-        }catch(final ClassCastException | NullPointerException | YamlException e){
-            logger.severe(locale.getString("permissions.init.notFound"));
-            throw e;
-        }finally{
-            if(IN != null)
-                try{ IN.close();
-                }catch(final IOException e){
-                    logger.warning(locale.getString("permissions.init.stream") + '\n' + Exceptions.getStackTraceAsString(e));
-                }
+        if(locale != null)
+            logger.info(locale.getString("permissions.const"));
+
+    // load default
+        final Permissions def;
+        {
+            YamlReader IN = null;
+            try{
+                IN = new YamlReader(new InputStreamReader(getClass().getResourceAsStream(Objects.requireNonNull(defaultPermissionsResource))));
+                def = new Permissions((Map) IN.read());
+            }catch(final NullPointerException e){
+                if(locale != null)
+                    logger.severe(locale.getString("permissions.const.default.missing"));
+                throw e;
+            }catch(final ClassCastException | YamlException e){
+                if(locale != null)
+                    logger.severe(locale.getString("permissions.const.default.malformed") + '\n' + Exceptions.getStackTraceAsString(e));
+                throw e;
+            }finally{
+                if(IN != null)
+                    try{ IN.close();
+                    }catch(final IOException e){
+                        if(locale != null)
+                            logger.warning(locale.getString("permissions.const.default.closeIO") + '\n' + Exceptions.getStackTraceAsString(e));
+                    }
+            }
+        }
+    // load perm
+        Permissions perms = null;
+        {
+            YamlReader IN = null;
+            try{
+                IN = new YamlReader(new FileReader(permissionsFile));
+                perms = new Permissions((Map) IN.read());
+            }catch(final FileNotFoundException ignored){
+                if(locale != null)
+                    logger.warning(locale.getString("permissions.const.load.missing"));
+                if(!permissionsFile.exists())
+                    try(final InputStream dpr = getClass().getResourceAsStream(defaultPermissionsResource)){
+                        Files.copy(dpr, permissionsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        if(locale != null)
+                            logger.info(locale.getString("permissions.const.load.default"));
+                    }catch(final Throwable e){
+                        if(locale != null)
+                            logger.severe(locale.getString("permissions.const.load.failedCopy") + '\n' + Exceptions.getStackTraceAsString(e));
+                    }
+                else if(locale != null)
+                    logger.warning(locale.getString("permissions.const.load.exists"));
+            }catch(final ClassCastException | YamlException e){
+                if(locale != null)
+                    logger.severe(locale.getString("permissions.const.load.malformed") + '\n' + Exceptions.getStackTraceAsString(e));
+            }finally{
+                if(IN != null)
+                    try{ IN.close();
+                    }catch(final IOException e){
+                        if(locale != null)
+                            logger.warning(locale.getString("permissions.const.load.closeIO") + '\n' + Exceptions.getStackTraceAsString(e));
+                    }
+            }
         }
 
-        read();
-        logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
-        logger.info(locale.getString("permissions.init.finished"));
+        this.permissions = perms == null ? def : perms;
+        if(locale != null)
+            logger.info(locale.getString("permissions.const.loaded"));
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public synchronized final boolean read(){
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
-        logger.info(locale.getString("permissions.read.start"));
+    //
 
-        YamlReader IN = null;
-        try{
-            IN = new YamlReader(new FileReader(permissionsFile));
-            permissions = new Permissions((Map) IN.read());
-            logger.info(locale.getString("permissions.read.finished"));
-            return true;
-        }catch(final FileNotFoundException ignored){
-            logger.warning(locale.getString("permissions.read.notFound"));
-            permissions = defaultPermissions;
-            if(!write())
-                logger.severe(locale.getString("permissions.read.notCreate"));
-            else
-                logger.info(locale.getString("permissions.read.created"));
-        }catch(final ClassCastException | YamlException e){
-            logger.severe(locale.getString("permissions.read.badSyntax") + '\n' + Exceptions.getStackTraceAsString(e));
-        }finally{
-            if(IN != null)
-                try{ IN.close();
-                }catch(final IOException e){
-                    logger.warning(locale.getString("permissions.read.stream"));
-                }
-        }
-        return false;
-    }
-
-    public synchronized final boolean write(){
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
-        logger.info(locale.getString("permissions.write.start"));
-
-        YamlWriter OUT = null;
-        try{
-            OUT = new YamlWriter(new FileWriter(permissionsFile));
-            //OUT.write(permissions.toMap());
-            logger.info(locale.getString("permissions.write.finished"));
-            return true;
-        }catch(final IOException e){
-            logger.severe(locale.getString("permissions.write.failed") + '\n' + Exceptions.getStackTraceAsString(e));
-        }finally{
-            if(OUT != null)
-                try{ OUT.close();
-                }catch(final IOException e){
-                    logger.severe(locale.getString("permissions.write.stream") + '\n' + Exceptions.getStackTraceAsString(e));
-                }
-        }
-        return false;
+    @Override
+    public String toString(){
+        return new toStringBuilder("PermissionsService")
+            .addObject("permissionsFile",permissionsFile)
+            .addObject("defaultPermissionsResource",defaultPermissionsResource)
+            .addObject("permissions",permissions)
+            .toString();
     }
 
 }

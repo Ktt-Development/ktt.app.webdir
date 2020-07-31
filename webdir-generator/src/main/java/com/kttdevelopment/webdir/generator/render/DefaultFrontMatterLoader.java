@@ -69,6 +69,15 @@ public final class DefaultFrontMatterLoader {
 
         final String path = ContextUtil.getContext(sourcesDir.getAbsoluteFile().toPath().relativize(file.getAbsoluteFile().toPath()).toString(),true,false);
 
+        return getDefaultFrontMatter(path);
+    }
+
+    public final ConfigurationSection getDefaultFrontMatter(final String context){
+        final LocaleService locale  = Main.getLocaleService();
+        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+
+        final String path = ContextUtil.getContext(context,true,false);
+
         if(locale != null)
             logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.path",path));
 
@@ -96,7 +105,7 @@ public final class DefaultFrontMatterLoader {
                .getInteger(Vars.Renderer.Default.indexKey, Vars.Renderer.Default.defaultIndex)));
 
         if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.sort",fabs,configs));
+            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.sort",path,configs));
 
         // populate configuration by lower index first so higher ones override
         final ConfigurationSection def = new ConfigurationSectionImpl();

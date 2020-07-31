@@ -4,13 +4,11 @@ public abstract class ServerVars {
 
     public static class Config {
         
-        @Deprecated
-        public static final String fileRenderersKey = "fileRenderers"; 
-        @Deprecated
-        public static final String defaultFileRenderers = ".fileRenderers"; // file renderers can use the existing default system to operate
-        
         public static final String permissionsKey     = "permissions";
         public static final String defaultPermissions = "permissions.yml";
+
+        public static final String filesContextKey     = "files_dir";
+        public static final String defaultFilesContext = "files";
 
     }
 

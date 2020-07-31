@@ -28,7 +28,7 @@ public class ConfigServiceTests {
         final String defaultResource = "/configTests/missingDefault.yml";
 
         try{
-            new ConfigService(null, defaultResource);
+            new ConfigService(new File("null"), defaultResource);
             Assert.fail("Config Service failed to throw null exception for missing default config");
         }catch(final NullPointerException ignored){ }
     }
@@ -38,7 +38,7 @@ public class ConfigServiceTests {
         final String defaultResource = "/configTests/malformedDefault.yml";
 
         try{
-            new ConfigService(null,defaultResource);
+            new ConfigService(new File("null"),defaultResource);
             Assert.fail("Config Service failed to throw yaml exception for malformed default config");
         }catch(final ClassCastException | YamlException ignored){ }
     }
