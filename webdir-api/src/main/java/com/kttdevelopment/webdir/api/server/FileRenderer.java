@@ -44,7 +44,7 @@ public class FileRenderer extends ExchangeRenderer implements FileRenderAdapter{
     //
 
     @Override
-    public String render(final SimpleHttpExchange exchange, final File source, final byte[] bytes){
+    public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         return new String(bytes);
     }
 

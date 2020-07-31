@@ -39,7 +39,6 @@ public class StaticFileHandler extends FileHandler {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("DefaultFileHandler")

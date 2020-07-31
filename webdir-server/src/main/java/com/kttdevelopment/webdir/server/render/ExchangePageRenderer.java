@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-public class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,File,File,ConfigurationSection,byte[],byte[]> {
+public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,File,File,ConfigurationSection,byte[],byte[]> {
 
     @Override
-    public byte[] apply(final SimpleHttpExchange exchange, final File source, final File rendered, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+    public final byte[] apply(final SimpleHttpExchange exchange, final File source, final File rendered, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final LocaleService locale  = Main.getLocaleService();
         final Logger logger         = Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
 
@@ -48,24 +48,29 @@ public class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,Fil
             mergedFrontMatter.setDefault(frontMatter.getFrontMatter());
 
         final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(source,mergedFrontMatter);
-    // render page
+    // get renderers
         final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRendererKey,String.class);
 
         // if no renderers then return given bytes
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
 
         final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, renderersStr);
-
+    // render page
         final AtomicReference<String> content = new AtomicReference<>(new String(bytes));
 
         final InetAddress address     = exchange.getPublicAddress().getAddress();
         final Permissions permissions = Main.getPermissions().getPermissions();
         renderers.forEach(renderer -> {
+            final Renderer render = renderer.getRenderer();
             try{
-                final Renderer render = renderer.getRenderer();
                 // if is an adapter but not a class (adapter has no permissions) or is class and has permission
-                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())) // todo
+                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission()))
                     content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
+            }catch(final Throwable e){
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            }
+            try{
+                content.set(render.render(source,defaultFrontMatter,content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
