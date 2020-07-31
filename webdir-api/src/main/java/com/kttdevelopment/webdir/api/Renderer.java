@@ -23,7 +23,6 @@ public interface Renderer {
      *
      * @see ConfigurationSection
      * @since 01.00.00
-     * @author Ktt Development
      */
     String render(final File output, final ConfigurationSection yamlFrontMatter, final String content);
 
