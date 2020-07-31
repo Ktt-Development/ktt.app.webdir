@@ -1,8 +1,7 @@
 package com.kttdevelopment.webdir.server.permissions;
 
 import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 
@@ -131,10 +130,12 @@ public final class Permissions {
     private boolean hasPermission(final String permission, final List<String> permissions){
         boolean hasPermission = false;
         for(final String perm : permissions)
-            if(perm.equals('!' + permission) || (perm.startsWith("!") && perm.endsWith(".*") && permission.startsWith(perm.substring(1,perm.length()-2))))
-                return false;
-            else if(perm.equals(permission) || perm.endsWith(".*") && permission.startsWith(perm.substring(0,perm.length()-2)))
-                hasPermission = true;
+            switch(SymbolicStringMatcher.matches(perm,permission)){
+                case NEGATIVE_MATCH:
+                    return false;
+                case MATCH:
+                    hasPermission = true;
+            }
         return hasPermission;
     }
 

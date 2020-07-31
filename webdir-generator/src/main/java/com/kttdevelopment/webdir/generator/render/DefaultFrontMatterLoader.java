@@ -6,16 +6,13 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
-import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.generator.object.Tuple2;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class DefaultFrontMatterLoader {
 
@@ -77,27 +74,18 @@ public final class DefaultFrontMatterLoader {
 
         final List<ConfigurationSection> configs = new ArrayList<>();
 
+        // <scope,configuration?
         defaultConfigurations.forEach((tuple) -> {
             boolean canUseConfig = false;
-            for(final String string : tuple.getVar1()){
-                final boolean negative = !string.isEmpty() && string.charAt(0) == '!';
-                final String context = ContextUtil.getContext(negative ? string.substring(1) : string,true,false);
-
-                // make string literal but replace '*' with '.*' for regex
-                final String regex = "^\\Q" + context.replace("*","\\E.*\\Q") + "\\E$";
-
-                if(locale != null)
-                    logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.scope",fabs,regex,tuple.getVar2()));
-
-                final Matcher matcher = Pattern.compile(regex).matcher(path);
-                if(matcher.matches()){
-                    canUseConfig = !negative;
-                    if(negative) // negative ('!') overrides true state
+            for(final String scope : tuple.getVar1()){
+                switch(SymbolicStringMatcher.matches(scope,path)){
+                    case MATCH:
+                        canUseConfig = true;
+                        continue;
+                    case NEGATIVE_MATCH:
+                        canUseConfig = false;
                         break;
                 }
-
-                if(locale != null)
-                    logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.match",matcher.matches(),fabs));
             }
             if(canUseConfig) configs.add(tuple.getVar2());
         });
