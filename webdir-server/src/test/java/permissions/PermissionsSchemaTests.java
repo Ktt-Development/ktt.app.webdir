@@ -56,7 +56,7 @@ public class PermissionsSchemaTests {
     public void testGroupSchema(){
         final Map map = Map.of(
             "inheritance",List.of("testGroup"),
-            ServerVars.Permissions.optionsKey,Map.of("default",true),
+            ServerVars.Permissions.optionsKey,Map.of(ServerVars.Permissions.defaultKey,true),
             ServerVars.Permissions.permissionsKey,List.of("*")
         );
 

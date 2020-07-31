@@ -82,11 +82,11 @@ public class PermissionsTests {
 
         final Map map = Map.of(
             ServerVars.Permissions.groupsKey, Map.of(
-                "default", Map.of(
+                ServerVars.Permissions.defaultKey, Map.of(
                     ServerVars.Permissions.optionsKey, Map.of(
-                        ServerVars.Permissions.defaultKeys,true,
-                        testDefaultOptionOverride,false,
-                        testDefaultOption,true
+                        ServerVars.Permissions.defaultKey, true,
+                        testDefaultOptionOverride, false,
+                        testDefaultOption, true
                     )
                 )
             ),
@@ -149,15 +149,101 @@ public class PermissionsTests {
         negativePerms.forEach( (k,v) -> Assert.assertFalse("User had permission for '" + v + "' but permissions specified '" + k + "' (not allowed)", invalidPermissions.hasPermission(local, v)));
     }
 
-    @Test @Ignore
-    public void testDefaults(){
-        // test default list
-        // test default inherit non default list
+    @Test
+    public void testInheritedDefault(){
+        final String testInherited = "inherited";
+        final Map map = Map.of(
+            ServerVars.Permissions.groupsKey, Map.of(
+                "default",Map.of(
+                    ServerVars.Permissions.optionsKey, Map.of(
+                        ServerVars.Permissions.defaultKey, true
+                    ),
+                    ServerVars.Permissions.inheritanceKey,testInherited
+                ),
+                testInherited,Collections.emptyMap()
+            )
+        );
+
+        final Permissions permissions = new Permissions(map);
+        Assert.assertEquals("Default group did not inherit correct amount of groups from " + map + "(was " + permissions + ')',2, permissions.getDefaultGroupsAndInherited().size());
     }
 
-    @Test @Ignore
-    public void testInherited(){
-        // test inheritance on user and groups
+    @Test
+    public void testInheritedLoop(){
+        final String testInherited = "inherited", testInherited2 = "inherited2";
+        final Map map = Map.of(
+            ServerVars.Permissions.groupsKey, Map.of(
+                "default",Map.of(
+                    ServerVars.Permissions.optionsKey, Map.of(
+                        ServerVars.Permissions.defaultKey, true
+                    ),
+                    ServerVars.Permissions.inheritanceKey,testInherited
+                ),
+                testInherited,Map.of(
+                    ServerVars.Permissions.inheritanceKey,  testInherited2
+                ),
+                testInherited2, Map.of(
+                    ServerVars.Permissions.inheritanceKey, "default"
+                )
+            )
+        );
+
+        try{
+            final Permissions permissions = new Permissions(map);
+            Assert.assertEquals("Default group did not inherit correct amount of groups from " + map + "(was " + permissions + ')',3, permissions.getDefaultGroupsAndInherited().size());
+        }catch(final StackOverflowError ignored){
+            Assert.fail("Permissions encountered an infinite loop when trying to load " + map);
+        }
+    }
+
+    @Test
+    public void testInheritedUser() throws UnknownHostException{
+        // test that use inherits default op/p and group op/perms
+        final String testInheritedDefault = "inheritedDefault";
+        final String testOptionDefault = "testOpDef", testPermissionDefault = "default.permission";
+        final String testInherited = "inherited";
+        final String testOption = "testOp", testPermission = "test.permission";
+
+        final Map map = Map.of(
+            ServerVars.Permissions.groupsKey, Map.of(
+                "default",Map.of(
+                    ServerVars.Permissions.optionsKey, Map.of(
+                        ServerVars.Permissions.defaultKey, true
+                    ),
+                    ServerVars.Permissions.inheritanceKey,testInheritedDefault
+                ),
+                testInheritedDefault,Map.of(
+                    ServerVars.Permissions.optionsKey, Map.of(
+                        testOptionDefault, true
+                    ),
+                    ServerVars.Permissions.permissionsKey, List.of(
+                        testPermissionDefault
+                    )
+                ),
+                testInherited,Map.of(
+                    ServerVars.Permissions.optionsKey, Map.of(
+                        testOption, true
+                    ),
+                    ServerVars.Permissions.permissionsKey, List.of(
+                        testPermission
+                    )
+                )
+            ),
+            ServerVars.Permissions.usersKey, Map.of(
+                "localhost", Map.of(
+                    ServerVars.Permissions.groupsKey, testInherited
+                )
+            )
+        );
+
+        final Permissions permissions = new Permissions(map);
+
+        final InetAddress user = InetAddress.getLocalHost();
+
+        Assert.assertEquals("User did not inherit default option from " + map + "(was " + permissions + ')',true,permissions.getOption(user,testOptionDefault));
+        Assert.assertTrue("User did not inherit default permission from " + map + "(was " + permissions + ')', permissions.hasPermission(user, testPermissionDefault));
+        Assert.assertEquals("User did not inherit group option from " + map + "(was " + permissions + ')',true,permissions.getOption(user,testOption));
+        Assert.assertTrue("User did not inherit group permission from " + map + "(was " + permissions + ')', permissions.hasPermission(user, testPermission));
     }
 
 }

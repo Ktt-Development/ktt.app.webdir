@@ -11,15 +11,14 @@ public abstract class ServerVars {
 
     public static class Permissions {
 
-        public static final String usersKey = "users";
 
         public static final String groupsKey        = "groups";
+        public static final String inheritanceKey   = "inheritance";
         public static final String optionsKey       = "options";
+        public static final String defaultKey       = "default";
         public static final String permissionsKey   = "permissions";
 
-        public static final String inheritanceKey   = "inheritance";
-
-        public static final String defaultKeys     = "default";
+        public static final String usersKey = "users";
 
     }
 

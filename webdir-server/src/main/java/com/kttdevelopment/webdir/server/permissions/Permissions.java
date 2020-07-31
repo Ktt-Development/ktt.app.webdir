@@ -82,19 +82,22 @@ public final class Permissions {
     public final Object getOption(final InetAddress address, final String option){
         final PermissionsUser user = getUser(address);
 
-        if(user != null && user.getOptions().containsKey(option)) // user option is most specific one available
+        Object defaultValue = null;
+        for(final PermissionsGroup group : getDefaultGroupsAndInherited())
+            if(group.getOptions().get(option) != null)
+                defaultValue = group.getOptions().get(option);
+
+        if(user == null) return defaultValue;
+
+        if(user.getOptions().containsKey(option)) // user option is most specific one available
             return user.getOptions().get(option);
 
         if(option.equals("option")) return null; // should not inherit option 'default' from groups, this value just tells permissions which ones are default groups.
 
-        Object def = null;
-        for(final PermissionsGroup group : groups)
-            if(group.getOptions().containsKey(option)) // if group contains option
-                if(user != null && Arrays.asList(user.getGroups()).contains(group.getGroup())) // if user is a member of the group
-                    return group.getOptions().get(option);
-                else if(Objects.requireNonNullElse(Boolean.parseBoolean(group.getOptions().get(ServerVars.Permissions.defaultKeys).toString()),false)) // if group is default use set default option
-                    def = group.getOptions().get(option);
-        return def;
+        for(final PermissionsGroup group : getGroupsAndInherited(user.getGroups()))
+            if(group.getOptions().get(option) != null)
+                return group.getOptions().get(option);
+        return defaultValue;
     }
 
     public final boolean hasPermission(final InetAddress address, final String permission){
@@ -145,7 +148,7 @@ public final class Permissions {
         final List<PermissionsGroup> defaultGroups = new ArrayList<>();
 
         for(final PermissionsGroup group : groups){
-            if(group.getOptions().containsKey("default") && Boolean.parseBoolean(group.getOptions().get("default").toString())){
+            if(group.getOptions().containsKey(ServerVars.Permissions.defaultKey) && Boolean.parseBoolean(group.getOptions().get(ServerVars.Permissions.defaultKey).toString())){
                 defaultGroups.add(group);
                 defaultGroups.addAll(getInheritedGroups(group)); // if default group inherits another group the default option doesn't matter, sub inheritance as well
             }
