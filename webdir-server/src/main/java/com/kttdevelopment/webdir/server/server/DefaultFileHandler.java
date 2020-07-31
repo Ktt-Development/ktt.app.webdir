@@ -13,7 +13,7 @@ import com.kttdevelopment.webdir.server.render.FilePageRenderer;
 import java.io.File;
 import java.io.IOException;
 
-public class DefaultFileHandler extends FileHandler {
+public final class DefaultFileHandler extends FileHandler {
 
     private final DefaultFrontMatterLoader defaultFrontMatterLoader;
     private final FilePageRenderer render = new FilePageRenderer();

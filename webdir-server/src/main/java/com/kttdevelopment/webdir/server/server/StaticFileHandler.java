@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class StaticFileHandler extends FileHandler {
+public final class StaticFileHandler extends FileHandler {
 
     private final DefaultFrontMatterLoader defaultFrontMatterLoader;
     private final ExchangePageRenderer render = new ExchangePageRenderer();

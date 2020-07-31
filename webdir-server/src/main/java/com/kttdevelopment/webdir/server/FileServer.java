@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.server;
 
+import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.*;
 import com.kttdevelopment.webdir.generator.LocaleService;
@@ -11,9 +12,8 @@ import java.io.IOException;
 import java.net.BindException;
 import java.util.logging.Logger;
 
-public class FileServer {
+public final class FileServer {
 
-    // todo
     FileServer(final int port, final File defaults, final File source, final File output) throws IOException{
         final LocaleService locale = Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
@@ -34,20 +34,21 @@ public class FileServer {
 
         final ServerExchangeThrottler throttler = new DefaultThrottler();
 
-        // todo: context from config
-
+        logger.info(locale.getString("server.const.createStaticHandler"));
         final FileHandler staticFileHandler = new StaticFileHandler(defaults,source,output);
         staticFileHandler.addDirectory(output, ByteLoadingOption.PRELOAD,true);
 
         server.createContext("",new ThrottledHandler(staticFileHandler,throttler));
 
-        // todo: fix file handler
-        //final FileHandler sysFileHandler = new StaticFileHandler(defaults, source, output);
-        // todo: add drives & watch add/remove
-        // server.createContext(Main.getConfigService().getConfig().getString("files_context"),new ThrottledHandler(sysFileHandler,throttler));
+        logger.info(locale.getString("server.const.createFileHandler"));
+        final FileHandler defaultFileHandler = new DefaultFileHandler(defaults);
+        // todo: add drive & watch add/remove
+
+        server.createContext(ContextUtil.getContext(Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey,ServerVars.Config.defaultFilesContext),true,false),new ThrottledHandler(defaultFileHandler,throttler));
 
         server.start();
-
+        logger.info(locale.getString("server.const.start"));
+        logger.info(locale.getString("server.const.loaded"));
     }
 
 }

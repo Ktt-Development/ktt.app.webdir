@@ -22,6 +22,9 @@ public abstract class ServerVars {
 
         public static final String usersKey = "users";
 
+        public static final String connectionOption = "connection-limit";
+        public static final int defaultConnectionOption = 0;
+
     }
 
     public static class Renderer {
