@@ -70,7 +70,8 @@ public abstract class YamlFrontMatter {
         final ILocaleService locale = Vars.Main.getLocaleService() ;
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        final String sourceABS = Exceptions.requireNonExceptionElse(source::getAbsolutePath,"null");
+        @SuppressWarnings("Convert2MethodRef") // method reference causes exception
+        final String sourceABS = Exceptions.requireNonExceptionElse(() -> source.getAbsolutePath(), "null");
 
         logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",sourceABS,config,checkedImports));
 

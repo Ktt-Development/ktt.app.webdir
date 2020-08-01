@@ -44,7 +44,9 @@ public final class YamlFrontMatterReader {
             }catch(final ClassCastException | YamlException ignored){
                 // invalid yaml
             }finally{
-                Exceptions.runIgnoreException(IN::close);
+                // causes exception
+                //noinspection Convert2MethodRef
+                Exceptions.runIgnoreException(() -> IN.close());
             }
         }
 

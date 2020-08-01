@@ -22,7 +22,9 @@ public class ConfigurationFile extends ConfigurationSectionImpl implements Confi
         try{
             config = (Map) IN.read();
         }finally{
-            Exceptions.runIgnoreException(IN::close);
+            // method causes exception
+            //noinspection Convert2MethodRef
+            Exceptions.runIgnoreException(() -> IN.close());
         }
     }
 
@@ -39,7 +41,9 @@ public class ConfigurationFile extends ConfigurationSectionImpl implements Confi
         try{
             config = (Map) IN.read();
         }finally{
-            Exceptions.runIgnoreException(IN::close);
+            // method causes exception
+            //noinspection Convert2MethodRef
+            Exceptions.runIgnoreException(() -> IN.close());
         }
     }
 
