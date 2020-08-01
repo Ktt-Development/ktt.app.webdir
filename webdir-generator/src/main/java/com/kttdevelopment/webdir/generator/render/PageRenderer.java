@@ -24,12 +24,12 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         final String str = new String(bytes);
 
         if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.render",fabs,defaultFrontMatter,str));
+            logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fabs, defaultFrontMatter, str));
 
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
 
         if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.frontMatter",fabs,frontMatter));
+            logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter", fabs, frontMatter));
 
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
     // create front matter
@@ -51,11 +51,11 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 
         renderers.forEach(renderer -> {
+            final String ct = content.get();
             try{
-                final String ct = content.get();
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, ct));
                 if(locale != null)
-                    logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.apply",fabs,renderer,ct,content.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", fabs, renderer, ct, content.get()));
             }catch(final Throwable e){
                 if(locale != null)
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));

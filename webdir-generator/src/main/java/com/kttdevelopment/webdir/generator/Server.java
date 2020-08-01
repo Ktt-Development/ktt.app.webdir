@@ -102,7 +102,6 @@ public final class Server {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("Server")

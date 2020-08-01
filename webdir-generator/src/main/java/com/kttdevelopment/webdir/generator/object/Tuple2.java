@@ -22,7 +22,6 @@ public class Tuple2<X,Y> {
 
     //
 
-
     @Override
     public boolean equals(final Object o){
         if(this == o)

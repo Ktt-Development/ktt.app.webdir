@@ -85,7 +85,6 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
 
     //
 
-
     @Override
     public boolean equals(final Object o){
         if(this == o)

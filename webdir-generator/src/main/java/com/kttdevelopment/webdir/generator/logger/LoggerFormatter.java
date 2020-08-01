@@ -48,7 +48,6 @@ public final class LoggerFormatter extends Formatter {
 
     //
 
-
     @Override
     public boolean equals(final Object o){
         if(this == o)

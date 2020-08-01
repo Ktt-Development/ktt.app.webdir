@@ -282,7 +282,6 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     //
 
-
     @Override
     public boolean equals(final Object o){
         if(this == o)

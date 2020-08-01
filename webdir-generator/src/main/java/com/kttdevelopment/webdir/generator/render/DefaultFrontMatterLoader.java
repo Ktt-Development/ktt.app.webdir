@@ -121,7 +121,6 @@ public final class DefaultFrontMatterLoader {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("DefaultFrontMatterLoader")

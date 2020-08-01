@@ -78,7 +78,6 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
 
     //
 
-
     @Override
     public boolean equals(final Object o){
         if(this == o)

@@ -46,7 +46,6 @@ public class CircularDependencyChecker implements Predicate<PluginLoaderEntry> {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("CircularDependencyChecker")

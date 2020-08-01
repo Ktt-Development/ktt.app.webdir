@@ -41,6 +41,8 @@ public final class PermissionsService {
     // load default
         final Permissions def;
         {
+            if(locale != null)
+                logger.fine(locale.getString("permissions.debug.const.defPerm",defaultPermissionsResource));
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new InputStreamReader(getClass().getResourceAsStream(Objects.requireNonNull(defaultPermissionsResource))));
@@ -65,6 +67,8 @@ public final class PermissionsService {
     // load perm
         Permissions perms = null;
         {
+            if(locale != null)
+                logger.fine(locale.getString("permissions.debug.const.permFile",permissionsFile.getAbsolutePath()));
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new FileReader(permissionsFile));

@@ -25,7 +25,10 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
     @Override
     public byte[] apply(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final LocaleService locale  = Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
+        final Logger logger         = Main.getLoggerService().getLogger(locale.getString("fileRenderer"));
+        final String sabs = source.getAbsolutePath();
+
+        logger.finest(locale.getString("exchangeRenderer.debug.render",exchange,sabs,defaultFrontMatter,bytes));
 
         if(defaultFrontMatter == null)
             return bytes;
@@ -45,29 +48,38 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
 
         final InetAddress address     = exchange.getPublicAddress().getAddress();
         final Permissions permissions = Main.getPermissions().getPermissions();
+        logger.finest(locale.getString("exchangeRenderer.debug.permissions",permissions,address.getHostAddress()));
         allRenderers.forEach(renderer -> {
             final Renderer render = renderer.getRenderer();
+            byte[] ct = content.get();
             try{
-                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission()))
-                    content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange,source,defaultFrontMatter,new String(content.get())).getBytes());
+                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
+                    content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, new String(content.get())).getBytes());
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sabs,render,ct,content.get()));
+                }
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
             try{
-                if((render instanceof FileRenderAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission())))
-                    content.set(((FileRenderAdapter) renderer.getRenderer()).render(exchange,source,defaultFrontMatter,content.get()).getBytes());
-                content.set(render.render(source,defaultFrontMatter,new String(content.get())).getBytes());
+                ct = content.get();
+                if((render instanceof FileRenderAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission()))){
+                    content.set(((FileRenderAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, content.get()).getBytes());
+                    content.set(render.render(source, defaultFrontMatter, new String(content.get())).getBytes());
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sabs,render,ct,content.get()));
+                }
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
             try{
+                ct = content.get();
                 content.set(render.render(source,defaultFrontMatter,new String(content.get())).getBytes());
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sabs,render,ct,content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 
-        return null;
+        return content.get();
     }
 
 }

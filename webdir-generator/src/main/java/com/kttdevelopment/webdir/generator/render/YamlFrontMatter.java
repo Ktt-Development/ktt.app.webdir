@@ -166,7 +166,6 @@ public abstract class YamlFrontMatter {
 
     //
 
-
     @Override
     public boolean equals(final Object obj){
         if(this == obj)

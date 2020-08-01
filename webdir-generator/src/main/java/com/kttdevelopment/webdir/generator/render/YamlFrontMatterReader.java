@@ -85,7 +85,6 @@ public final class YamlFrontMatterReader {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("YamLFrontMatterReader")

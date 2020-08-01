@@ -56,7 +56,6 @@ public final class PluginYmlImpl extends PluginYml {
 
     //
 
-
     @Override
     public boolean equals(final Object o){
         if(this == o)
@@ -70,7 +69,6 @@ public final class PluginYmlImpl extends PluginYml {
                Arrays.equals(other.getDependencies(),dependencies) &&
                other.getConfiguration().equals(config);
     }
-
 
     @Override
     public String toString(){

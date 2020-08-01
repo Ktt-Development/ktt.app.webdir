@@ -56,7 +56,6 @@ public final class LoggerService {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("LoggerService")

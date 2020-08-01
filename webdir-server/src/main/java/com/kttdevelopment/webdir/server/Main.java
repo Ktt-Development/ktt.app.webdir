@@ -42,9 +42,6 @@ public abstract class Main {
 
     public static FileServer getServer(){ return server; }
 
-    // todo | have application run main from generator and hook into the active server to add handlers [x]
-    // todo | ^ this approach can not be used because the handler for static files must be overridden to allow exchange renderers to operate
-
     public static void main(String[] args){
         try{
             loggerService = new LoggerService();

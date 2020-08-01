@@ -25,7 +25,6 @@ public final class UTF8PropertiesControl extends ResourceBundle.Control {
             IN = loader.getResourceAsStream(resourceName);
         }
 
-
         ResourceBundle bundle = null;
         if(IN != null){
             try{

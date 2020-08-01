@@ -40,7 +40,6 @@ public final class DefaultFileHandler extends FileHandler {
 
     //
 
-
     @Override
     public String toString(){
         return new toStringBuilder("DefaultFileHandler")

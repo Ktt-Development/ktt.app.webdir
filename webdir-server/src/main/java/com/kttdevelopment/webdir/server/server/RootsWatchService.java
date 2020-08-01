@@ -2,18 +2,16 @@ package com.kttdevelopment.webdir.server.server;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
-public final class RootsWatchService{
+public class RootsWatchService{
 
     private final long delay;
     private AtomicBoolean running = new AtomicBoolean(false);
     private AtomicBoolean stop = new AtomicBoolean(false);
 
-    private AtomicReference<File[]> roots;
+    private final List<File> drives = Collections.synchronizedList(new ArrayList<>());
 
     public RootsWatchService(final long delay){
         this.delay = delay;
@@ -25,12 +23,25 @@ public final class RootsWatchService{
             running.set(true);
             while(!stop.get()){
                 final FileSystemView fileSys = FileSystemView.getFileSystemView();
-                final File[] roots = fileSys.getRoots();
-                final List<File> drives = new ArrayList<>();
-                for(final File root : roots)
+                final File[] allRoots = fileSys.getRoots();
+                final List<File> loadedDrives = new ArrayList<>();
+                for(final File root : allRoots)
                     if(fileSys.isDrive(root))
-                        drives.add(root);
-                RootsWatchService.this.roots.set( drives.toArray(new File[0]));
+                        loadedDrives.add(root);
+
+                for(final File drive : loadedDrives){
+                    if(!drives.contains(drive)){
+                        drives.add(drive);
+                        onAddedEvent(drive);
+                    }
+                }
+
+                for(final File drive : drives){
+                    if(!loadedDrives.contains(drive)){
+                        drives.remove(drive);
+                        onRemovedEvent(drive);
+                    }
+                }
                 try{
                     Thread.sleep(delay);
                 }catch(final InterruptedException ignored){
@@ -46,8 +57,14 @@ public final class RootsWatchService{
         running.set(false);
     }
 
-    public final File[] listRoots(){
-        return roots.get();
+    //
+
+    public void onRemovedEvent(final File file){
+
+    }
+
+    public void onAddedEvent(final File file){
+
     }
 
 }
