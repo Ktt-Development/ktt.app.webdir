@@ -14,17 +14,10 @@ target
 /*.log
 /*.yml
 
-*.log
-*.lck
-*.1
-*.2
-*.3
-*.4
-*.5
-*.6
-*.7
-
-/webdir-generator/_site
-/webdir-generator/*.yml
-/webdir-generator/*.log
-/webdir-generator/crash-*.txt
+/webdir-*/_site
+/webdir-*/*.yml
+/webdir-*/*.log
+/webdir-*/*.log.*
+/webdir-*/*.log.lck
+/webdir-*/*.log.lck.*
+/webdir-*/crash-*.txt

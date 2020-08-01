@@ -44,13 +44,13 @@ public abstract class Main {
 
     public static void main(String[] args){
         try{
-            loggerService = new LoggerService();
-            localeService = new LocaleService(Vars.Main.localeResource);
-            configService = new ConfigService(Vars.Main.configFile,Vars.Main.configResource);
+            Vars.Main.setLoggerService(new LoggerService());
+            Vars.Main.setLocaleService(new LocaleService(Vars.Main.localeResource));
+            Vars.Main.setConfigService(new ConfigService(Vars.Main.configFile,Vars.Main.configResource));
 
-            final ConfigurationSection config = configService.getConfig();
+            final ConfigurationSection config = Vars.Main.getConfigService().getConfig();
 
-            pluginLoader = new PluginLoader();
+            Vars.Main.setPluginLoader(new PluginLoader());
             final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
             final File source = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
             final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
