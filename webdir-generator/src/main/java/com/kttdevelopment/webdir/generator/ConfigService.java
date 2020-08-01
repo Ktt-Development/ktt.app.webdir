@@ -31,7 +31,7 @@ public final class ConfigService {
         Objects.requireNonNull(configFile);
         this.configFile = configFile.getAbsolutePath();
         this.defaultConfigResource = defaultConfigResource;
-        final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Config") : Logger.getLogger("Config");
+        final Logger logger = Vars.Main.getLoggerService().getLogger("Config");
 
         logger.info("Started configuration initialization");
 
@@ -79,8 +79,7 @@ public final class ConfigService {
 
         logger.fine("Loaded configuration:\n" + config);
 
-        if(Main.getLoggerService() != null)
-            Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
+        Vars.Main.getLocaleService().setLocale(Locale.forLanguageTag(config.getString("locale", "en_us")));
         logger.info("Finished configuration service initialization");
     }
 

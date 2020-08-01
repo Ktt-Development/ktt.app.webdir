@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RootsWatchService{
 
     private final long delay;
-    private AtomicBoolean running = new AtomicBoolean(false);
-    private AtomicBoolean stop = new AtomicBoolean(false);
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    private final AtomicBoolean stop = new AtomicBoolean(false);
 
     private final List<File> drives = Collections.synchronizedList(new ArrayList<>());
 

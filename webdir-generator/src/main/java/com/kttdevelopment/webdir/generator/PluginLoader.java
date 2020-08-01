@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.*;
 
 import java.io.*;
@@ -53,9 +54,9 @@ public final class PluginLoader {
 
     @SuppressWarnings({"unchecked", "SpellCheckingInspection"})
     public PluginLoader(){
-        final LocaleService locale = Main.getLocaleService();
-        final ConfigService config = Main.getConfigService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pluginLoader"));
+        final ILocaleService locale = Vars.Main.getLocaleService();
+        final ConfigService config = Vars.Main.getConfigService();
+        final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("pluginLoader"));
 
         logger.info(locale.getString("pluginLoader.const"));
 

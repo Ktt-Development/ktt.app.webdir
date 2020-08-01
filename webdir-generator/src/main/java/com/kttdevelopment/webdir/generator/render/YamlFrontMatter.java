@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
@@ -44,19 +45,17 @@ public abstract class YamlFrontMatter {
 
     // load imports via file → loads both, may be empty if bad file
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
-        final LocaleService locale  = Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ILocaleService locale  = Vars.Main.getLocaleService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final ConfigurationFile config = new ConfigurationFile();
         try{
             config.load(file);
             return loadImports(file,config, checkedImports);
         }catch(final FileNotFoundException ignored){
-            if(locale != null)
-                logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.notFound", file.getAbsolutePath()));
+            logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.notFound", file.getAbsolutePath()));
         }catch(final ClassCastException |  YamlException e){
-            if(locale != null)
-                logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.malformedYML", file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.malformedYML", file.getAbsolutePath()) + '\n' + Exceptions.getStackTraceAsString(e));
         }
         return new ConfigurationSectionImpl();
     }
@@ -68,13 +67,12 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports){
-        final LocaleService locale  = Main.getLocaleService() ;
-        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ILocaleService locale  = Vars.Main.getLocaleService() ;
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final String sabs = source != null ? source.getAbsolutePath() : null;
 
-        if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",sabs,config,checkedImports));
+        logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",sabs,config,checkedImports));
 
         // reverse lists so top imports#putAll will override lower imports
         final List<String> imports = config.getList(Vars.Renderer.importKey, new ArrayList<>());
@@ -94,8 +92,7 @@ public abstract class YamlFrontMatter {
             final String fileName = ContextUtil.getContext(s + (hasExtension.matcher(s).matches() ? "" : ".yml"),true,false);
             final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
 
-            if(locale != null)
-                logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,sabs));
+            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,sabs));
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
@@ -104,7 +101,7 @@ public abstract class YamlFrontMatter {
                 imported.remove(Vars.Renderer.importKey);
                 imported.remove(Vars.Renderer.importRelativeKey);
                 out.putAll(imported);
-            }else if(locale != null){
+            }else{
                 logger.warning(locale.getString("pageRenderer.yamlFrontMatter.getImports.circularImport", IN.getPath()));
             }
         }));
@@ -117,10 +114,10 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings("rawtypes")
     public static List<PluginRendererEntry> getRenderers(final String renderKey, final List renderers){
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final ILocaleService locale = Vars.Main.getLocaleService();
+        final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        final List<PluginRendererEntry> installedRenderers = Main.getPluginLoader().getRenderers();
+        final List<PluginRendererEntry> installedRenderers = Vars.Main.getPluginLoader().getRenderers();
         final List<PluginRendererEntry> out = new ArrayList<>();
 
         logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getRenderers",renderers));

@@ -1,6 +1,6 @@
 package com.kttdevelopment.webdir.generator.logger;
 
-import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
@@ -40,7 +40,7 @@ public final class LoggerFormatter extends Formatter {
         final String level = record.getLevel().getName().toUpperCase();
         return
             (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
-            '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Main.getLocaleService().getString("logger.level." + level)), level) + ']' + ' ' +
+            '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Vars.Main.getLocaleService().getString("logger.level." + level)), level) + ']' + ' ' +
             (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") +
             String.format(name,record.getLoggerName()) + ' ' +
             record.getMessage() + '\n';

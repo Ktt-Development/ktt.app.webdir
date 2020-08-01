@@ -4,10 +4,10 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.server.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.QuadriFunction;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.server.Main;
@@ -24,7 +24,7 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
 
     @Override
     public byte[] apply(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Main.getLoggerService().getLogger(locale.getString("fileRenderer"));
         final String sabs = source.getAbsolutePath();
 

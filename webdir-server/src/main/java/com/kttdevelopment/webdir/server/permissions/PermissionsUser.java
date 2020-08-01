@@ -1,8 +1,9 @@
 package com.kttdevelopment.webdir.server.permissions;
 
-import com.kttdevelopment.webdir.generator.LocaleService;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.object.Tuple4;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
@@ -25,7 +26,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
         super( // if user uses loop back address (127.0.0.1) then use local address instead; (server uses machine address instead of 127.0.0.1)
             Exceptions.requireNonExceptionElse(() -> user.isLoopbackAddress() ? InetAddress.getLocalHost() : user, user),
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final ILocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -41,7 +42,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                 }
             }).get(),
             ((Supplier<Map>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final ILocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -53,7 +54,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                 }
             }).get(),
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final ILocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{

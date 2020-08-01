@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.*;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.object.Tuple2;
 
 import java.io.File;
@@ -21,16 +22,14 @@ public final class DefaultFrontMatterLoader {
     private final File sourcesDir;
 
     public DefaultFrontMatterLoader(final File defaultDir, final File sourcesDir){
-        final LocaleService locale  = Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ILocaleService locale  = Vars.Main.getLocaleService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        if(locale != null)
-            logger.fine(locale.getString("pageRenderer.debug.default.dir",defaultDir.getAbsolutePath(),sourcesDir.getAbsolutePath()));
+        logger.fine(locale.getString("pageRenderer.debug.default.dir",defaultDir.getAbsolutePath(),sourcesDir.getAbsolutePath()));
 
         this.sourcesDir = sourcesDir;
         for(final File file : Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])){
-            if(locale != null)
-                logger.finest(locale.getString("pageRenderer.debug.default.file",file.getAbsolutePath()));
+            logger.finest(locale.getString("pageRenderer.debug.default.file",file.getAbsolutePath()));
 
             try{
                 final ConfigurationFile config = new ConfigurationFile();
@@ -42,30 +41,24 @@ public final class DefaultFrontMatterLoader {
                         config
                     ));
                 }catch(final NullPointerException ignored){
-                    if(locale != null)
-                        logger.warning(locale.getString("pageRenderer.default.missingDefault", file.getPath()));
+                    logger.warning(locale.getString("pageRenderer.default.missingDefault", file.getPath()));
                 }catch(final ClassCastException ignored){
-                    if(locale != null)
-                        logger.warning(locale.getString("pageRenderer.default.invalidDefaultType", file.getPath()));
+                    logger.warning(locale.getString("pageRenderer.default.invalidDefaultType", file.getPath()));
                 }
             }catch(final FileNotFoundException ignored){
-                if(locale != null)
-                    logger.warning(locale.getString("pageRenderer.default.noDefaultFile", file.getPath()));
+                logger.warning(locale.getString("pageRenderer.default.noDefaultFile", file.getPath()));
             }catch(final ClassCastException | YamlException e){
-                if(locale != null)
-                    logger.warning(locale.getString("pageRenderer.default.malformedYML", file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.default.malformedYML", file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }
-        if(locale != null)
-            logger.fine(locale.getString("pageRenderer.debug.default.loaded",defaultConfigurations.size(),Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])));
+        logger.fine(locale.getString("pageRenderer.debug.default.loaded",defaultConfigurations.size(),Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])));
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final File file){
-        final LocaleService locale  = Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ILocaleService locale  = Vars.Main.getLocaleService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         final String fabs = file.getAbsolutePath();
-        if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.file",fabs));
+        logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.file",fabs));
 
         final String path = ContextUtil.getContext(sourcesDir.getAbsoluteFile().toPath().relativize(file.getAbsoluteFile().toPath()).toString(),true,false);
 
@@ -73,13 +66,12 @@ public final class DefaultFrontMatterLoader {
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final String context){
-        final LocaleService locale  = Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ILocaleService locale  = Vars.Main.getLocaleService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final String path = ContextUtil.getContext(context,true,false);
 
-        if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.path",path));
+        logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.path",path));
 
         final List<ConfigurationSection> configs = new ArrayList<>();
 
@@ -104,8 +96,7 @@ public final class DefaultFrontMatterLoader {
             Comparator.comparingInt(o -> Objects.requireNonNull(o.get(Vars.Renderer.Default.defaultKey))
                .getInteger(Vars.Renderer.Default.indexKey, Vars.Renderer.Default.defaultIndex)));
 
-        if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.sort",path,configs));
+        logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.sort",path,configs));
 
         // populate configuration by lower index first so higher ones override
         final ConfigurationSection def = new ConfigurationSectionImpl();

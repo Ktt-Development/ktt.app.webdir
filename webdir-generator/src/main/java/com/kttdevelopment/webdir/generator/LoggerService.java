@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.logger.ILoggerService;
 import com.kttdevelopment.webdir.generator.logger.LoggerFormatter;
 import com.kttdevelopment.webdir.generator.object.Tuple3;
 
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.logging.*;
 import java.util.logging.Formatter;
 
-public final class LoggerService {
+public final class LoggerService implements ILoggerService {
 
     private final List<Handler> handlers = new ArrayList<>();
 
@@ -45,6 +46,7 @@ public final class LoggerService {
         logger.info("Finished logger service initialization");
     }
 
+    @Override
     public final Logger getLogger(final String loggerName){
         final Logger logger = loggerName != null ? Logger.getLogger(loggerName) : Logger.getAnonymousLogger();
         final List<Handler> handlers = Arrays.asList(logger.getHandlers());

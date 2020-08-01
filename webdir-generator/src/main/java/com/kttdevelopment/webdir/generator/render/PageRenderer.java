@@ -5,6 +5,7 @@ import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.TriFunction;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
@@ -16,20 +17,18 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
 
     @Override
     public final byte[] apply(final File file, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(locale.getString("pageRenderer")) : Logger.getLogger("Page Renderer");
+        final ILocaleService locale  = Vars.Main.getLocaleService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         @SuppressWarnings("SpellCheckingInspection")
         final String fabs = file.getAbsolutePath();
         final String str = new String(bytes);
 
-        if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fabs, defaultFrontMatter, str));
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fabs, defaultFrontMatter, str));
 
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
 
-        if(locale != null)
-            logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter", fabs, frontMatter));
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter", fabs, frontMatter));
 
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
     // create front matter
@@ -54,11 +53,9 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
             final String ct = content.get();
             try{
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, ct));
-                if(locale != null)
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", fabs, renderer, ct, content.get()));
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", fabs, renderer, ct, content.get()));
             }catch(final Throwable e){
-                if(locale != null)
-                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 
