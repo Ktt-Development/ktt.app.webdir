@@ -1,8 +1,9 @@
 package com.kttdevelopment.webdir.generator.config;
 
-import com.esotericsoftware.yamlbeans.*;
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.function.*;
 
 import java.io.*;
 import java.util.Map;
@@ -21,8 +22,7 @@ public class ConfigurationFile extends ConfigurationSectionImpl implements Confi
         try{
             config = (Map) IN.read();
         }finally{
-            try{ IN.close();
-            }catch(final IOException ignored){ }
+            Exceptions.runIgnoreException(IN::close);
         }
     }
 
@@ -39,8 +39,7 @@ public class ConfigurationFile extends ConfigurationSectionImpl implements Confi
         try{
             config = (Map) IN.read();
         }finally{
-            try{ IN.close();
-            }catch(final IOException ignored){ }
+            Exceptions.runIgnoreException(IN::close);
         }
     }
 

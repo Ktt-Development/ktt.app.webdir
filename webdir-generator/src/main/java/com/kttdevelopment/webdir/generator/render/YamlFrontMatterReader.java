@@ -4,9 +4,9 @@ import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
+import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,41 +25,40 @@ public final class YamlFrontMatterReader {
     public final YamlFrontMatter read(){
         final Matcher matcher = pattern.matcher(content);
 
-        boolean hasFrontMatter = false;
+        boolean hasFrontMatter           = false;
         ConfigurationSection frontMatter = null;
-        String frontMatterStr = null;
-        String cont = content;
+        String frontMatterStr            = null;
+        String cont                      = content;
 
         if(matcher.find()){
             final String g2 = matcher.group(2);
-            final int len = matcher.group(0).length();
+            final int len   = matcher.group(0).length();
             final String ct = content.length() == len ? "" : content.substring(len + 1);
 
             final YamlReader IN = new YamlReader(g2);
             try{
-                frontMatter = new ConfigurationSectionImpl((Map) IN.read());
+                frontMatter    = new ConfigurationSectionImpl((Map) IN.read());
                 hasFrontMatter = true;
                 frontMatterStr = g2;
-                cont = ct;
+                cont           = ct;
             }catch(final ClassCastException | YamlException ignored){
                 // invalid yaml
             }finally{
-                try{ IN.close();
-                }catch(final IOException ignored){ }
+                Exceptions.runIgnoreException(IN::close);
             }
         }
 
-        final boolean hfm = hasFrontMatter;
+        final boolean hfm             = hasFrontMatter;
         final ConfigurationSection fm = frontMatter;
-        final String fms = frontMatterStr;
-        final String ct = cont;
+        final String fms              = frontMatterStr;
+        final String ct               = cont;
 
         return new YamlFrontMatter() {
 
-            final boolean hasFrontMatter = hfm;
+            final boolean hasFrontMatter           = hfm;
             final ConfigurationSection frontMatter = fm;
-            final String frontMatterString = fms;
-            final String content = ct;
+            final String frontMatterString         = fms;
+            final String content                   = ct;
 
             @Override
             public final boolean hasFrontMatter(){

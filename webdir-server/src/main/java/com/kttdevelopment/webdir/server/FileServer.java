@@ -18,18 +18,18 @@ public final class FileServer {
 
     private final RootsWatchService watchService;
 
+    private final SimpleHttpServer server;
     private final int port;
     private final File defaults, source, output;
 
     FileServer(final int port, final File defaults, final File source, final File output) throws IOException{
-        this.port = port;
+        this.port     = port;
         this.defaults = defaults;
-        this.source = source;
-        this.output = output;
+        this.source   = source;
+        this.output   = output;
 
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
-        final SimpleHttpServer server;
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("server"));
 
         logger.fine(locale.getString("server.debug.const.port", port));
         try{
@@ -55,7 +55,7 @@ public final class FileServer {
 
         logger.info(locale.getString("server.const.createFileHandler"));
 
-        final String fileContext = Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext);
+        final String fileContext = Vars.Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext);
         watchService = new RootsWatchService(1000 * 5) {
 
             @Override
@@ -92,6 +92,7 @@ public final class FileServer {
     public String toString(){
         return new toStringBuilder("FileServer")
             .addObject("port",port)
+            .addObject("server",server)
             .addObject("defaults",defaults)
             .addObject("source",source)
             .addObject("output",output)

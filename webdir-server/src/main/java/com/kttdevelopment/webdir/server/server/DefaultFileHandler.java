@@ -3,9 +3,9 @@ package com.kttdevelopment.webdir.server.server;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
-import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 import com.kttdevelopment.webdir.server.httpserver.SimpleHttpExchangeUnmodifiable;
 import com.kttdevelopment.webdir.server.render.FilePageRenderer;
@@ -22,7 +22,7 @@ public final class DefaultFileHandler extends FileHandler {
 
     public DefaultFileHandler(final File defaults){
         this.defaults = defaults;
-        this.source = new File(Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext));
+        this.source   = new File(Vars.Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext));
 
         this.defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults, source);
     }

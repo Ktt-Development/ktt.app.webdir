@@ -5,7 +5,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
-import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
 import java.io.File;
@@ -23,9 +23,10 @@ public final class PluginServiceImpl extends PluginService {
     private final File pluginFolder;
     private final PluginYml pluginYml;
 
+    @SuppressWarnings("ConstantExpression")
     public PluginServiceImpl(final ConfigurationSection pluginYml, final File pluginFolder){
-        this.pluginYml = new PluginYmlImpl(pluginYml);
-        this.pluginFolder = Paths.get( pluginFolder.getPath() ,this.pluginYml.getPluginName().replaceAll('[' + badFileChars + ']',"_")).toFile();
+        this.pluginYml      = new PluginYmlImpl(pluginYml);
+        this.pluginFolder   = Paths.get( pluginFolder.getPath() ,this.pluginYml.getPluginName().replaceAll('[' + badFileChars + ']',"_")).toFile();
         this.logger         = Vars.Main.getLoggerService().getLogger(this.pluginYml.getPluginName());
     }
 
@@ -64,23 +65,25 @@ public final class PluginServiceImpl extends PluginService {
     @Override
     public final ConfigurationSection createConfiguration(final File file){
         final ConfigurationFile configurationSection = new ConfigurationFile();
-        try{
-            configurationSection.load(file);
-            return configurationSection;
-        }catch(final Throwable ignored){
-            return null;
-        }
+        return Exceptions.requireNonExceptionElse(
+            (ExceptionSupplier<ConfigurationSection>) () -> {
+                configurationSection.load(file);
+                return configurationSection;
+            },
+            null
+        );
     }
 
     @Override
     public final ConfigurationSection createConfiguration(final InputStream stream){
         final ConfigurationFile configurationSection = new ConfigurationFile();
-        try{
-            configurationSection.load(stream);
-            return configurationSection;
-        }catch(final Throwable ignored){
-            return null;
-        }
+        return Exceptions.requireNonExceptionElse(
+            (ExceptionSupplier<ConfigurationSection>) () -> {
+                configurationSection.load(stream);
+                return configurationSection;
+            },
+            null
+        );
     }
 
     @Override

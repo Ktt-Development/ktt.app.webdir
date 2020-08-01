@@ -30,8 +30,8 @@ public abstract class Main {
 
             Vars.Main.setPluginLoader(new PluginLoader());
             final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
-            final File source = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
-            final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
+            final File source   = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
+            final File output   = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
             pageRenderingService = new PageRenderingService(defaults,source,output);
 
             if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))

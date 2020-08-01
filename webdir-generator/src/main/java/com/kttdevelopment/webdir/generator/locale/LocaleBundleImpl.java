@@ -1,7 +1,7 @@
 package com.kttdevelopment.webdir.generator.locale;
 
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
-import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.function.*;
 
 import java.util.*;
 
@@ -34,21 +34,13 @@ public final class LocaleBundleImpl implements LocaleBundle {
 
     @Override
     public final String getString(final String key){
-        try{
-            return bundle.getString(key);
-        }catch(final MissingResourceException | NullPointerException e){
-            return null;
-        }
+        return Exceptions.requireNonExceptionElse(() -> bundle.getString(key), null);
     }
 
     @Override
     public final String getString(final String key, final Object... args){
         final String value = getString(key);
-        try{
-            return String.format(Objects.requireNonNull(value),args);
-        }catch(final NullPointerException | IllegalFormatException e){
-            return value;
-        }
+        return Exceptions.requireNonExceptionElse(() -> String.format(Objects.requireNonNull(value),args), value);
     }
 
     //

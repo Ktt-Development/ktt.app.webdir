@@ -67,12 +67,12 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports){
-        final ILocaleService locale  = Vars.Main.getLocaleService() ;
+        final ILocaleService locale = Vars.Main.getLocaleService() ;
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        final String sabs = source != null ? source.getAbsolutePath() : null;
+        final String sourceABS = Exceptions.requireNonExceptionElse(source::getAbsolutePath,"null");
 
-        logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",sabs,config,checkedImports));
+        logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports",sourceABS,config,checkedImports));
 
         // reverse lists so top imports#putAll will override lower imports
         final List<String> imports = config.getList(Vars.Renderer.importKey, new ArrayList<>());
@@ -90,14 +90,14 @@ public abstract class YamlFrontMatter {
         repeat.forEach(list -> list.forEach(s -> {
             // if has no extension assume .yml
             final String fileName = ContextUtil.getContext(s + (hasExtension.matcher(s).matches() ? "" : ".yml"),true,false);
+            //noinspection ConstantConditions // the assertion that its true is actually false; issued caused by nonExceptionElse
             final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
 
-            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,sabs));
+            logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,sourceABS));
 
             if(!checkedImports.contains(IN)){ // only apply imports if not already done so (circular import prevention)
                 checkedImports.add(IN);
                 final Map imported = loadImports(IN,checkedImports).toMap();
-
                 imported.remove(Vars.Renderer.importKey);
                 imported.remove(Vars.Renderer.importRelativeKey);
                 out.putAll(imported);
@@ -115,10 +115,10 @@ public abstract class YamlFrontMatter {
     @SuppressWarnings("rawtypes")
     public static List<PluginRendererEntry> getRenderers(final String renderKey, final List renderers){
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final List<PluginRendererEntry> installedRenderers = Vars.Main.getPluginLoader().getRenderers();
-        final List<PluginRendererEntry> out = new ArrayList<>();
+        final List<PluginRendererEntry> out                = new ArrayList<>();
 
         logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getRenderers",renderers));
 

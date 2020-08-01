@@ -55,8 +55,8 @@ public final class PluginLoader {
     @SuppressWarnings({"unchecked", "SpellCheckingInspection"})
     public PluginLoader(){
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final ConfigService config = Vars.Main.getConfigService();
-        final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("pluginLoader"));
+        final ConfigService config  = Vars.Main.getConfigService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pluginLoader"));
 
         logger.info(locale.getString("pluginLoader.const"));
 

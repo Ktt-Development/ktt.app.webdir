@@ -20,7 +20,9 @@ public final class StaticFileHandler extends FileHandler {
     private final File defaults, source, output;
 
     public StaticFileHandler(final File defaults, final File source, final File output){
-        this.defaults = defaults; this.source = source; this.output = output;
+        this.defaults = defaults;
+        this.source   = source;
+        this.output   = output;
         this.defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
     }
 

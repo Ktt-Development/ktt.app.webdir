@@ -19,11 +19,8 @@ public abstract class Exceptions {
     }
 
     public static <T> T requireNonExceptionElse(final ExceptionSupplier<T> supplier, T def){
-        try{
-            return supplier.get();
-        }catch(final Throwable ignored){
-            return def;
-        }
+        try{ return supplier.get();
+        }catch(final Throwable ignored){ return def; }
     }
 
     @SuppressWarnings({"unchecked", "UnusedReturnValue"})

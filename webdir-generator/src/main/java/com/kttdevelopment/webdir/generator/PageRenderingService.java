@@ -20,28 +20,29 @@ public final class PageRenderingService {
     private final DefaultFrontMatterLoader defaultFrontMatterLoader;
     private final PageRenderer render = new PageRenderer();
 
-    private final File source;
-    private final File output;
+    private final File defaults, source, output;
 
     public PageRenderingService(final File defaults, final File source, final File output) throws IOException{
+        this.defaults = defaults;
+        this.source   = source;
+        this.output   = output;
+
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final ConfigService config = Vars.Main.getConfigService();
-        final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final ConfigService config  = Vars.Main.getConfigService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
 
-        final String dabs = defaults.getAbsolutePath();
-        logger.fine(locale.getString("pageRenderer.debug.const.default",dabs));
+        final String defABS = defaults.getAbsolutePath();
+        logger.fine(locale.getString("pageRenderer.debug.const.default",defABS));
 
         defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
 
         final Path sourcePath = source.getAbsoluteFile().toPath();
-        this.source = source;
-        this.output = output;
 
-        logger.fine(locale.getString("pageRenderer.debug.const.source",dabs));
-        logger.fine(locale.getString("pageRenderer.debug.const.output",dabs));
+        logger.fine(locale.getString("pageRenderer.debug.const.source",defABS));
+        logger.fine(locale.getString("pageRenderer.debug.const.output",defABS));
 
-        final AtomicInteger total = new AtomicInteger(0);
+        final AtomicInteger total    = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
 
         final boolean clean =
@@ -83,9 +84,9 @@ public final class PageRenderingService {
     // target is the source file
     public final boolean render(final File target){
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
-        final String tabs = target.getAbsolutePath();
-        logger.finest(locale.getString("pageRenderer.debug.render",tabs));
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final String targetABS      = target.getAbsolutePath();
+        logger.finest(locale.getString("pageRenderer.debug.render",targetABS));
 
         if(target.isDirectory()){
             logger.warning(locale.getString("pageRenderer.render.noRenderDirectory", target));
@@ -98,7 +99,7 @@ public final class PageRenderingService {
 
         if(!target.exists()){
             try{
-                logger.finest(locale.getString("pageRenderer.debug.render.delete", tabs));
+                logger.finest(locale.getString("pageRenderer.debug.render.delete", targetABS));
                 Files.delete(out);
                 return true;
             }catch(final IOException e){
@@ -123,7 +124,7 @@ public final class PageRenderingService {
                     logger.warning(locale.getString("pageRenderer.render.failedRead", path) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
             else
-                logger.finest(locale.getString("pageRenderer.debug.render.missingDir",tabs,parent.getAbsolutePath()));
+                logger.finest(locale.getString("pageRenderer.debug.render.missingDir",targetABS,parent.getAbsolutePath()));
         }
         return false;
     }
@@ -135,6 +136,7 @@ public final class PageRenderingService {
         return new toStringBuilder("PageRenderingService")
             .addObject("defaultFrontMatterLoader",defaultFrontMatterLoader)
             .addObject("pageRenderer",render)
+            .addObject("defaults",defaults.getAbsolutePath())
             .addObject("source",source.getAbsolutePath())
             .addObject("output",output.getAbsolutePath())
             .toString();

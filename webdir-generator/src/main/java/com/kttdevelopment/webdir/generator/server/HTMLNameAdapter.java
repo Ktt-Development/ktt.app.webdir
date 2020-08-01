@@ -6,7 +6,7 @@ import java.io.File;
 
 public final class HTMLNameAdapter implements FileHandlerAdapter {
 
-    final int len = ".html".length();
+    private final int len = ".html".length();
 
     @Override
     public final String getName(final File file){

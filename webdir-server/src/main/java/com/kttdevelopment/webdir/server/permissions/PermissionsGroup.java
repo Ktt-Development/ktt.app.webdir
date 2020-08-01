@@ -4,7 +4,6 @@ import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.object.Tuple4;
-import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 
 import java.util.*;
@@ -20,7 +19,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
             group,
             ((Supplier<String[]>) () -> {
                 final ILocaleService locale = Vars.Main.getLocaleService();
-                final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+                final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
 
                 try{
                     final Object inheritance = Objects.requireNonNull(value.get(ServerVars.Permissions.inheritanceKey));
@@ -29,32 +28,29 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
                     else
                         return new String[]{inheritance.toString()};
                 }catch(final ClassCastException | NullPointerException ignored){
-                    if(locale != null)
-                        logger.warning(locale.getString("permissions.PermissionsGroup.missingInheritance",group));
+                    logger.warning(locale.getString("permissions.PermissionsGroup.missingInheritance",group));
                     return new String[0];
                 }
             }).get(),
             ((Supplier<Map>) () -> {
                 final ILocaleService locale = Vars.Main.getLocaleService();
-                final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+                final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
 
                 try{
                     return Collections.unmodifiableMap((Map) Objects.requireNonNull(value.get(ServerVars.Permissions.optionsKey)));
                 }catch(final ClassCastException | NullPointerException ignored){
-                    if(locale != null)
-                        logger.warning(locale.getString("permissions.PermissionsGroup.missingOptions",group));
+                    logger.warning(locale.getString("permissions.PermissionsGroup.missingOptions",group));
                     return new HashMap();
                 }
             }).get(),
             ((Supplier<String[]>) () -> {
                 final ILocaleService locale = Vars.Main.getLocaleService();
-                final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
+                final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
 
                 try{
                     return ((List<String>) value.get(ServerVars.Permissions.permissionsKey)).toArray(new String[0]);
                 }catch(final ClassCastException | NullPointerException ignored){
-                    if(locale != null)
-                        logger.warning(locale.getString("permissions.PermissionsGroup.missingPermissions",group));
+                    logger.warning(locale.getString("permissions.PermissionsGroup.missingPermissions",group));
                     return new String[0];
                 }
             }).get()

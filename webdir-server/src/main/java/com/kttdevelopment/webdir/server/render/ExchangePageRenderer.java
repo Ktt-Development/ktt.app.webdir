@@ -29,16 +29,16 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
 
     @Override
     public final byte[] apply(final SimpleHttpExchange exchange, final File source, final File rendered, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final ILocaleService locale  = Vars.Main.getLocaleService();
-        final Logger logger         = Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
-        final String sabs = source.getAbsolutePath();
+        final ILocaleService locale = Vars.Main.getLocaleService();
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
+        final String sourceABS      = source.getAbsolutePath();
 
-        logger.finest(locale.getString("exchangeRenderer.debug.render",exchange,sabs,defaultFrontMatter,bytes));
+        logger.finest(locale.getString("exchangeRenderer.debug.render",exchange,sourceABS,defaultFrontMatter,bytes));
 
         final String sourceContent;
         try{ sourceContent = Files.readString(source.toPath());
         }catch(final IOException e){
-            logger.warning(locale.getString("exchangeRenderer.failedRead", sabs + '\n' + Exceptions.getStackTraceAsString(e)));
+            logger.warning(locale.getString("exchangeRenderer.failedRead", sourceABS + '\n' + Exceptions.getStackTraceAsString(e)));
             return bytes; }
     // create front matter from source
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(sourceContent).read();
@@ -74,7 +74,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
                 // if is an adapter but not a class (adapter has no permissions) or is class and has permission
                 if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
                     content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sabs,render,ct,content.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
                 }
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -82,7 +82,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
             try{
                 ct = content.get();
                 content.set(render.render(source,defaultFrontMatter,content.get()));
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sabs,render,ct,content.get()));
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }

@@ -24,7 +24,7 @@ public final class Server {
         this.source = source.getAbsolutePath();
         this.output = output.getAbsolutePath();
 
-        final ILocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("server"));
         logger.info(locale.getString("server.const"));
 
@@ -84,7 +84,7 @@ public final class Server {
 
     private void createWatchService(final WatchService watchService, final Path target){
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("server"));
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("server"));
 
         try{
             Files.walk(target).filter(path -> path.toFile().isDirectory()).forEach(p -> {

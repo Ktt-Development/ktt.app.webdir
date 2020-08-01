@@ -35,76 +35,63 @@ public final class PermissionsService {
         this.defaultPermissionsResource = defaultPermissionsResource;
 
         final ILocaleService locale = Vars.Main.getLocaleService();
-        final Logger logger        = locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("permissions");
+        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
 
-        if(locale != null)
-            logger.info(locale.getString("permissions.const"));
+        logger.info(locale.getString("permissions.const"));
 
     // load default
         final Permissions def;
         {
-            if(locale != null)
-                logger.fine(locale.getString("permissions.debug.const.defPerm",defaultPermissionsResource));
+            logger.fine(locale.getString("permissions.debug.const.defPerm",defaultPermissionsResource));
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new InputStreamReader(getClass().getResourceAsStream(Objects.requireNonNull(defaultPermissionsResource))));
                 def = new Permissions((Map) IN.read());
             }catch(final NullPointerException e){
-                if(locale != null)
-                    logger.severe(locale.getString("permissions.const.default.missing"));
+                logger.severe(locale.getString("permissions.const.default.missing"));
                 throw e;
             }catch(final ClassCastException | YamlException e){
-                if(locale != null)
-                    logger.severe(locale.getString("permissions.const.default.malformed") + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("permissions.const.default.malformed") + '\n' + Exceptions.getStackTraceAsString(e));
                 throw e;
             }finally{
                 if(IN != null)
                     try{ IN.close();
                     }catch(final IOException e){
-                        if(locale != null)
-                            logger.warning(locale.getString("permissions.const.default.closeIO") + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("permissions.const.default.closeIO") + '\n' + Exceptions.getStackTraceAsString(e));
                     }
             }
         }
     // load perm
         Permissions perms = null;
         {
-            if(locale != null)
-                logger.fine(locale.getString("permissions.debug.const.permFile",permissionsFile.getAbsolutePath()));
+            logger.fine(locale.getString("permissions.debug.const.permFile",permissionsFile.getAbsolutePath()));
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new FileReader(permissionsFile));
                 perms = new Permissions((Map) IN.read());
             }catch(final FileNotFoundException ignored){
-                if(locale != null)
-                    logger.warning(locale.getString("permissions.const.load.missing"));
+                logger.warning(locale.getString("permissions.const.load.missing"));
                 if(!permissionsFile.exists())
                     try(final InputStream dpr = getClass().getResourceAsStream(defaultPermissionsResource)){
                         Files.copy(dpr, permissionsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        if(locale != null)
-                            logger.info(locale.getString("permissions.const.load.default"));
+                        logger.info(locale.getString("permissions.const.load.default"));
                     }catch(final Throwable e){
-                        if(locale != null)
-                            logger.severe(locale.getString("permissions.const.load.failedCopy") + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.severe(locale.getString("permissions.const.load.failedCopy") + '\n' + Exceptions.getStackTraceAsString(e));
                     }
-                else if(locale != null)
-                    logger.warning(locale.getString("permissions.const.load.exists"));
+                else logger.warning(locale.getString("permissions.const.load.exists"));
             }catch(final ClassCastException | YamlException e){
-                if(locale != null)
-                    logger.severe(locale.getString("permissions.const.load.malformed") + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.severe(locale.getString("permissions.const.load.malformed") + '\n' + Exceptions.getStackTraceAsString(e));
             }finally{
                 if(IN != null)
                     try{ IN.close();
                     }catch(final IOException e){
-                        if(locale != null)
-                            logger.warning(locale.getString("permissions.const.load.closeIO") + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("permissions.const.load.closeIO") + '\n' + Exceptions.getStackTraceAsString(e));
                     }
             }
         }
 
         this.permissions = perms == null ? def : perms;
-        if(locale != null)
-            logger.info(locale.getString("permissions.const.loaded"));
+        logger.info(locale.getString("permissions.const.loaded"));
     }
 
     //

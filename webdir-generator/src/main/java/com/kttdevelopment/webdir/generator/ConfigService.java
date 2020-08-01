@@ -29,22 +29,20 @@ public final class ConfigService {
 
     public ConfigService(final File configFile, final String defaultConfigResource) throws IOException{
         Objects.requireNonNull(configFile);
-        this.configFile = configFile.getAbsolutePath();
+        Objects.requireNonNull(defaultConfigResource);
+        this.configFile            = configFile.getAbsolutePath();
         this.defaultConfigResource = defaultConfigResource;
-        final Logger logger = Vars.Main.getLoggerService().getLogger("Config");
+        final Logger logger        = Vars.Main.getLoggerService().getLogger("Config");
 
         logger.info("Started configuration initialization");
 
     // load default
         final ConfigurationFile def;
         logger.finer("Loading default configuration from resource " + defaultConfigResource);
-        try(final InputStream IN = getClass().getResourceAsStream(Objects.requireNonNull( defaultConfigResource))){
+        try(final InputStream IN = getClass().getResourceAsStream(defaultConfigResource)){
             final ConfigurationFile impl = new ConfigurationFile();
             impl.load(IN);
             def = impl;
-        }catch(final NullPointerException e){
-            logger.severe("Failed to load default configuration file (none specified)");
-            throw e;
         }catch(final ClassCastException | YamlException e){
             logger.severe("Failed to load default configuration file (invalid syntax)" + '\n' + Exceptions.getStackTraceAsString(e));
             throw e;

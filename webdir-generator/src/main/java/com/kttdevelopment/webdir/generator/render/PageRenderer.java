@@ -20,15 +20,14 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        @SuppressWarnings("SpellCheckingInspection")
-        final String fabs = file.getAbsolutePath();
+        final String fileABS = file.getAbsolutePath();
         final String str = new String(bytes);
 
-        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fabs, defaultFrontMatter, str));
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fileABS, defaultFrontMatter, str));
 
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
 
-        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter", fabs, frontMatter));
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter", fileABS, frontMatter));
 
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
     // create front matter
@@ -53,7 +52,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
             final String ct = content.get();
             try{
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, ct));
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", fabs, renderer, ct, content.get()));
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", fileABS, renderer, ct, content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }

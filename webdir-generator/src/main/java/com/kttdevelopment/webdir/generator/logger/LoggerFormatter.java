@@ -39,11 +39,11 @@ public final class LoggerFormatter extends Formatter {
     public final String format(final LogRecord record){
         final String level = record.getLevel().getName().toUpperCase();
         return
-            (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
-            '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Vars.Main.getLocaleService().getString("logger.level." + level)), level) + ']' + ' ' +
-            (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") +
-            String.format(name,record.getLoggerName()) + ' ' +
-            record.getMessage() + '\n';
+            (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") + // timestamp
+            '[' + Exceptions.requireNonExceptionElse(() -> Objects.requireNonNull(Vars.Main.getLocaleService().getString("logger.level." + level)), level) + ']' + ' ' + // level
+            (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") + // stack trace
+            String.format(name,record.getLoggerName()) + ' ' + // logger name
+            record.getMessage() + '\n'; // message
     }
 
     //

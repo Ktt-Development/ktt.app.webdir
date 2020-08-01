@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.server.server;
 
+import com.kttdevelopment.webdir.generator.Vars;
+
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.*;
@@ -17,6 +19,7 @@ public class RootsWatchService{
         this.delay = delay;
     }
 
+    @SuppressWarnings("BusyWait")
     public synchronized final void start(){
         if(!running.get())
         new Thread(() -> {
@@ -44,8 +47,8 @@ public class RootsWatchService{
                 }
                 try{
                     Thread.sleep(delay);
-                }catch(final InterruptedException ignored){
-                    // todo: logging
+                }catch(final InterruptedException e){
+                    Vars.Main.getLoggerService().getLogger(Vars.Main.getLocaleService().getString("server")).severe(Vars.Main.getLocaleService().getString("server.const.fileWatchInterrupt",e));
                     running.set(false);
                 }
             }
