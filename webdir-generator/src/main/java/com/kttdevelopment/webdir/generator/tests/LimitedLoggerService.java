@@ -8,7 +8,7 @@ public class LimitedLoggerService implements ILoggerService {
 
     @Override
     public final Logger getLogger(final String loggerName){
-        return Logger.getLogger(loggerName);
+        return loggerName != null ? Logger.getLogger(loggerName) : Logger.getGlobal();
     }
 
 }
