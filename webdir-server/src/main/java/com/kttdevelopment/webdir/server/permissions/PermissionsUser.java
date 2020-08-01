@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.server.permissions;
 
 import com.kttdevelopment.webdir.generator.LocaleService;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.object.Tuple4;

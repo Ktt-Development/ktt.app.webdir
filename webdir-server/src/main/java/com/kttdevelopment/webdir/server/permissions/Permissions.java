@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.server.permissions;
 
 import com.kttdevelopment.webdir.generator.LocaleService;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;

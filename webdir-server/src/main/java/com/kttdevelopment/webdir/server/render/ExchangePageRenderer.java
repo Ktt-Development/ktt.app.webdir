@@ -1,18 +1,19 @@
 package com.kttdevelopment.webdir.server.render;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
-import com.kttdevelopment.webdir.api.*;
+import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.server.ExchangeRenderAdapter;
 import com.kttdevelopment.webdir.api.server.ExchangeRenderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.LocaleService;
-import com.kttdevelopment.webdir.server.Main;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.QuinFunction;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
+import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 
