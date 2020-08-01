@@ -25,7 +25,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
         super( // if user uses loop back address (127.0.0.1) then use local address instead; (server uses machine address instead of 127.0.0.1)
             Exceptions.requireNonExceptionElse(() -> user.isLoopbackAddress() ? InetAddress.getLocalHost() : user, user),
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final LocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -41,7 +41,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                 }
             }).get(),
             ((Supplier<Map>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final LocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -53,7 +53,7 @@ public final class PermissionsUser extends Tuple4<InetAddress,String[],Map,Strin
                 }
             }).get(),
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final LocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{

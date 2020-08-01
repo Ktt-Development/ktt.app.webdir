@@ -19,7 +19,7 @@ public final class Permissions {
 
     @SuppressWarnings("unchecked")
     public Permissions(final Map obj){
-        final LocaleService locale = Main.getLocaleService();
+        final LocaleService locale = Vars.Main.getLocaleService();
         final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
         try{

@@ -28,7 +28,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
 
     @Override
     public final byte[] apply(final SimpleHttpExchange exchange, final File source, final File rendered, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = Main.getLocaleService();
+        final LocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
         final String sabs = source.getAbsolutePath();
 

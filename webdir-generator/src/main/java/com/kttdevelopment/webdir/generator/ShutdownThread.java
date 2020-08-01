@@ -12,12 +12,12 @@ public final class ShutdownThread extends Thread{
 
     @Override
     public final void run(){
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("shutdown"));
+        final LocaleService locale = Vars.Main.getLocaleService();
+        final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("shutdown"));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final AtomicInteger success = new AtomicInteger(0);
-        final List<WebDirPlugin> plugins = Main.getPluginLoader().getPlugins();
+        final List<WebDirPlugin> plugins = Vars.Main.getPluginLoader().getPlugins();
         plugins.forEach(plugin -> {
             final Future<?> future = executor.submit(plugin::onDisable);
 

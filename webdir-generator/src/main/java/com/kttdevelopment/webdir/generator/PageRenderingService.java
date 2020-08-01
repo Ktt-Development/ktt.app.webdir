@@ -23,9 +23,9 @@ public final class PageRenderingService {
     private final File output;
 
     public PageRenderingService(final File defaults, final File source, final File output) throws IOException{
-        final LocaleService locale = Main.getLocaleService();
-        final ConfigService config = Main.getConfigService();
-        final Logger logger        = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final LocaleService locale = Vars.Main.getLocaleService();
+        final ConfigService config = Vars.Main.getConfigService();
+        final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
 
         final String dabs = defaults.getAbsolutePath();
@@ -81,8 +81,8 @@ public final class PageRenderingService {
 
     // target is the source file
     public final boolean render(final File target){
-        final LocaleService locale = Main.getLocaleService();
-        final Logger logger = Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
+        final LocaleService locale = Vars.Main.getLocaleService();
+        final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         final String tabs = target.getAbsolutePath();
         logger.finest(locale.getString("pageRenderer.debug.render",tabs));
 

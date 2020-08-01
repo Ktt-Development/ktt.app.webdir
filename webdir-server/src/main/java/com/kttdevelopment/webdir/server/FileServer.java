@@ -26,7 +26,7 @@ public final class FileServer {
         this.source = source;
         this.output = output;
 
-        final LocaleService locale = Main.getLocaleService();
+        final LocaleService locale = Vars.Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
         final SimpleHttpServer server;
 

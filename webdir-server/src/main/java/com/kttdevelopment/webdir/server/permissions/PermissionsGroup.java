@@ -18,7 +18,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
         super(
             group,
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final LocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -34,7 +34,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
                 }
             }).get(),
             ((Supplier<Map>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final LocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -46,7 +46,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
                 }
             }).get(),
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Main.getLocaleService();
+                final LocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{

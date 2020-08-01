@@ -14,11 +14,50 @@ public abstract class Vars {
 
         public static boolean plugin = false;
 
-        public static int port = 8080;
+        public static final int port = 8080;
 
     }
 
     public static final class Main {
+
+        private static ConfigService configService;
+        private static LocaleService localeService;
+        private static LoggerService loggerService;
+        private static PluginLoader pluginLoader; // add empty defaults here ^
+
+        public static ConfigService getConfigService(){
+            return configService;
+        }
+
+        public static void setConfigService(final ConfigService configService){
+            Main.configService = configService;
+        }
+
+        public static LocaleService getLocaleService(){
+            return localeService;
+        }
+
+        public static void setLocaleService(final LocaleService localeService){
+            Main.localeService = localeService;
+        }
+
+        public static LoggerService getLoggerService(){
+            return loggerService;
+        }
+
+        public static void setLoggerService(final LoggerService loggerService){
+            Main.loggerService = loggerService;
+        }
+
+        //
+
+        public static PluginLoader getPluginLoader(){
+            return pluginLoader;
+        }
+
+        public static void setPluginLoader(final PluginLoader pluginLoader){
+            Main.pluginLoader = pluginLoader;
+        }
 
         public static final String localeResource = "lang/bundle";
 
@@ -61,7 +100,7 @@ public abstract class Vars {
         public static final String dependenciesKey  = "dependencies";
 
         public static final int loadTimeout = 30;
-        public static TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
+        public static final TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
 
     }
 

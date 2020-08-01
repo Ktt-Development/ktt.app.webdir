@@ -24,7 +24,7 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
 
     @Override
     public byte[] apply(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = Main.getLocaleService();
+        final LocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Main.getLoggerService().getLogger(locale.getString("fileRenderer"));
         final String sabs = source.getAbsolutePath();
 

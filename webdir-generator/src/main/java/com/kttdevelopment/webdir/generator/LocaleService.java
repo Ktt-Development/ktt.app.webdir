@@ -19,7 +19,7 @@ public final class LocaleService {
     private final List<LocaleBundle> watching = Collections.synchronizedList(new ArrayList<>());
 
     public synchronized final void setLocale(final Locale locale){
-        (Main.getLoggerService() != null ? Main.getLoggerService().getLogger(getString("locale")) : Logger.getLogger("Locale")).fine(getString("locale.debug.setLocale",locale.getDisplayName(Locale.getDefault()),locale.getDisplayName(locale)));
+        Vars.Main.getLoggerService().getLogger(getString("locale")).fine(getString("locale.debug.setLocale",locale.getDisplayName(Locale.getDefault()),locale.getDisplayName(locale)));
 
         this.locale.setLocale(locale);
         currentLocale = locale;
@@ -27,7 +27,7 @@ public final class LocaleService {
     }
 
     public synchronized final void addWatchedLocale(final LocaleBundle localeBundle){
-        (Main.getLoggerService() != null ? Main.getLoggerService().getLogger(getString("locale")) : Logger.getLogger("Locale")).finer(getString("locale.debug.addWatchedLocale",localeBundle));
+        Vars.Main.getLoggerService().getLogger(getString("locale")).finer(getString("locale.debug.addWatchedLocale",localeBundle));
 
         watching.add(localeBundle);
         ((LocaleBundleImpl) localeBundle).setLocale(currentLocale);
@@ -40,9 +40,9 @@ public final class LocaleService {
 
         try{ // if key is locale then logger must return a string and not a localized name; required to prevent infinite loop:
              // getString(String) → #getLogger(getString("locale")) ⇆ #getLogger(getString("locale")) ↻
-            logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(key.equals("locale") ? "Locale" : Objects.requireNonNull(locale.getString("locale"))) : Logger.getLogger("Locale");
+            logger = Vars.Main.getLoggerService().getLogger(key.equals("locale") ? "Locale" : Objects.requireNonNull(locale.getString("locale")));
         }catch(final NullPointerException ignored){
-            logger = Main.getLoggerService().getLogger("Locale");
+            logger = Vars.Main.getLoggerService().getLogger("Locale");
         }
 
         final String value = locale.getString(key);
@@ -54,7 +54,7 @@ public final class LocaleService {
     }
 
     public final String getString(final String key, final Object... args){
-        final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger(getString("locale")) : Logger.getLogger("Locale");
+        final Logger logger = Vars.Main.getLoggerService().getLogger(getString("locale"));
 
         final String value = locale.getString(key,args);
         if(value == null)
@@ -72,7 +72,7 @@ public final class LocaleService {
 
     public LocaleService(String resource_prefix){
         this.resource = resource_prefix;
-        final Logger logger = Main.getLoggerService() != null ? Main.getLoggerService().getLogger("Locale") : Logger.getLogger("Locale");
+        final Logger logger = Vars.Main.getLoggerService().getLogger("Locale");
         logger.info("Started locale initialization");
 
         Locale.setDefault(Locale.US);

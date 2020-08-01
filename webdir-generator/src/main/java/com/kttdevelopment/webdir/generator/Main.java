@@ -10,22 +10,6 @@ import java.nio.file.Files;
 
 public abstract class Main {
 
-    private static LoggerService loggerService = null;
-
-    public static LoggerService getLoggerService(){ return loggerService; }
-
-    private static LocaleService localeService = null;
-
-    public static LocaleService getLocaleService(){ return localeService; }
-
-    private static ConfigService configService = null;
-
-    public static ConfigService getConfigService(){ return configService; }
-
-    private static PluginLoader pluginLoader = null;
-
-    public static PluginLoader getPluginLoader(){ return pluginLoader; }
-
     private static PageRenderingService pageRenderingService = null;
 
     public static PageRenderingService getPageRenderingService(){ return pageRenderingService; }
@@ -38,13 +22,13 @@ public abstract class Main {
 
     public static void main(String[] args){
         try{
-            loggerService = new LoggerService();
-            localeService = new LocaleService(Vars.Main.localeResource);
-            configService = new ConfigService(Vars.Main.configFile,Vars.Main.configResource);
+            Vars.Main.setLoggerService(new LoggerService());
+            Vars.Main.setLocaleService(new LocaleService(Vars.Main.localeResource));
+            Vars.Main.setConfigService(new ConfigService(Vars.Main.configFile,Vars.Main.configResource));
 
-            final ConfigurationSection config = configService.getConfig();
+            final ConfigurationSection config = Vars.Main.getConfigService().getConfig();
 
-            pluginLoader = new PluginLoader();
+            Vars.Main.setPluginLoader(new PluginLoader());
             final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
             final File source = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
             final File output = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
@@ -56,7 +40,7 @@ public abstract class Main {
             Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){
             try{
-                Exceptions.runIgnoreException(() -> loggerService.getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));
+                Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));
                 Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(final IOException e2){
                 e2.printStackTrace();
@@ -69,10 +53,10 @@ public abstract class Main {
     @Override
     public String toString(){
         return new toStringBuilder("Main")
-            .addObject("loggerService",loggerService)
-            .addObject("localeService",localeService)
-            .addObject("configService",configService)
-            .addObject("pluginLoader",pluginLoader)
+            .addObject("loggerService",Vars.Main.getLoggerService())
+            .addObject("localeService",Vars.Main.getLocaleService())
+            .addObject("configService",Vars.Main.getConfigService())
+            .addObject("pluginLoader",Vars.Main.getPluginLoader())
             .addObject("pageRenderingService",pageRenderingService)
             .addObject("server",server)
             .toString();

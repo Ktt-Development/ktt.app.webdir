@@ -47,7 +47,7 @@ public class ApplicationTest {
             "Valid"
         };
 
-        final PluginLoader pluginLoader = Main.getPluginLoader();
+        final PluginLoader pluginLoader = Vars.Main.getPluginLoader();
 
         for(final String badPlugin : badPlugins)
             Assert.assertNull("Server should not have loaded plugin: " + badPlugin,pluginLoader.getPlugin(badPlugin));
@@ -63,7 +63,7 @@ public class ApplicationTest {
         Vars.Test.safemode = true;
         Vars.Test.server = false;
         Main.main(null);
-        Assert.assertTrue("Safe-mode should not load any plugins",Main.getPluginLoader().getPlugins().isEmpty());
+        Assert.assertTrue("Safe-mode should not load any plugins",Vars.Main.getPluginLoader().getPlugins().isEmpty());
     }
 
     /*
@@ -225,7 +225,7 @@ public class ApplicationTest {
         Vars.Test.plugin = true;
         Main.main(null);
 
-        final WebDirPlugin plugin = Main.getPluginLoader().getPlugin("Valid");
+        final WebDirPlugin plugin = Vars.Main.getPluginLoader().getPlugin("Valid");
 
         Assert.assertNotNull("Valid plugin should be loaded by the server",plugin);
 

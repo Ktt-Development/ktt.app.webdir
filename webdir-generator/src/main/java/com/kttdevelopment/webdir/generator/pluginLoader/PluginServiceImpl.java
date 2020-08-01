@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir.generator.pluginLoader;
 import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
-import com.kttdevelopment.webdir.generator.Main;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
@@ -26,7 +26,7 @@ public final class PluginServiceImpl extends PluginService {
     public PluginServiceImpl(final ConfigurationSection pluginYml, final File pluginFolder){
         this.pluginYml = new PluginYmlImpl(pluginYml);
         this.pluginFolder = Paths.get( pluginFolder.getPath() ,this.pluginYml.getPluginName().replaceAll('[' + badFileChars + ']',"_")).toFile();
-        this.logger = Main.getLoggerService().getLogger(this.pluginYml.getPluginName());
+        this.logger         = Vars.Main.getLoggerService().getLogger(this.pluginYml.getPluginName());
     }
 
     @Override
@@ -48,12 +48,12 @@ public final class PluginServiceImpl extends PluginService {
 
     @Override
     public WebDirPlugin getPlugin(final String pluginName){
-        return Main.getPluginLoader().getPlugin(pluginName);
+        return Vars.Main.getPluginLoader().getPlugin(pluginName);
     }
 
     @Override
     public <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass){
-        return Main.getPluginLoader().getPlugin(pluginName,pluginClass);
+        return Vars.Main.getPluginLoader().getPlugin(pluginName,pluginClass);
     }
 
     @Override
@@ -85,7 +85,7 @@ public final class PluginServiceImpl extends PluginService {
 
     @Override
     public LocaleBundle getLocaleBundle(final String resource){
-        return new LocaleBundleImpl(Main.getLocaleService(),resource);
+        return new LocaleBundleImpl(Vars.Main.getLocaleService(),resource);
     }
 
     //
