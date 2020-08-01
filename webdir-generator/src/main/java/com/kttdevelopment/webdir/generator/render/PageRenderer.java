@@ -5,6 +5,7 @@ import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.TriFunction;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
@@ -16,7 +17,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
 
     @Override
     public final byte[] apply(final File file, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         @SuppressWarnings("SpellCheckingInspection")

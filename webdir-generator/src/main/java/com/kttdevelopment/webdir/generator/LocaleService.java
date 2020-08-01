@@ -2,12 +2,13 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-public final class LocaleService {
+public final class LocaleService implements ILocaleService {
 
     private final String resource;
 
@@ -18,6 +19,7 @@ public final class LocaleService {
 
     private final List<LocaleBundle> watching = Collections.synchronizedList(new ArrayList<>());
 
+    @Override
     public synchronized final void setLocale(final Locale locale){
         Vars.Main.getLoggerService().getLogger(getString("locale")).fine(getString("locale.debug.setLocale",locale.getDisplayName(Locale.getDefault()),locale.getDisplayName(locale)));
 
@@ -26,6 +28,7 @@ public final class LocaleService {
         watching.forEach(localeBundle -> ((LocaleBundleImpl) localeBundle).setLocale(locale));
     }
 
+    @Override
     public synchronized final void addWatchedLocale(final LocaleBundle localeBundle){
         Vars.Main.getLoggerService().getLogger(getString("locale")).finer(getString("locale.debug.addWatchedLocale",localeBundle));
 
@@ -35,6 +38,7 @@ public final class LocaleService {
 
     //
 
+    @Override
     public final String getString(final String key){
         Logger logger;
 
@@ -53,6 +57,7 @@ public final class LocaleService {
         return value;
     }
 
+    @Override
     public final String getString(final String key, final Object... args){
         final Logger logger = Vars.Main.getLoggerService().getLogger(getString("locale"));
 

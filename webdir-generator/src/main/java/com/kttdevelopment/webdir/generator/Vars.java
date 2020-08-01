@@ -1,5 +1,10 @@
 package com.kttdevelopment.webdir.generator;
 
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
+import com.kttdevelopment.webdir.generator.logger.ILoggerService;
+import com.kttdevelopment.webdir.generator.tests.LimitedLocaleService;
+import com.kttdevelopment.webdir.generator.tests.LimitedLoggerService;
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +26,9 @@ public abstract class Vars {
     public static final class Main {
 
         private static ConfigService configService;
-        private static LocaleService localeService;
-        private static LoggerService loggerService;
-        private static PluginLoader pluginLoader; // add empty defaults here ^
+        private static ILocaleService localeService = new LimitedLocaleService();
+        private static ILoggerService loggerService = new LimitedLoggerService();
+        private static PluginLoader pluginLoader;
 
         public static ConfigService getConfigService(){
             return configService;
@@ -33,7 +38,7 @@ public abstract class Vars {
             Main.configService = configService;
         }
 
-        public static LocaleService getLocaleService(){
+        public static ILocaleService getLocaleService(){
             return localeService;
         }
 
@@ -41,7 +46,7 @@ public abstract class Vars {
             Main.localeService = localeService;
         }
 
-        public static LoggerService getLoggerService(){
+        public static ILoggerService getLoggerService(){
             return loggerService;
         }
 

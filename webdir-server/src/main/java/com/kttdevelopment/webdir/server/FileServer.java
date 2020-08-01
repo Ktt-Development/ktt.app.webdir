@@ -3,10 +3,10 @@ package com.kttdevelopment.webdir.server;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.*;
-import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.server.server.*;
 
 import java.io.File;
@@ -27,7 +27,7 @@ public final class FileServer {
         this.source = source;
         this.output = output;
 
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger = Main.getLoggerService().getLogger(locale.getString("server"));
         final SimpleHttpServer server;
 

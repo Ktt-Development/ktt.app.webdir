@@ -5,11 +5,11 @@ import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.server.ExchangeRenderAdapter;
 import com.kttdevelopment.webdir.api.server.ExchangeRenderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.QuinFunction;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
@@ -29,7 +29,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
 
     @Override
     public final byte[] apply(final SimpleHttpExchange exchange, final File source, final File rendered, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
         final String sabs = source.getAbsolutePath();
 

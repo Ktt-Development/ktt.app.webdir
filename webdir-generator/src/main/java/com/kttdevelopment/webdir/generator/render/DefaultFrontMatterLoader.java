@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.*;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.object.Tuple2;
 
 import java.io.File;
@@ -21,7 +22,7 @@ public final class DefaultFrontMatterLoader {
     private final File sourcesDir;
 
     public DefaultFrontMatterLoader(final File defaultDir, final File sourcesDir){
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         logger.fine(locale.getString("pageRenderer.debug.default.dir",defaultDir.getAbsolutePath(),sourcesDir.getAbsolutePath()));
@@ -54,7 +55,7 @@ public final class DefaultFrontMatterLoader {
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final File file){
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         final String fabs = file.getAbsolutePath();
         logger.finest(locale.getString("pageRenderer.debug.default.getDefaultFrontMatter.file",fabs));
@@ -65,7 +66,7 @@ public final class DefaultFrontMatterLoader {
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final String context){
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final String path = ContextUtil.getContext(context,true,false);

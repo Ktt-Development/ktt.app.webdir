@@ -1,8 +1,8 @@
 package com.kttdevelopment.webdir.server.permissions;
 
-import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.*;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
 
@@ -20,7 +20,7 @@ public final class Permissions {
 
     @SuppressWarnings("unchecked")
     public Permissions(final Map obj){
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
         try{

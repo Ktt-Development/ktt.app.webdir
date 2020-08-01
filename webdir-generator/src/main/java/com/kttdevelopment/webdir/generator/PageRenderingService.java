@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
 import com.kttdevelopment.webdir.generator.render.PageRenderer;
 
@@ -23,7 +24,7 @@ public final class PageRenderingService {
     private final File output;
 
     public PageRenderingService(final File defaults, final File source, final File output) throws IOException{
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final ConfigService config = Vars.Main.getConfigService();
         final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         logger.info(locale.getString("pageRenderer.const"));
@@ -81,7 +82,7 @@ public final class PageRenderingService {
 
     // target is the source file
     public final boolean render(final File target){
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
         final String tabs = target.getAbsolutePath();
         logger.finest(locale.getString("pageRenderer.debug.render",tabs));

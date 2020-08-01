@@ -2,10 +2,10 @@ package com.kttdevelopment.webdir.server;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
-import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.*;
@@ -34,7 +34,7 @@ public final class PermissionsService {
         this.permissionsFile = permissionsFile.getAbsolutePath();
         this.defaultPermissionsResource = defaultPermissionsResource;
 
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger        = locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("permissions");
 
         if(locale != null)

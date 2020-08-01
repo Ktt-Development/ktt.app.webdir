@@ -1,8 +1,8 @@
 package com.kttdevelopment.webdir.server.permissions;
 
-import com.kttdevelopment.webdir.generator.LocaleService;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.object.Tuple4;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
@@ -19,7 +19,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
         super(
             group,
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Vars.Main.getLocaleService();
+                final ILocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -35,7 +35,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
                 }
             }).get(),
             ((Supplier<Map>) () -> {
-                final LocaleService locale = Vars.Main.getLocaleService();
+                final ILocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{
@@ -47,7 +47,7 @@ public final class PermissionsGroup extends Tuple4<String,String[],Map,String[]>
                 }
             }).get(),
             ((Supplier<String[]>) () -> {
-                final LocaleService locale = Vars.Main.getLocaleService();
+                final ILocaleService locale = Vars.Main.getLocaleService();
                 final Logger logger        = Main.getLoggerService() != null && locale != null ? Main.getLoggerService().getLogger(locale.getString("permissions")) : Logger.getLogger("Permissions");
 
                 try{

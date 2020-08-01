@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.generator;
 
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -12,7 +13,7 @@ public final class ShutdownThread extends Thread{
 
     @Override
     public final void run(){
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger = Vars.Main.getLoggerService().getLogger(locale.getString("shutdown"));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();

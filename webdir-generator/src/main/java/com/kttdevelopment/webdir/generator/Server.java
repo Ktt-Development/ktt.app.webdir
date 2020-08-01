@@ -4,6 +4,7 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
 
 import java.io.File;
@@ -23,7 +24,7 @@ public final class Server {
         this.source = source.getAbsolutePath();
         this.output = output.getAbsolutePath();
 
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("server"));
         logger.info(locale.getString("server.const"));
 
@@ -82,7 +83,7 @@ public final class Server {
     }
 
     private void createWatchService(final WatchService watchService, final Path target){
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("server"));
 
         try{

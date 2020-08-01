@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
+import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public abstract class YamlFrontMatter {
 
     // load imports via file → loads both, may be empty if bad file
     public static ConfigurationSection loadImports(final File file, final List<File> checkedImports){
-        final LocaleService locale  = Vars.Main.getLocaleService();
+        final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final ConfigurationFile config = new ConfigurationFile();
@@ -66,7 +67,7 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ConfigurationSection loadImports(final File source, final ConfigurationSection config, final List<File> checkedImports){
-        final LocaleService locale  = Vars.Main.getLocaleService() ;
+        final ILocaleService locale  = Vars.Main.getLocaleService() ;
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final String sabs = source != null ? source.getAbsolutePath() : null;
@@ -113,7 +114,7 @@ public abstract class YamlFrontMatter {
 
     @SuppressWarnings("rawtypes")
     public static List<PluginRendererEntry> getRenderers(final String renderKey, final List renderers){
-        final LocaleService locale = Vars.Main.getLocaleService();
+        final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger        = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
         final List<PluginRendererEntry> installedRenderers = Vars.Main.getPluginLoader().getRenderers();
