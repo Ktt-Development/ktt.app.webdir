@@ -10,10 +10,6 @@ import java.nio.file.Files;
 
 public abstract class Main {
 
-    private static PageRenderingService pageRenderingService = null;
-
-    public static PageRenderingService getPageRenderingService(){ return pageRenderingService; }
-
     private static PermissionsService permissions = null;
 
     public static PermissionsService getPermissions(){

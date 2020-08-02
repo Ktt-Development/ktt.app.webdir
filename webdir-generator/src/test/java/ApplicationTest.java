@@ -299,6 +299,8 @@ public class ApplicationTest {
         }
     }
 
+    //
+
     private String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
