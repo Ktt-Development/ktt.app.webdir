@@ -55,7 +55,7 @@ public final class DefaultFrontMatterLoader {
                 logger.warning(locale.getString("pageRenderer.default.malformedYML", file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         }
-        logger.fine(locale.getString("pageRenderer.debug.default.loaded",defaultConfigurations.size(),Objects.requireNonNullElse(defaultDir.listFiles(File::isFile),new File[0])));
+        logger.fine(locale.getString("pageRenderer.debug.default.loaded",defaultConfigurations.size(),Objects.requireNonNullElse(defaultDir.listFiles(File::isFile), new File[0]).length));
     }
 
     public final ConfigurationSection getDefaultFrontMatter(final File file){
