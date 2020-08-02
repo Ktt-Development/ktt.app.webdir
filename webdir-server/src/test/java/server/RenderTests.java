@@ -6,7 +6,6 @@ import com.kttdevelopment.webdir.server.Main;
 import org.junit.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class RenderTests {
     //
 
     @Test @Ignore
-    public void testRenderers() throws IOException{
+    public void testRenderers(){
         Vars.Test.safemode = false;
 
         Map.of(
