@@ -19,7 +19,6 @@ public class ApplicationTest {
     public void testPluginLoading(){
         Vars.Test.safemode = false;
         Vars.Test.server = false;
-        Vars.Test.plugin = true;
         Main.main(null);
 
         final String[] badPlugins = {
@@ -80,7 +79,6 @@ public class ApplicationTest {
     public void testRenderer() throws IOException{
         Vars.Test.safemode = false;
         Vars.Test.server = false;
-        Vars.Test.plugin = true;
 
         Map.of(
             new File(".root/renderTests/renderOrder.html"),
@@ -128,7 +126,6 @@ public class ApplicationTest {
     public void testDefaultRenderer() throws IOException{
         Vars.Test.safemode = false;
         Vars.Test.server = false;
-        Vars.Test.plugin = true;
 
         Map.of(
             new File(".default/index.yml"), 
@@ -222,7 +219,6 @@ public class ApplicationTest {
     public void testImpl(){
         Vars.Test.safemode = false;
         Vars.Test.server = false;
-        Vars.Test.plugin = true;
         Main.main(null);
 
         final WebDirPlugin plugin = Vars.Main.getPluginLoader().getPlugin("Valid");

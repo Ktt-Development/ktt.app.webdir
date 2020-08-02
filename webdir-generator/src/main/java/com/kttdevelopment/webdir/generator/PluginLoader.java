@@ -275,7 +275,7 @@ public final class PluginLoader {
 
                 try{
                     logger.finest(locale.getString("pluginLoader.debug.const.loader", pluginName));
-                    final WebDirPlugin plugin = future.get(Vars.Test.plugin ? 5 : Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
+                    final WebDirPlugin plugin = future.get(Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
                     Objects.requireNonNull(plugin).getRenderers().forEach((rendererName, renderer) -> {
                         renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer));
                         logger.finest(locale.getString("pluginLoader.debug.const.loader.addRenderer", pluginName, rendererName));
@@ -288,7 +288,7 @@ public final class PluginLoader {
                     );
                     iterator.remove();
                 }catch(final NullPointerException e){
-                    logger.severe(locale.getString("pluginLoader.const.loader.null ",pluginName));
+                    logger.severe(locale.getString("pluginLoader.const.loader.failed",pluginName));
                     iterator.remove();
                 }catch(final Throwable e){
                     future.cancel(true);

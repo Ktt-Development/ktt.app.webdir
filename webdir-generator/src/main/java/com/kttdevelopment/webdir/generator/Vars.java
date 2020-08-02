@@ -17,8 +17,6 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
-        public static boolean plugin = false;
-
         public static final int port = 8080;
 
     }
