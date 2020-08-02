@@ -1,5 +1,3 @@
-package server;
-
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.server.Main;
 import org.junit.Assert;

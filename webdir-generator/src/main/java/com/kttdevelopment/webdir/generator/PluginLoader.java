@@ -219,7 +219,6 @@ public final class PluginLoader {
 
     // execute #onEnable for each plugin
         logger.finer(locale.getString("pluginLoader.debug.const.enable"));
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
 
         final AtomicInteger loadedPlugins = new AtomicInteger();
         final Iterator<PluginLoaderEntry> iterator = pluginsSortedDep.iterator();
@@ -231,29 +230,40 @@ public final class PluginLoader {
             final List<String> missingDependencies = new ArrayList<>(Arrays.asList(entry.getPluginYml().getDependencies()));
             pluginsValid.forEach(testPlugin -> missingDependencies.remove(testPlugin.getPluginYml().getPluginName()));
             if(!missingDependencies.isEmpty()){
-                logger.finest(locale.getString("pluginLoader.debug.const.enable.missingDep", entry.getPluginYml().getPluginName(), missingDependencies));
+                logger.finest(locale.getString("pluginLoader.debug.const.enable.missingDep", pluginName, missingDependencies));
                 iterator.remove();
             }else{
+                logger.finest(locale.getString("pluginLoader.debug.const.enable.loadJar",pluginName));
+                // load jar classes
+                final ClassLoader classLoader;
+
+                try{
+                    classLoader = new URLClassLoader(new URL[]{entry.getPluginFile().toURI().toURL()});
+                    final JarFile jar = new JarFile(entry.getPluginFile());
+                    final Enumeration<JarEntry> jarEntry = jar.entries();
+                    final int ln = ".class".length();
+                    while(jarEntry.hasMoreElements()){
+                        final JarEntry je = jarEntry.nextElement();
+                        if(je.isDirectory() || !je.getName().endsWith(".class"))
+                            continue;
+                        classLoader.loadClass(je.getName().substring(0, je.getName().length() - ln).replace('/', '.'));
+                    }
+                }catch(ClassNotFoundException e){
+                    logger.severe(locale.getString("pluginLoader.const.enable.classNotFound",pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                    continue;
+                }catch(IOException e){
+                    logger.severe(locale.getString("pluginLoader.const.enable.failedLoadClass",pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
+                    continue;
+                }
+
                 // run main function
+                final ExecutorService executor = Executors.newSingleThreadExecutor();
                 final Future<WebDirPlugin> future = executor.submit(() -> {
                     final PluginService provider = new PluginServiceImpl(entry.getYml(),pluginsFolder);
-                    final ClassLoader classLoader = new URLClassLoader(new URL[]{entry.getPluginFile().toURI().toURL()});
-
                     WebDirPlugin plugin = null;
+
                     try{
                         logger.finest(locale.getString("pluginLoader.debug.const.enable.load",pluginName));
-
-                        // the #onEnable method can not run until all classes from the jar file are loaded.
-                        final JarFile jar = new JarFile(entry.getPluginFile());
-                        final Enumeration<JarEntry> jarEntry = jar.entries();
-                        final int ln = ".class".length();
-                        while (jarEntry.hasMoreElements()) {
-                            final JarEntry je = jarEntry.nextElement();
-                            if(je.isDirectory() || !je.getName().endsWith(".class"))
-                                continue;
-                            classLoader.loadClass(je.getName().substring(0, je.getName().length() - ln).replace('/', '.'));
-                        }
-
                         plugin = (WebDirPlugin) classLoader.loadClass(entry.getMainClassName()).getDeclaredConstructor(PluginService.class).newInstance(provider);
 
                     }catch(final InstantiationException ignored){
@@ -292,6 +302,7 @@ public final class PluginLoader {
                     iterator.remove();
                 }catch(final Throwable e){
                     future.cancel(true);
+                    executor.shutdownNow();
                     logger.severe(
                         locale.getString("pluginLoader.const.loader.uncaught", pluginName) + '\n' + Exceptions.getStackTraceAsString(e)
                     );

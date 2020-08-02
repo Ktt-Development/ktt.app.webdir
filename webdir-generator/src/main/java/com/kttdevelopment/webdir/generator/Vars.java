@@ -102,7 +102,7 @@ public abstract class Vars {
         public static final String authorsKey       = "authors";
         public static final String dependenciesKey  = "dependencies";
 
-        public static final int loadTimeout = 60;
+        public static final int loadTimeout = 30;
         public static final TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
 
     }
