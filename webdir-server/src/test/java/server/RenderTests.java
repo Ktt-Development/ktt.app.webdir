@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 public class RenderTests {
 
-    @Test @Ignore
+    @Test
     public void testExtendedPluginLoading(){
         Vars.Test.safemode = false;
 

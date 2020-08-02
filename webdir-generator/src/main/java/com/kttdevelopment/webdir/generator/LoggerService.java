@@ -20,7 +20,6 @@ public final class LoggerService implements ILoggerService {
         logger.setLevel(Level.ALL);
 
         handlers.add(new ConsoleHandler(){{
-            setLevel(Level.INFO);
             setFormatter(new LoggerFormatter(false,false));
         }} );
 
@@ -49,6 +48,7 @@ public final class LoggerService implements ILoggerService {
     @Override
     public final Logger getLogger(final String loggerName){
         final Logger logger = loggerName != null ? Logger.getLogger(loggerName) : Logger.getAnonymousLogger();
+        logger.setLevel(Level.ALL);
         final List<Handler> handlers = Arrays.asList(logger.getHandlers());
         for(final Handler handler : this.handlers)
             if(!handlers.contains(handler))

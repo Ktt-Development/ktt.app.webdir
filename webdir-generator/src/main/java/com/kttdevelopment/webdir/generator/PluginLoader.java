@@ -16,6 +16,8 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 public final class PluginLoader {
@@ -117,7 +119,7 @@ public final class PluginLoader {
             final ConfigurationSection yml;
             final PluginYml pluginYml;
 
-            // read plugin yml
+        // read plugin yml
             YamlReader IN = null;
             try{
                 IN = new YamlReader(new InputStreamReader(ymlURL.openStream()));
@@ -143,10 +145,12 @@ public final class PluginLoader {
                     }
             }
 
-            // test if main class can be loaded
+        // test if main class can be loaded
             logger.finest(locale.getString("pluginLoader.debug.const.loadValidMain",pluginName,yml.getString(Vars.Plugin.mainClassKey)));
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{plugin.toURI().toURL()})){
-                pluginsValid.add(new PluginLoaderEntry(plugin, (Class<WebDirPlugin>) loader.loadClass(Objects.requireNonNull(yml.getString(Vars.Plugin.mainClassKey))), yml, pluginYml));
+                final String mainClassName = Objects.requireNonNull(yml.getString(Vars.Plugin.mainClassKey));
+                loader.loadClass(mainClassName);
+                pluginsValid.add(new PluginLoaderEntry(plugin, mainClassName,yml, pluginYml));
             }catch(final MalformedURLException | IllegalArgumentException e){
                 logger.severe(locale.getString("pluginLoader.const.loadJars.jarMalformedURL", pluginName) + '\n' + Exceptions.getStackTraceAsString(e));
             }catch(final SecurityException e){
@@ -233,10 +237,25 @@ public final class PluginLoader {
                 // run main function
                 final Future<WebDirPlugin> future = executor.submit(() -> {
                     final PluginService provider = new PluginServiceImpl(entry.getYml(),pluginsFolder);
+                    final ClassLoader classLoader = new URLClassLoader(new URL[]{entry.getPluginFile().toURI().toURL()});
+
                     WebDirPlugin plugin = null;
                     try{
                         logger.finest(locale.getString("pluginLoader.debug.const.enable.load",pluginName));
-                        plugin = entry.getMainClass().getDeclaredConstructor(PluginService.class).newInstance(provider);
+
+                        // the #onEnable method can not run until all classes from the jar file are loaded.
+                        final JarFile jar = new JarFile(entry.getPluginFile());
+                        final Enumeration<JarEntry> jarEntry = jar.entries();
+                        final int ln = ".class".length();
+                        while (jarEntry.hasMoreElements()) {
+                            final JarEntry je = jarEntry.nextElement();
+                            if(je.isDirectory() || !je.getName().endsWith(".class"))
+                                continue;
+                            classLoader.loadClass(je.getName().substring(0, je.getName().length() - ln).replace('/', '.'));
+                        }
+
+                        plugin = (WebDirPlugin) classLoader.loadClass(entry.getMainClassName()).getDeclaredConstructor(PluginService.class).newInstance(provider);
+
                     }catch(final InstantiationException ignored){
                         logger.severe(locale.getString("pluginLoader.const.enable.abstract", pluginName));
                     }catch(final IllegalAccessException ignored){
@@ -255,20 +274,26 @@ public final class PluginLoader {
                 });
 
                 try{
-                    logger.finest(locale.getString("pluginLoader.debug.const.loader",pluginName));
+                    logger.finest(locale.getString("pluginLoader.debug.const.loader", pluginName));
                     final WebDirPlugin plugin = future.get(Vars.Test.plugin ? 5 : Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit);
-                    plugin.getRenderers().forEach((rendererName, renderer) -> {
+                    Objects.requireNonNull(plugin).getRenderers().forEach((rendererName, renderer) -> {
                         renderers.add(new PluginRendererEntry(plugin.getPluginYml().getPluginName(), rendererName, renderer));
-                        logger.finest(locale.getString("pluginLoader.debug.const.loader.addRenderer",pluginName,rendererName));
+                        logger.finest(locale.getString("pluginLoader.debug.const.loader.addRenderer", pluginName, rendererName));
                     });
                     plugins.add(plugin);
                     loadedPlugins.incrementAndGet();
+                }catch(final TimeoutException e){
+                    logger.severe(
+                        locale.getString("pluginLoader.const.loader.timedOut", pluginName, Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
+                    );
+                    iterator.remove();
+                }catch(final NullPointerException e){
+                    logger.severe(locale.getString("pluginLoader.const.loader.null ",pluginName));
+                    iterator.remove();
                 }catch(final Throwable e){
                     future.cancel(true);
                     logger.severe(
-                        e instanceof TimeoutException
-                        ? locale.getString("pluginLoader.const.loader.timedOut", entry.getPluginYml().getPluginName(), Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
-                        : locale.getString("pluginLoader.const.loader.uncaught", entry.getPluginYml().getPluginName()) + '\n' + Exceptions.getStackTraceAsString(e)
+                        locale.getString("pluginLoader.const.loader.uncaught", pluginName) + '\n' + Exceptions.getStackTraceAsString(e)
                     );
                     iterator.remove();
                 }
