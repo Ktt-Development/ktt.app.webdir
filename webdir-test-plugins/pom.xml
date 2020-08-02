@@ -16,6 +16,7 @@
 
     <build>
         <plugins>
+            <!-- compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -39,6 +40,7 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -47,12 +49,13 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
             </plugin>
         </plugins>
@@ -75,6 +78,10 @@
         <module>Valid</module>
         <module>RenderTests</module>
         <module>DuplicateRenderTests</module>
+        <module>ExchangeRenderTests</module>
+        <module>ExchangeDuplicateRenderTests</module>
+        <module>FileHandlerRenderTests</module>
+        <module>FileHandlerDuplicateRenderTests</module>
     </modules>
 
     <dependencies>

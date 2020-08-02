@@ -5,7 +5,7 @@ public abstract class ServerVars {
     public static class Config {
         
         public static final String permissionsKey     = "permissions";
-        public static final String defaultPermissions = "permissions.yml";
+        public static final String defaultPermissions = "/permissions.yml";
 
         public static final String filesContextKey     = "files_dir";
         public static final String defaultFilesContext = "files";

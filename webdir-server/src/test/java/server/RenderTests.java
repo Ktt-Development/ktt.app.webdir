@@ -19,10 +19,15 @@ public class RenderTests {
         Vars.Test.safemode = false;
 
         final String[] goodPlugins = {
-            "Valid",
-            "ExchangeValid",
-            "FileHandlerValid"
+            "RenderTests",
+            "DuplicateRenderTests",
+            "ExchangeRenderTests",
+            "ExchangeDuplicateRenderTests",
+            "FileHandlerRenderTests",
+            "FileHandlerDuplicateRenderTests"
         };
+
+        Main.main(null);
 
         final PluginLoader pluginLoader = Vars.Main.getPluginLoader();
 
@@ -76,8 +81,6 @@ public class RenderTests {
         // same above tests but with exchange renderers
     }
 
-
-
     //
 
     @Test @Ignore
@@ -88,6 +91,7 @@ public class RenderTests {
     @Test @Ignore
     public void testFileRenderers(){
         // same above tests but with files (use absolute path for context url)
+        // test raw render and def render
     }
 
     //
