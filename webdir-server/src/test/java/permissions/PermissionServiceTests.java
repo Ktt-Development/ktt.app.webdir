@@ -6,13 +6,14 @@ import org.junit.*;
 import utility.TestFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class PermissionServiceTests {
 
     @Test
     public void testValid() throws YamlException{
         final String testOp = "testOp", value = "true";
-        final String defOp = "def", defValue = "true";
         final String content =
             "groups:\n" +
             "  default:\n" +
@@ -49,14 +50,32 @@ public class PermissionServiceTests {
         }catch(final ClassCastException | YamlException ignored){ }
     }
 
-    @Test @Ignore
-    public void testMissingPerm(){
+    @Test
+    public void testMissingPerm() throws IOException{
+        final String defOp = "def", defValue = "true";
+        final String defaultResource = "/permissionsTests/defaultPermissions.yml";
+        final File missingPermissions = new File("src/test/resources/permissionsTests/missing.yml");
+        if(missingPermissions.exists() && !missingPermissions.delete())
+            Assert.fail("Failed to delete config file for testing");
+        missingPermissions.deleteOnExit();
 
+        final PermissionsService permissions = new PermissionsService(missingPermissions,defaultResource);
+
+        Assert.assertEquals("Permissions service did not return default value when using a missing permissions",defValue,permissions.getPermissions().getOption(null,defOp));
+        Assert.assertTrue("Permissions service did not create a new permissions file when using a missing permissions",missingPermissions.exists());
+        Assert.assertEquals("New file created by permissions service did not match default permissions", Files.readString(new File("src/test/resources" + defaultResource).toPath()),Files.readString(missingPermissions.toPath()));
     }
 
-    @Test @Ignore
-    public void testMalformedPerm(){
-        
+    @Test
+    public void testMalformedPerm() throws YamlException{
+        final String defOp = "def", defValue = "true";
+        final String defaultResource = "/permissionsTests/defaultPermissions.yml";
+        final File malformedPermissions = new File("src/test/resources/permissionsTests/malformed.yml");
+        TestFile.createTestFile(malformedPermissions,String.valueOf(System.currentTimeMillis()));
+
+        final PermissionsService permissions = new PermissionsService(malformedPermissions,defaultResource);
+
+        Assert.assertEquals("Permissions service did not return default value when using a missing permissions",defValue,permissions.getPermissions().getOption(null,defOp));
     }
 
 }
