@@ -35,8 +35,6 @@ public abstract class Main {
 
             permissions = new PermissionsService(new File(config.getString(ServerVars.Config.permissionsKey,ServerVars.Config.defaultPermissions)),ServerVars.Config.defaultPermissions);
             server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),defaults,source,output);
-
-            Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){
             try{
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));

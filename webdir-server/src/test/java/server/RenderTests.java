@@ -7,7 +7,6 @@ import org.junit.*;
 
 import java.io.File;
 import java.net.URI;
-import java.net.http.*;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -39,8 +38,9 @@ public class RenderTests {
     //
 
     @Test @Ignore
-    public void testRenderers(){
+    public void testRenderers() throws ExecutionException, InterruptedException{
         Vars.Test.safemode = false;
+        Vars.Test.server = true;
 
         Map.of(
             new File(".root/renderTests/renderOrder.html"),
@@ -49,12 +49,16 @@ public class RenderTests {
             "  - first\n" +
             "  - second\n" +
             "  - exception\n" +
+            "  - firstEx\n" +
+            "  - secondEx\n" +
             "---",
             new File(".root/renderTests/renderReverseOrder.html"),
             "---\n" +
             "renderer:\n" +
             "  - second\n" +
             "  - first\n" +
+            "  - firstEx\n" +
+            "  - secondEx\n" +
             "---",
             new File(".root/renderTests/renderExactFirst.html"),
             "---\n" +
@@ -72,7 +76,14 @@ public class RenderTests {
 
         Main.main(null);
 
-        // test renderer content against server output
+        System.out.println(Main.getServer().toString());
+
+        final String url = "http://localhost:" + Vars.Test.port + "/renderTests";
+
+        Assert.assertEquals("Renderers lower on the list are expected to render last","second",TestResponse.getResponseContent(URI.create(url + "/renderOrder")));
+        Assert.assertEquals("Renderers lower on the list are expected to render last","first",TestResponse.getResponseContent(URI.create(url + "/renderReverseOrder")));
+        Assert.assertEquals("Render specifying plugin and renderer are expected to use that renderer", "first", TestResponse.getResponseContent(URI.create(url + "/renderExactFirst")));
+        Assert.assertEquals("Render specifying plugin and renderer are expected to use that renderer","DUPLICATE", TestResponse.getResponseContent(URI.create(url + "/renderExactDuplicate")));
     }
 
     @Test @Ignore
@@ -91,17 +102,6 @@ public class RenderTests {
     public void testFileRenderers(){
         // same above tests but with files (use absolute path for context url)
         // test raw render and def render
-    }
-
-    //
-
-    private String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .build();
-
-        return HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenApply(HttpResponse::body).get();
     }
 
 }

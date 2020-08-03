@@ -200,15 +200,6 @@ public class WebDirPlugin {
     @SuppressWarnings("EmptyMethod")
     public void onEnable(){}
 
-    /**
-     * Runs when the plugin is being unloaded.
-     *
-     * @since 01.00.00
-     * @author Ktt Development
-     */
-    @SuppressWarnings("EmptyMethod")
-    public void onDisable(){}
-
     //
 
     @Override

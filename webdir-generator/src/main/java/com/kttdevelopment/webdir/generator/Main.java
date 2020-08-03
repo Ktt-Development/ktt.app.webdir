@@ -36,8 +36,6 @@ public abstract class Main {
 
             if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))
                 server = new Server(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),source,output);
-
-            Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         }catch(final Throwable e){
             try{
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));
