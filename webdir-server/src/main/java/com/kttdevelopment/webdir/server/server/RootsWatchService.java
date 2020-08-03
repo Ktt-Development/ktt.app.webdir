@@ -26,7 +26,7 @@ public class RootsWatchService{
             running.set(true);
             while(!stop.get()){
                 final FileSystemView fileSys = FileSystemView.getFileSystemView();
-                final File[] allRoots = fileSys.getRoots();
+                final File[] allRoots = File.listRoots();
                 final List<File> loadedDrives = new ArrayList<>();
                 for(final File root : allRoots)
                     if(fileSys.isDrive(root))

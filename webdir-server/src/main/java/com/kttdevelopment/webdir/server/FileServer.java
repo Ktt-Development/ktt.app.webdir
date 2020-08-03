@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.server;
 
-import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.*;
 import com.kttdevelopment.webdir.generator.Vars;
@@ -56,30 +55,24 @@ public final class FileServer {
         logger.info(locale.getString("server.const.createFileHandler"));
 
         final String fileContext = Vars.Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext);
+        final DefaultFileHandler defaultFileHandler = new DefaultFileHandler(defaults);
         watchService = new RootsWatchService(1000 * 5) {
 
             @Override
             public synchronized final void onAddedEvent(final File file){
-                final String root = file.toPath().getRoot().toString();
-                final String context = ContextUtil.joinContexts(true, false, fileContext, root);
-                final DefaultFileHandler handler = new DefaultFileHandler(defaults);
-
-                handler.addDirectory(file, "");
-                server.createContext(context, new ThrottledHandler(handler, throttler));
-                logger.fine(locale.getString("server.debug.const.rootAdd",file.getAbsolutePath(),context));
+                defaultFileHandler.addDirectory(file);
+                logger.fine(locale.getString("server.debug.const.rootAdd",file.getAbsolutePath()));
             }
 
             @Override
             public synchronized final void onRemovedEvent(final File file){
-                final String root = file.toPath().getRoot().toString();
-                final String context = ContextUtil.joinContexts(true, false, fileContext, root);
-                server.removeContext(context);
-                logger.fine(locale.getString("server.debug.const.rootRemove",file.getAbsolutePath(),context));
+                // defaultFileHandler#removeDirectory (TBD)
+                logger.fine(locale.getString("server.debug.const.rootRemove",file.getAbsolutePath()));
             }
 
         };
-
         watchService.start();
+        server.createContext(fileContext,new ThrottledHandler(defaultFileHandler, throttler));
         logger.info(locale.getString("server.const.startFileHandler"));
 
         server.start();
