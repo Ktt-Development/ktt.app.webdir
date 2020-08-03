@@ -37,7 +37,7 @@ public class RenderTests {
 
     //
 
-    @Test @Ignore
+    @Test
     public void testRenderers() throws ExecutionException, InterruptedException{
         Vars.Test.safemode = false;
         Vars.Test.server = true;
@@ -46,7 +46,8 @@ public class RenderTests {
             new File(".root/renderTests/renderOrder.html"),
             "---\n" +
             "renderer:\n" +
-            "  - first\n" +
+            "  - plugin: RenderTests\n" +
+            "    renderer: first\n" +
             "  - second\n" +
             "  - exception\n" +
             "  - firstEx\n" +
@@ -56,7 +57,8 @@ public class RenderTests {
             "---\n" +
             "renderer:\n" +
             "  - second\n" +
-            "  - first\n" +
+            "  - plugin: RenderTests\n" +
+            "    renderer: first\n" +
             "  - firstEx\n" +
             "  - secondEx\n" +
             "---",
