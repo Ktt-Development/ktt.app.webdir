@@ -295,6 +295,11 @@ public class ApplicationTest {
         }
     }
 
+    @Test @Ignore
+    public void testIndex() {
+
+    }
+
     //
 
     private String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
