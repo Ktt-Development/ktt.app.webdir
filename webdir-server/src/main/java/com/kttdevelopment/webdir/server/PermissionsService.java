@@ -30,7 +30,7 @@ public final class PermissionsService {
     //
 
     @SuppressWarnings("SameParameterValue")
-    PermissionsService(final File permissionsFile, final String defaultPermissionsResource) throws YamlException{
+    public PermissionsService(final File permissionsFile, final String defaultPermissionsResource) throws YamlException{
         Objects.requireNonNull(permissionsFile);
         this.permissionsFile = permissionsFile.getAbsolutePath();
         this.defaultPermissionsResource = defaultPermissionsResource;

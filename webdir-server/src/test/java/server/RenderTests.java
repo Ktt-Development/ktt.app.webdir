@@ -4,6 +4,8 @@ import com.kttdevelopment.webdir.generator.PluginLoader;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.server.Main;
 import org.junit.*;
+import utility.TestFile;
+import utility.TestResponse;
 
 import java.io.File;
 import java.net.URI;
@@ -74,7 +76,7 @@ public class RenderTests {
 
         final String url = "http://localhost:" + Vars.Test.port + "/renderTests";
 
-        Assert.assertEquals("Renderers lower on the list are expected to render last","second",TestResponse.getResponseContent(URI.create(url + "/renderOrder")));
+        Assert.assertEquals("Renderers lower on the list are expected to render last", "second", TestResponse.getResponseContent(URI.create(url + "/renderOrder")));
         Assert.assertEquals("Renderers lower on the list are expected to render last","first",TestResponse.getResponseContent(URI.create(url + "/renderReverseOrder")));
         Assert.assertEquals("Render specifying plugin and renderer are expected to use that renderer","DUPLICATE", TestResponse.getResponseContent(URI.create(url + "/renderExactDuplicate")));
     }

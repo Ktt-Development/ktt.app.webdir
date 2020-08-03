@@ -1,12 +1,12 @@
-package server;
+package utility;
 
 import java.net.URI;
 import java.net.http.*;
 import java.util.concurrent.ExecutionException;
 
-public class TestResponse {
+public abstract class TestResponse {
 
-    static String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
+    public static String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
             .build();

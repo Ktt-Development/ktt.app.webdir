@@ -43,7 +43,6 @@ public class ConfigServiceTests {
         }catch(final ClassCastException | YamlException ignored){ }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testMissingConfig() throws IOException{
         final String defaultKey = "default", defaultValue = "value";
@@ -51,14 +50,13 @@ public class ConfigServiceTests {
         final File missingConfig = new File("src/test/resources/configTests/missing.yml");
         if(missingConfig.exists() && !missingConfig.delete())
             Assert.fail("Failed to delete config file for testing");
+        missingConfig.deleteOnExit();
 
         final ConfigService config = new ConfigService(missingConfig,defaultResource);
 
         Assert.assertEquals("Config service did not return default value when using a missing config",defaultValue,config.getConfig().getString(defaultKey));
         Assert.assertTrue("Config service did not create a new config file when using a missing config",missingConfig.exists());
         Assert.assertEquals("New file created by config service did not match default config", defaultKey + ": " + defaultValue, Files.readString(missingConfig.toPath()));
-
-        missingConfig.delete();
     }
 
     @Test
