@@ -10,6 +10,10 @@ import java.nio.file.Files;
 
 public abstract class Main {
 
+    private static PageRenderingService pageRenderingService = null;
+
+    public static PageRenderingService getPageRenderingService(){ return pageRenderingService; }
+
     private static PermissionsService permissions = null;
 
     public static PermissionsService getPermissions(){
@@ -32,9 +36,11 @@ public abstract class Main {
             final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
             final File source   = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
             final File output   = new File(config.getString(Vars.Config.outputKey,Vars.Config.defaultOutput));
+            pageRenderingService = new PageRenderingService(defaults,source,output);
 
-            permissions = new PermissionsService(new File(config.getString(ServerVars.Config.permissionsKey,ServerVars.Config.defaultPermissions)),ServerVars.Config.defaultPermissions);
-            server = new FileServer(config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort),defaults,source,output);
+            final String permissionsKey = config.getString(ServerVars.Config.permissionsKey);
+            permissions = new PermissionsService(permissionsKey != null ? new File(permissionsKey) : ServerVars.Main.permissionsFile,ServerVars.Main.permissionsFileResource);
+            server = new FileServer(!Vars.Test.server ? config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort) : Vars.Test.port,defaults,source,output);
         }catch(final Throwable e){
             try{
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));

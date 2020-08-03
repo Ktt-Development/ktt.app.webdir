@@ -1,11 +1,19 @@
 package com.kttdevelopment.webdir.server;
 
+import java.io.File;
+
 public abstract class ServerVars {
+
+    public static class Main {
+
+        public static final File permissionsFile           = new File("permissions.yml");
+        public static final String permissionsFileResource = "/permissions.yml";
+
+    }
 
     public static class Config {
         
         public static final String permissionsKey     = "permissions";
-        public static final String defaultPermissions = "/permissions.yml";
 
         public static final String filesContextKey     = "files_dir";
         public static final String defaultFilesContext = "files";

@@ -76,8 +76,6 @@ public class RenderTests {
 
         Main.main(null);
 
-        System.out.println(Main.getServer().toString());
-
         final String url = "http://localhost:" + Vars.Test.port + "/renderTests";
 
         Assert.assertEquals("Renderers lower on the list are expected to render last","second",TestResponse.getResponseContent(URI.create(url + "/renderOrder")));

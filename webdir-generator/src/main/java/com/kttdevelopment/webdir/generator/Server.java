@@ -29,7 +29,7 @@ public final class Server {
         logger.info(locale.getString("server.const"));
 
         try{
-            server = SimpleHttpServer.create(!Vars.Test.server ? port : Vars.Test.port);
+            server = SimpleHttpServer.create(port);
             this.port = server.getAddress().getPort();
         }catch(final BindException e){
             logger.severe(locale.getString("server.const.blockedPort",port));

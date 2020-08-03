@@ -79,13 +79,6 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
-            try{
-                ct = content.get();
-                content.set(render.render(source,defaultFrontMatter,content.get()));
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
-            }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-            }
         });
 
         return content.get().getBytes();

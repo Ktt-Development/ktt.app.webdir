@@ -1,13 +1,13 @@
 groups:
   default:
-    inheritance:
-      - admin
     options:
       default: true
-      connection-limit: 2
+      connection-limit: 0
   admin:
+    inheritance:
+      - default
     options:
-      connection-limit: -1
+      connection-limit: 1
     permissions:
       - "*"
 users:
@@ -15,6 +15,6 @@ users:
     group:
       - admin
     options:
-      connections-limit: 0
+      connection-limit: -1
     permissions:
-      - test.*
+      - "*"

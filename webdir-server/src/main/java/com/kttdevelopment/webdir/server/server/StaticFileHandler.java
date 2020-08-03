@@ -4,6 +4,7 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 import com.kttdevelopment.webdir.generator.render.DefaultFrontMatterLoader;
+import com.kttdevelopment.webdir.generator.server.HTMLNameAdapter;
 import com.kttdevelopment.webdir.server.httpserver.SimpleHttpExchangeUnmodifiable;
 import com.kttdevelopment.webdir.server.render.ExchangePageRenderer;
 
@@ -20,6 +21,7 @@ public final class StaticFileHandler extends FileHandler {
     private final File defaults, source, output;
 
     public StaticFileHandler(final File defaults, final File source, final File output){
+        super(new HTMLNameAdapter());
         this.defaults = defaults;
         this.source   = source;
         this.output   = output;
