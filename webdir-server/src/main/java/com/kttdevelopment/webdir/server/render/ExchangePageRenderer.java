@@ -43,7 +43,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
     // create front matter from source
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(sourceContent).read();
 
-        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter"));
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter",sourceABS,frontMatter));
 
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes;
 
@@ -58,7 +58,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
         final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRendererKey,String.class);
 
         // if no renderers then return given bytes
-        if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
+        if(renderersStr == null || renderersStr.isEmpty()) return bytes;
 
         final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, renderersStr);
     // render page

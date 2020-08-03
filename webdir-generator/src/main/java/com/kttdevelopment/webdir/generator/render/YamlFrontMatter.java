@@ -133,7 +133,7 @@ public abstract class YamlFrontMatter {
                 try{
                     renderer = new PluginRendererEntry(
                         Objects.requireNonNull(map.get(Vars.Renderer.pluginKey)).toString(),
-                        Objects.requireNonNull(map.get(renderKey)).toString(),
+                        Objects.requireNonNull(map.get(Vars.Renderer.rendererKey)).toString(),
                         null
                     );
                 }catch(final NullPointerException ignored){

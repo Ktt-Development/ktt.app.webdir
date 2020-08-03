@@ -30,7 +30,7 @@ public final class StaticFileHandler extends FileHandler {
 
     @Override // target file refers to file in output folder
     public final void handle(final SimpleHttpExchange exchange, final File target, final byte[] bytes) throws IOException{
-        final Path rel = target.toPath().relativize(output.toPath());
+        final Path rel = output.toPath().relativize(target.toPath());
         final File sourceFile = Paths.get(source.getAbsolutePath(),rel.toString()).toFile();
         exchange.send(render.apply(
             new SimpleHttpExchangeUnmodifiable(exchange),
