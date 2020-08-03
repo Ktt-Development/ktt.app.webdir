@@ -15,7 +15,7 @@ public abstract class TestResponse {
             .thenApply(HttpResponse::body).get();
     }
 
-    static int getResponseCode(final URI uri) throws ExecutionException, InterruptedException{
+    public static int getResponseCode(final URI uri) throws ExecutionException, InterruptedException{
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
             .build();

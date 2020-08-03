@@ -127,7 +127,7 @@ public class RenderTests {
 
     @Test @Ignore
     public void testDefaultRenderers(){
-        // test that classic defaults work and that default file handler works (below)
+        // test that classic defaults work and exchange defaults work (below)
     }
 
     @Test @Ignore
