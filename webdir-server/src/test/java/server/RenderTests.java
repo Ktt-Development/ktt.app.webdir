@@ -341,6 +341,7 @@ public class RenderTests {
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
         Main.main(null);
+        Thread.sleep(1000);
 
         final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTests").getAbsolutePath());
 
@@ -418,6 +419,7 @@ public class RenderTests {
         testFiles.forEach(file -> TestFile.createTestFile(file, ""));
 
         Main.main(null);
+        Thread.sleep(1000);
 
         final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsEx").getAbsolutePath());
 
@@ -494,6 +496,7 @@ public class RenderTests {
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
         Main.main(null);
+        Thread.sleep(1000);
 
         final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsFH").getAbsolutePath());
 
