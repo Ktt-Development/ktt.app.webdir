@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
+import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
@@ -72,7 +73,15 @@ public final class Server {
         logger.info(locale.getString("server.const.watch.loaded"));
 
         // server
-        final FileHandler handler = new FileHandler(new HTMLNameAdapter());
+        final FileHandler handler = new FileHandler(new HTMLNameAdapter()){
+            @Override
+            public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
+                if(source.isDirectory() && bytes == null)
+                    exchange.send(Files.readAllBytes(Paths.get(source.getAbsolutePath(), "index.html")));
+                else
+                    super.handle(exchange, source, bytes);
+            }
+        };
         handler.addDirectory(output,"",true);
 
         server.createContext("",handler);

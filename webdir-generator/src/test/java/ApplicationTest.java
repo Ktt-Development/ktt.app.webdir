@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.http.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -295,16 +296,12 @@ public class ApplicationTest {
         }
     }
 
-    @Test @Ignore
-    public void testIndex() {
-
-    }
-
     //
 
     private String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
+            .timeout(Duration.ofSeconds(10))
             .build();
 
         return HttpClient.newHttpClient().sendAsync(request,HttpResponse.BodyHandlers.ofString())

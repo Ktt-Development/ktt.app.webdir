@@ -10,8 +10,7 @@ import com.kttdevelopment.webdir.server.render.ExchangePageRenderer;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 public final class StaticFileHandler extends FileHandler {
 
@@ -30,12 +29,14 @@ public final class StaticFileHandler extends FileHandler {
 
     @Override // target file refers to file in output folder
     public final void handle(final SimpleHttpExchange exchange, final File target, final byte[] bytes) throws IOException{
-        final Path rel = output.toPath().relativize(target.toPath());
+        final File file = target.isDirectory() ? Paths.get(target.getAbsolutePath(),"index.html").toFile() : target;
+
+        final Path rel = output.toPath().relativize(file.toPath());
         final File sourceFile = Paths.get(source.getAbsolutePath(),rel.toString()).toFile();
         exchange.send(render.apply(
             new SimpleHttpExchangeUnmodifiable(exchange),
             sourceFile,
-            target,
+            file,
             defaultFrontMatterLoader.getDefaultFrontMatter(sourceFile),
             bytes
         ));
