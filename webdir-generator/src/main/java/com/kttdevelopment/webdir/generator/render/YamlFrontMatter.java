@@ -91,7 +91,6 @@ public abstract class YamlFrontMatter {
         repeat.forEach(list -> list.forEach(s -> {
             // if has no extension assume .yml
             final String fileName = ContextUtil.getContext(s + (hasExtension.matcher(s).matches() ? "" : ".yml"),true,false);
-            //noinspection ConstantConditions // the assertion that its true is actually false; issued caused by nonExceptionElse
             final File IN = Paths.get((source != null && list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(),fileName).toFile();
 
             logger.finest(locale.getString("pageRenderer.debug.yamlFrontMatter.getImports.load",fileName,IN,sourceABS));

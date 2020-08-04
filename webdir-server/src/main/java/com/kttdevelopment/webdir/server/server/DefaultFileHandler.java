@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.server.server;
 
-import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.webdir.generator.Vars;
@@ -23,17 +22,15 @@ public final class DefaultFileHandler extends FileHandler {
     public DefaultFileHandler(final File defaults){
         this.defaults = defaults;
         this.source   = new File(Vars.Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext));
-
         this.defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults, source);
     }
 
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
-        final String rel = ContextUtil.getContext(exchange.getHttpContext().getPath(),true,false);
         exchange.send(render.apply(
             new SimpleHttpExchangeUnmodifiable(exchange),
             source,
-            defaultFrontMatterLoader.getDefaultFrontMatter(rel),
+            defaultFrontMatterLoader.getDefaultFrontMatter(source.getAbsolutePath()),
             bytes
         ));
     }

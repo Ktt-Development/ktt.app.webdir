@@ -3,8 +3,10 @@ package server;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.generator.PluginLoader;
 import com.kttdevelopment.webdir.generator.Vars;
-import com.kttdevelopment.webdir.server.*;
-import org.junit.*;
+import com.kttdevelopment.webdir.server.Main;
+import com.kttdevelopment.webdir.server.ServerVars;
+import org.junit.Assert;
+import org.junit.Test;
 import utility.TestFile;
 import utility.TestResponse;
 
@@ -279,10 +281,8 @@ public class RenderTests {
         Assert.assertEquals("Default with negation ! scope should not render file","", TestResponse.getResponseContent(URI.create(url + "/negative")));
     }
 
-    @Test @Ignore
+    @Test
     public void testFileRenderers() throws ExecutionException, InterruptedException{
-        // same above tests but with files (use absolute path for context url)
-        // test raw render and def render
         Vars.Test.safemode = false;
         Vars.Test.server = true;
 
@@ -290,7 +290,7 @@ public class RenderTests {
             new File(".default/index0.yml"),
             "default:\n" +
             "  scope:\n" +
-            "     - C/*/fileTests/index0.html\n" +
+            "     - /C:/*/fileTests/index0.html\n" +
             "renderer:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n",
@@ -298,7 +298,7 @@ public class RenderTests {
             "default:\n" +
             "  index: 1\n" +
             "  scope:\n" +
-            "     - C/*/fileTests/index1.html\n" +
+            "     - /C:/*/fileTests/index1.html\n" +
             "renderer:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n",
@@ -306,23 +306,23 @@ public class RenderTests {
             "default:\n" +
             "  index: -1\n" +
             "  scope:\n" +
-            "     - C/*/fileTests/index0.html\n" +
-            "     - C/*/fileTests/index1.html\n" +
+            "     - /C:/*/fileTests/index0.html\n" +
+            "     - /C:/*/fileTests/index1.html\n" +
             "renderer: second",
             new File(".default/negative.yml"),
             "default:\n" +
             "  scope:\n" +
-            "    - C/*/fileTests/negative.html\n" +
-            "    - \"!C/*/fileTests/negative.html\"\n" +
+            "    - /C:/*/fileTests/negative.html\n" +
+            "    - \"!/C:/*/fileTests/negative.html\"\n" +
             "renderer:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n",
             new File(".default/scope.yml"),
             "default:\n" +
             "  scope:\n" +
-            "    - C/*/fileTests/exact.txt\n" +
-            "    - C/*/fileTests/*.cfg\n" +
-            "    - C/*/fileTests/file.*\n" +
+            "    - /C:/*/fileTests/exact.txt\n" +
+            "    - /C:/*/fileTests/*.cfg\n" +
+            "    - /C:/*/fileTests/file.*\n" +
             "    - \"*.log\"\n" +
             "renderer:\n" +
             "  - plugin: RenderTests\n" +
@@ -344,8 +344,8 @@ public class RenderTests {
 
         final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTests").getAbsolutePath());
 
-        Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "first", TestResponse.getResponseContent(URI.create(url + "/index1")));
-        Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","first", TestResponse.getResponseContent(URI.create(url + "/index0")));
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "first", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","first", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
 
         // test scope
         Assert.assertEquals("Default with exact scope should render file","first", TestResponse.getResponseContent(URI.create(url + "/exact.txt")));
@@ -354,7 +354,160 @@ public class RenderTests {
         Assert.assertEquals("Default with *.log scope should render file","first", TestResponse.getResponseContent(URI.create(url + "/test.log")));
 
         // test negative scope
-        Assert.assertEquals("Default with negation ! scope should not render file","", TestResponse.getResponseContent(URI.create(url + "/negative")));
+        Assert.assertEquals("Default with negation ! scope should not render file","", TestResponse.getResponseContent(URI.create(url + "/negative.html")));
+    }
+
+    @Test
+    public void testFileRenderersEx() throws ExecutionException, InterruptedException{
+        Vars.Test.safemode = false;
+        Vars.Test.server = true;
+
+        Map.of(
+            new File(".default/index0.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "     - /C:/*/fileTestsEx/index0.html\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: ExchangeRenderTests\n" +
+            "    renderer: firstEx\n",
+            new File(".default/index1.yml"),
+            "default:\n" +
+            "  index: 1\n" +
+            "  scope:\n" +
+            "     - /C:/*/fileTestsEx/index1.html\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: ExchangeRenderTests\n" +
+            "    renderer: firstEx\n",
+            new File(".default/index-1.yml"),
+            "default:\n" +
+            "  index: -1\n" +
+            "  scope:\n" +
+            "     - /C:/*/fileTestsEx/index0.html\n" +
+            "     - /C:/*/fileTestsEx/index1.html\n" +
+            "exchangeRenderer: secondEx",
+            new File(".default/negative.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "    - /C:/*/fileTestsEx/negative.html\n" +
+            "    - \"!/C:/*/fileTestsEx/negative.html\"\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: ExchangeRenderTests\n" +
+            "    renderer: firstEx\n",
+            new File(".default/scope.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "    - /C:/*/fileTestsEx/exact.txt\n" +
+            "    - /C:/*/fileTestsEx/*.cfg\n" +
+            "    - /C:/*/fileTestsEx/file.*\n" +
+            "    - \"*.log\"\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: ExchangeRenderTests\n" +
+            "    renderer: firstEx\n"
+        ).forEach(TestFile::createTestFile);
+
+        // test files
+        final List<File> testFiles = List.of(
+            new File(".test/fileTestsEx/exact.txt"),
+            new File(".test/fileTestsEx/file.txt"),
+            new File(".test/fileTestsEx/index0.html"),
+            new File(".test/fileTestsEx/index1.html"),
+            new File(".test/fileTestsEx/negative.html"),
+            new File(".test/fileTestsEx/test.cfg"),
+            new File(".test/fileTestsEx/test.log")
+        );
+        testFiles.forEach(file -> TestFile.createTestFile(file, ""));
+
+        Main.main(null);
+
+        final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsEx").getAbsolutePath());
+
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstEx", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstEx", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
+
+        // test scope
+        Assert.assertEquals("Default with exact scope should render file","firstEx", TestResponse.getResponseContent(URI.create(url + "/exact.txt")));
+        Assert.assertEquals("Default with *.cfg scope should render file","firstEx", TestResponse.getResponseContent(URI.create(url + "/test.cfg")));
+        Assert.assertEquals("Default with file.* scope should render file","firstEx", TestResponse.getResponseContent(URI.create(url + "/test.cfg")));
+        Assert.assertEquals("Default with *.log scope should render file","firstEx", TestResponse.getResponseContent(URI.create(url + "/test.log")));
+
+        // test negative scope
+        Assert.assertEquals("Default with negation ! scope should not render file","", TestResponse.getResponseContent(URI.create(url + "/negative.html")));
+    }
+
+    @Test
+    public void testFileRenderersFH() throws ExecutionException, InterruptedException{
+        Vars.Test.safemode = false;
+        Vars.Test.server = true;
+
+        Map.of(
+            new File(".default/index0.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "     - /C:/*/fileTestsFH/index0.html\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: FileHandlerRenderTests\n" +
+            "    renderer: firstFH\n",
+            new File(".default/index1.yml"),
+            "default:\n" +
+            "  index: 1\n" +
+            "  scope:\n" +
+            "     - /C:/*/fileTestsFH/index1.html\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: FileHandlerRenderTests\n" +
+            "    renderer: firstFH\n",
+            new File(".default/index-1.yml"),
+            "default:\n" +
+            "  index: -1\n" +
+            "  scope:\n" +
+            "     - /C:/*/fileTestsFH/index0.html\n" +
+            "     - /C:/*/fileTestsFH/index1.html\n" +
+            "exchangeRenderer: secondFH",
+            new File(".default/negative.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "    - /C:/*/fileTestsFH/negative.html\n" +
+            "    - \"!/C:/*/fileTestsFH/negative.html\"\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: FileHandlerRenderTests\n" +
+            "    renderer: firstFH\n",
+            new File(".default/scope.yml"),
+            "default:\n" +
+            "  scope:\n" +
+            "    - /C:/*/fileTestsFH/exact.txt\n" +
+            "    - /C:/*/fileTestsFH/*.cfg\n" +
+            "    - /C:/*/fileTestsFH/file.*\n" +
+            "    - \"*.log\"\n" +
+            "exchangeRenderer:\n" +
+            "  - plugin: FileHandlerRenderTests\n" +
+            "    renderer: firstFH\n"
+        ).forEach(TestFile::createTestFile);
+
+        // test files
+        List.of(
+            new File(".test/fileTestsFH/exact.txt"),
+            new File(".test/fileTestsFH/file.txt"),
+            new File(".test/fileTestsFH/index0.html"),
+            new File(".test/fileTestsFH/index1.html"),
+            new File(".test/fileTestsFH/negative.html"),
+            new File(".test/fileTestsFH/test.cfg"),
+            new File(".test/fileTestsFH/test.log")
+        ).forEach(file -> TestFile.createTestFile(file, ""));
+
+        Main.main(null);
+
+        final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsFH").getAbsolutePath());
+
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstFH", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
+        Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstFH", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
+
+        // test scope
+        Assert.assertEquals("Default with exact scope should render file","firstFH", TestResponse.getResponseContent(URI.create(url + "/exact.txt")));
+        Assert.assertEquals("Default with *.cfg scope should render file","firstFH", TestResponse.getResponseContent(URI.create(url + "/test.cfg")));
+        Assert.assertEquals("Default with file.* scope should render file","firstFH", TestResponse.getResponseContent(URI.create(url + "/test.cfg")));
+        Assert.assertEquals("Default with *.log scope should render file","firstFH", TestResponse.getResponseContent(URI.create(url + "/test.log")));
+
+        // test negative scope
+        Assert.assertEquals("Default with negation ! scope should not render file","", TestResponse.getResponseContent(URI.create(url + "/negative.html")));
     }
 
 }

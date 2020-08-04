@@ -10,11 +10,12 @@ public class SymbolicStringMatcher {
     private static final String regex = "^\\Q%s\\E$";
 
     private static boolean matchesAsterisk(final String format, final String string){ // file names prohibit '*' from being used so an escape character is not needed
+        final String r = String.format(regex,format.replace("*","\\E.*\\Q"));
         return Pattern.compile(String.format(regex,format.replace("*","\\E.*\\Q"))).matcher(string).matches();
     }
 
     public static MatchState matches(final String format, final String string){
-        if(format.equals('!' + string) || (format.startsWith("!") && matchesAsterisk(format,string.substring(1))))
+        if(format.equals('!' + string) || (format.startsWith("!") && matchesAsterisk(format.substring(1),string)))
             return MatchState.NEGATIVE_MATCH;
         else
             return format.equals(string) || matchesAsterisk(format,string) ? MatchState.MATCH : MatchState.NO_MATCH;

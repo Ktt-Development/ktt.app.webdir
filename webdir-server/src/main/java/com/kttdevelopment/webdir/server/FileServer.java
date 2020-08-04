@@ -60,7 +60,7 @@ public final class FileServer {
 
             @Override
             public synchronized final void onAddedEvent(final File file){
-                defaultFileHandler.addDirectory(file);
+                defaultFileHandler.addDirectory(file,true);
                 logger.fine(locale.getString("server.debug.const.rootAdd",file.getAbsolutePath()));
             }
 

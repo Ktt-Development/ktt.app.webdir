@@ -52,7 +52,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
             final String ct = content.get();
             try{
                 content.set(renderer.getRenderer().render(file, finalFrontMatter, ct));
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", fileABS, renderer, ct, content.get()));
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", renderer.getRendererName(),fileABS, ct, content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }

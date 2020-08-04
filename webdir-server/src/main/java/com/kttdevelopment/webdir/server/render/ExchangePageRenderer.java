@@ -74,7 +74,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
                 // if is an adapter but not a class (adapter has no permissions) or is class and has permission
                 if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
                     content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));

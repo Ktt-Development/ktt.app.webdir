@@ -44,7 +44,7 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
         allRenderers.addAll(renders);
         allRenderers.addAll(rendersEx);
     // render page
-        final AtomicReference<byte[]> content = new AtomicReference<>();
+        final AtomicReference<byte[]> content = new AtomicReference<>("".getBytes());
 
         final InetAddress address     = exchange.getPublicAddress().getAddress();
         final Permissions permissions = Main.getPermissions().getPermissions();
@@ -53,9 +53,16 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
             final Renderer render = renderer.getRenderer();
             byte[] ct = content.get();
             try{
+                ct = content.get();
+                content.set(render.render(source,defaultFrontMatter,new String(content.get())).getBytes());
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
+            }catch(final Throwable e){
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            }
+            try{
                 if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
                     content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, new String(content.get())).getBytes());
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -65,15 +72,8 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
                 if((render instanceof FileRenderAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission()))){
                     content.set(((FileRenderAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, content.get()).getBytes());
                     content.set(render.render(source, defaultFrontMatter, new String(content.get())).getBytes());
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
-            }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-            }
-            try{
-                ct = content.get();
-                content.set(render.render(source,defaultFrontMatter,new String(content.get())).getBytes());
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",sourceABS,render,ct,content.get()));
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
