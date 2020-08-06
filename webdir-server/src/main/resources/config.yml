@@ -44,7 +44,7 @@ port: 80
 
 # The context to view files at.
 # (WebDir - Server only)
-# Ex: setting this to 'files' would put files from C://* at http://localhost/files/C/*    ← here
+# Ex: setting this to 'files' would put files from C://* at http://localhost/files/C:/*    ← here
 # Default: files
 files_context: files
 
