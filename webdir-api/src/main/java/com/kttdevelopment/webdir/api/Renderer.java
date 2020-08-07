@@ -7,6 +7,10 @@ import java.io.File;
 /**
  * A renderer determines how content will appear.
  *
+ * @see com.kttdevelopment.webdir.api.server.ExchangeRendererAdapter
+ * @see com.kttdevelopment.webdir.api.server.ExchangeRenderer
+ * @see com.kttdevelopment.webdir.api.server.FileRendererAdapter
+ * @see com.kttdevelopment.webdir.api.server.FileRenderer
  * @since 01.00.00
  * @version 01.00.00
  * @author Ktt Development

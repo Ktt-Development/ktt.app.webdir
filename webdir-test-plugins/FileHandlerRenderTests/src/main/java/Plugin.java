@@ -1,7 +1,7 @@
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.server.FileRenderAdapter;
+import com.kttdevelopment.webdir.api.server.FileRendererAdapter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.io.File;
@@ -14,7 +14,7 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        addRenderer("firstFH", new FileRenderAdapter() {
+        addRenderer("firstFH", new FileRendererAdapter() {
             @Override
             public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
                 return "firstFH";
@@ -25,7 +25,7 @@ public class Plugin extends WebDirPlugin {
                 return content;
             }
         });
-        addRenderer("secondFH", new FileRenderAdapter() {
+        addRenderer("secondFH", new FileRendererAdapter() {
             @Override
             public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
                 return "secondFH";
@@ -36,7 +36,7 @@ public class Plugin extends WebDirPlugin {
                 return content;
             }
         });
-        addRenderer("exceptionFH", new FileRenderAdapter() {
+        addRenderer("exceptionFH", new FileRendererAdapter() {
             @Override
             public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
                 throw new RuntimeException();

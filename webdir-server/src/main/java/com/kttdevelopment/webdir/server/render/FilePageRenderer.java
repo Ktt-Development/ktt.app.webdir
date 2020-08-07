@@ -60,8 +60,8 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
             try{
-                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                    content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, new String(content.get())).getBytes());
+                if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
+                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, new String(content.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
@@ -69,8 +69,8 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
             }
             try{
                 ct = content.get();
-                if((render instanceof FileRenderAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission()))){
-                    content.set(((FileRenderAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, content.get()).getBytes());
+                if((render instanceof FileRendererAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission()))){
+                    content.set(((FileRendererAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, content.get()).getBytes());
                     content.set(render.render(source, defaultFrontMatter, new String(content.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }

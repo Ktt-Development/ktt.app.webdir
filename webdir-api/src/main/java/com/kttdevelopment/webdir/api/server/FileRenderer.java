@@ -11,13 +11,13 @@ import java.io.File;
  * {@link #render(File, ConfigurationSection, String)} is not affected by the permissions requirement and will run in all cases.
  *
  * @see com.kttdevelopment.webdir.api.Renderer
- * @see FileRenderAdapter
+ * @see FileRendererAdapter
  * @see ExchangeRenderer
  * @since 01.00.00
  * @version 01.00.00
  * @author Ktt Development
  */
-public class FileRenderer extends ExchangeRenderer implements FileRenderAdapter{
+public class FileRenderer extends ExchangeRenderer implements FileRendererAdapter {
 
     /**
      * Creates a file renderer with no required permission.

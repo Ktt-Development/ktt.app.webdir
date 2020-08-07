@@ -1,7 +1,7 @@
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.server.ExchangeRenderAdapter;
+import com.kttdevelopment.webdir.api.server.ExchangeRendererAdapter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.io.File;
@@ -14,7 +14,7 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        addRenderer("firstEx", new ExchangeRenderAdapter(){
+        addRenderer("firstEx", new ExchangeRendererAdapter(){
 
             @Override
             public String render(final File output, final ConfigurationSection yamlFrontMatter, final String content){

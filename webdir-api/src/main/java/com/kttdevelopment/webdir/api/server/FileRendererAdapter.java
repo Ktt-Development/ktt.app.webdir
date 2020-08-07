@@ -7,30 +7,30 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import java.io.File;
 
 /**
- * A renderer that determines how content will appear based on an exchange.
+ * A renderer that converts bytes to content.
  *
  * @see Renderer
+ * @see FileRenderer
  * @see SimpleHttpExchange
  * @since 01.00.00
  * @version 01.00.00
  * @author Ktt Development
  */
-public interface ExchangeRenderAdapter extends Renderer {
+public interface FileRendererAdapter extends Renderer {
 
     /**
      * Renders content from a file.
      *
-     * @param exchange information on the client
-     * @param source equivalent file in the sources folder
-     * @param yamlFrontMatter yaml front matter configuration
-     * @param content current file content (after previous renders, if any)
+     * @param exchange information on client
+     * @param source file being read
+     * @param defaultFrontMatter default yaml front matter configuration
+     * @param bytes content of source file in bytes
      * @return rendered content
      *
      * @see SimpleHttpExchange
-     * @see ConfigurationSection
      * @since 01.00.00
      * @author Ktt Development
      */
-    String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content);
+    String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes);
 
 }

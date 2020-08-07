@@ -11,13 +11,13 @@ import java.io.File;
  * {@link #render(File, ConfigurationSection, String)} is not affected by the permissions requirement and will run in all cases.
  *
  * @see com.kttdevelopment.webdir.api.Renderer
- * @see ExchangeRenderAdapter
+ * @see ExchangeRendererAdapter
  * @see SimpleHttpExchange
  * @since 01.00.00
  * @version 01.00.00
  * @author Ktt Development
  */
-public class ExchangeRenderer implements ExchangeRenderAdapter {
+public class ExchangeRenderer implements ExchangeRendererAdapter {
 
     private final String permission;
 

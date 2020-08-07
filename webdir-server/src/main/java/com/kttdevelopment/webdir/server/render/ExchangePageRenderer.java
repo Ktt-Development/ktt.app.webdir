@@ -2,7 +2,7 @@ package com.kttdevelopment.webdir.server.render;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.webdir.api.Renderer;
-import com.kttdevelopment.webdir.api.server.ExchangeRenderAdapter;
+import com.kttdevelopment.webdir.api.server.ExchangeRendererAdapter;
 import com.kttdevelopment.webdir.api.server.ExchangeRenderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
@@ -72,8 +72,8 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
             String ct = content.get();
             try{
                 // if is an adapter but not a class (adapter has no permissions) or is class and has permission
-                if((render instanceof ExchangeRenderAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                    content.set(((ExchangeRenderAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
+                if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
+                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
