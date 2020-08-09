@@ -28,7 +28,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.kttdevelopment.webdir.generator.Main</mainClass>
+                            <mainClass>com.kttdevelopment.webdir.server.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
