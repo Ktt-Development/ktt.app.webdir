@@ -1,7 +1,8 @@
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.*;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -248,7 +249,7 @@ public class ApplicationTest {
         Main.main(null);
 
         final String url = "http://localhost:%s/%s";
-        final int port = Vars.Test.port;
+        final int port = Vars.Test.getTestPort();
         final String target = String.valueOf(System.currentTimeMillis());
         final Path targetFile = new File(".root/" + target + ".html").toPath();
 

@@ -35,7 +35,7 @@ public abstract class Main {
             pageRenderingService = new PageRenderingService(defaults,source,output);
 
             if(Vars.Test.server || config.getBoolean(Vars.Config.serverKey,Vars.Config.defaultServer))
-                server = new Server(!Vars.Test.server ? config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort) : Vars.Test.port,source,output);
+                server = new Server(!Vars.Test.server ? config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort) : Vars.Test.getTestPort(),source,output);
         }catch(final Throwable e){
             try{
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));

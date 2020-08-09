@@ -31,7 +31,7 @@ public class ThrottlerTests {
         TestFile.createTestFile(new File(".root/test.html"),"");
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port;
+        final String url = "http://localhost:" + Vars.Test.getTestPort();
 
         try{
             TestResponse.getResponseContent(URI.create(url + "/test"));
@@ -56,7 +56,7 @@ public class ThrottlerTests {
         TestFile.createTestFile(new File(".root/test.html"),"");
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port;
+        final String url = "http://localhost:" + Vars.Test.getTestPort();
 
         final CyclicBarrier pause = new CyclicBarrier(3);
 
