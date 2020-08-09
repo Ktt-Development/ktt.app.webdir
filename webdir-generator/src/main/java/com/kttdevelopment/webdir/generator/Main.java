@@ -4,8 +4,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 
 public abstract class Main {
@@ -43,6 +42,7 @@ public abstract class Main {
             }catch(final IOException e2){
                 e2.printStackTrace();
             }
+            throw new RuntimeException(e);
         }
     }
 
