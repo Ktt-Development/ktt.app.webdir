@@ -7,25 +7,42 @@
     <parent>
         <groupId>com.kttdevelopment</groupId>
         <artifactId>webdir</artifactId>
-        <version>S-EAV-01</version>
+        <version>R-EAV-01</version>
     </parent>
 
     <artifactId>webdir-generator</artifactId>
-    <version>S-EAV-01</version>
+    <version>R-EAV-01</version>
     <packaging>jar</packaging>
 
     <url>https://github.com/Ktt-Development/webdir</url>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <build>
         <plugins>
+            <!-- Jar w/dep Compile [Used for launch4j] -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.kttdevelopment.webdir.generator.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- tests -->
@@ -41,18 +58,14 @@
         </plugins>
     </build>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <!-- api -->
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
-            <version>S-EAV-01</version>
-            <scope>compile</scope>
+            <version>R-EAV-01</version>
         </dependency>
+        <!-- yaml -->
         <dependency>
             <groupId>com.esotericsoftware.yamlbeans</groupId>
             <artifactId>yamlbeans</artifactId>
