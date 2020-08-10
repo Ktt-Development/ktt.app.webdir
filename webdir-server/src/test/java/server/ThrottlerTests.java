@@ -30,7 +30,7 @@ public class ThrottlerTests {
         TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(),perm);
         TestFile.createTestFile(new File(".root/test.html"),"");
 
-        final int port = Vars.Test.port = 20012;
+        int port = (Vars.Test.port = 20012);
 
         Main.main(null);
 
@@ -58,7 +58,7 @@ public class ThrottlerTests {
         TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(),perm);
         TestFile.createTestFile(new File(".root/test.html"),"");
 
-        final int port = Vars.Test.port = 20013;
+        int port = (Vars.Test.port = 20013);
 
         Main.main(null);
 
