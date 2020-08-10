@@ -21,6 +21,7 @@ public abstract class Vars {
         private static final AtomicInteger port = new AtomicInteger(8000);
 
         public synchronized static int assignPort(){
+            server = true;
             return port.incrementAndGet();
         }
 
