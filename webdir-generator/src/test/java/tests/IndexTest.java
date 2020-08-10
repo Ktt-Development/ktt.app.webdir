@@ -1,6 +1,9 @@
+package tests;
+
 import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.Vars;
 import org.junit.*;
+import utility.TestFile;
 
 import java.io.File;
 import java.net.URI;
@@ -17,11 +20,9 @@ public class IndexTest {
 
         final File file = new File(".root/indexTests/index.html");
         final String content = String.valueOf(System.currentTimeMillis());
-        TestFile.createTestFile(file,content);
+        TestFile.createTestFile(file, content);
 
         final int port = Vars.Test.assignPort();
-
-        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port;

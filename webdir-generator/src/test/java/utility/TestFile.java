@@ -1,10 +1,12 @@
+package utility;
+
 import org.junit.Assert;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-abstract class TestFile {
+public abstract class TestFile {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void createTestFile(final File file, final String content){

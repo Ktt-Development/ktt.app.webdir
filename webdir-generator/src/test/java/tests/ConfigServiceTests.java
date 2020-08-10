@@ -1,6 +1,9 @@
+package tests;
+
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.generator.*;
 import org.junit.*;
+import utility.TestFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +16,7 @@ public class ConfigServiceTests {
         final String key = "key", value = "value";
         final String defaultKey = "default", defaultValue = "value";
         final File configFile = new File("src/test/resources/configTests/testConfig.yml");
-        TestFile.createTestFile(configFile,key + ": " + value);
+        TestFile.createTestFile(configFile, key + ": " + value);
 
         final String defaultResource = "/configTests/defaultConfig.yml";
 

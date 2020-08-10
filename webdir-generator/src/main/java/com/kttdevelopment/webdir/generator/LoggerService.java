@@ -19,8 +19,6 @@ public final class LoggerService implements ILoggerService {
         Logger logger = getLogger("Logger");
         logger.setLevel(Level.ALL);
 
-        if(Vars.Test.disableLogger) return;
-        
         handlers.add(new ConsoleHandler(){{
             setFormatter(new LoggerFormatter(false,false));
             setLevel(Level.ALL);

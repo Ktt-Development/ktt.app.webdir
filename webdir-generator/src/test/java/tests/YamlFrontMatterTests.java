@@ -1,7 +1,10 @@
+package tests;
+
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import org.junit.*;
+import utility.TestFile;
 
 import java.io.File;
 import java.util.Map;
@@ -70,7 +73,7 @@ public class YamlFrontMatterTests {
         ));
 
         final File testFile = new File("src/test/resources/frontMatterTests/testImports.yml");
-        TestFile.createTestFile(testFile,testFileContent);
+        TestFile.createTestFile(testFile, testFileContent);
 
         // test
         final String frontMatter = getFrontMatter(Map.of(

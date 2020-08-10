@@ -1,7 +1,7 @@
 package server;
 
-import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.Vars;
+import com.kttdevelopment.webdir.server.Main;
 import org.junit.*;
 import utility.TestFile;
 import utility.TestResponse;
@@ -22,8 +22,6 @@ public class IndexTest {
         TestFile.createTestFile(file, content);
 
         final int port = Vars.Test.assignPort();
-
-        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port;
