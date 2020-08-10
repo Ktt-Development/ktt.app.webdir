@@ -32,6 +32,7 @@ public class RenderTests {
             "FileHandlerDuplicateRenderTests"
         };
 
+        Vars.Test.assignPort();
         Main.main(null);
 
         final PluginLoader pluginLoader = Vars.Main.getPluginLoader();
@@ -349,7 +350,7 @@ public class RenderTests {
             new File(".test/fileTests/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        final int port =  Vars.Test.port();
+        final int port =  Vars.Test.assignPort();
 
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
