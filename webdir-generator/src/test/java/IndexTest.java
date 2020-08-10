@@ -19,10 +19,11 @@ public class IndexTest {
         final String content = String.valueOf(System.currentTimeMillis());
         TestFile.createTestFile(file,content);
 
+        final int port = Vars.Test.port = 20001;
 
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port;
+        final String url = "http://localhost:" + port;
         // test index and no index
         Assert.assertEquals("Server should resolve index.html to '/'", content, getResponseContent(URI.create(url + "/indexTests")));
         Assert.assertEquals("index.html should still work as expected", content, getResponseContent(URI.create(url + "/indexTests/index")));

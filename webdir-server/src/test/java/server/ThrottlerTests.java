@@ -29,9 +29,12 @@ public class ThrottlerTests {
 
         TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(),perm);
         TestFile.createTestFile(new File(".root/test.html"),"");
+
+        final int port = Vars.Test.port = 27012;
+
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port;
+        final String url = "http://localhost:" + port;
 
         try{
             TestResponse.getResponseContent(URI.create(url + "/test"));
@@ -54,9 +57,12 @@ public class ThrottlerTests {
 
         TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(),perm);
         TestFile.createTestFile(new File(".root/test.html"),"");
+
+        final int port = Vars.Test.port = 27013;
+
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port;
+        final String url = "http://localhost:" + port;
 
         final CyclicBarrier pause = new CyclicBarrier(3);
 

@@ -76,9 +76,11 @@ public class RenderTests {
             "---"
         ).forEach(TestFile::createTestFile);
 
+        final int port = Vars.Test.port = 27004;
+
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port + "/renderTests";
+        final String url = "http://localhost:" + port + "/renderTests";
 
         Assert.assertEquals("Renderers lower on the list are expected to render last", "second", TestResponse.getResponseContent(URI.create(url + "/renderOrder")));
         Assert.assertEquals("Renderers lower on the list are expected to render last","first",TestResponse.getResponseContent(URI.create(url + "/renderReverseOrder")));
@@ -118,9 +120,11 @@ public class RenderTests {
             "---"
         ).forEach(TestFile::createTestFile);
 
+        final int port = Vars.Test.port = 27006;
+
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port + "/renderTestsEx";
+        final String url = "http://localhost:" + port + "/renderTestsEx";
 
         Assert.assertEquals("Renderers lower on the list are expected to render last","secondEx",TestResponse.getResponseContent(URI.create(url + "/renderOrder")));
         Assert.assertEquals("Renderers lower on the list are expected to render last","firstEx",TestResponse.getResponseContent(URI.create(url + "/renderReverseOrder")));
@@ -188,9 +192,11 @@ public class RenderTests {
             new File(".root/defaultTests/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
+        final int port = Vars.Test.port = 27007;
+
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port + "/defaultTests";
+        final String url = "http://localhost:" + port + "/defaultTests";
 
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "first", TestResponse.getResponseContent(URI.create(url + "/index1")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","first", TestResponse.getResponseContent(URI.create(url + "/index0")));
@@ -264,9 +270,11 @@ public class RenderTests {
             new File(".root/defaultTestsEx/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
+        final int port = Vars.Test.port = 27008;
+
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.port + "/defaultTestsEx";
+        final String url = "http://localhost:" + port + "/defaultTestsEx";
 
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstEx", TestResponse.getResponseContent(URI.create(url + "/index1")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstEx", TestResponse.getResponseContent(URI.create(url + "/index0")));
@@ -340,10 +348,12 @@ public class RenderTests {
             new File(".test/fileTests/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        Main.main(null);
-        Thread.sleep(1000);
+        final int port =  Vars.Test.port = 27009;
 
-        final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTests").getAbsolutePath());
+        Main.main(null);
+        Thread.sleep(1000); // make sure C:// is loaded
+
+        final String url = "http://localhost:" + port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTests").getAbsolutePath());
 
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "first", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","first", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
@@ -418,10 +428,12 @@ public class RenderTests {
         );
         testFiles.forEach(file -> TestFile.createTestFile(file, ""));
 
-        Main.main(null);
-        Thread.sleep(1000);
+        final int port = Vars.Test.port = 27010;
 
-        final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsEx").getAbsolutePath());
+        Main.main(null);
+        Thread.sleep(1000); // make sure C:// is loaded
+
+        final String url = "http://localhost:" + port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsEx").getAbsolutePath());
 
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstEx", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstEx", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
@@ -495,10 +507,12 @@ public class RenderTests {
             new File(".test/fileTestsFH/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        Main.main(null);
-        Thread.sleep(1000);
+        final int port = Vars.Test.port = 27011;
 
-        final String url = "http://localhost:" + Vars.Test.port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsFH").getAbsolutePath());
+        Main.main(null);
+        Thread.sleep(1000); // make sure C:// is loaded
+
+        final String url = "http://localhost:" + port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsFH").getAbsolutePath());
 
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstFH", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstFH", TestResponse.getResponseContent(URI.create(url + "/index0.html")));

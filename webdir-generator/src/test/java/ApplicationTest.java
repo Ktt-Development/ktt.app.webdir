@@ -246,10 +246,13 @@ public class ApplicationTest {
     public void testServer() throws ExecutionException, InterruptedException, IOException{
         Vars.Test.safemode = true;
         Vars.Test.server = true;
+
+        final int port = Vars.Test.port = 27002;
+
         Main.main(null);
 
         final String url = "http://localhost:%s/%s";
-        final int port = Vars.Test.port;
+
         final String target = String.valueOf(System.currentTimeMillis());
         final Path targetFile = new File(".root/" + target + ".html").toPath();
 

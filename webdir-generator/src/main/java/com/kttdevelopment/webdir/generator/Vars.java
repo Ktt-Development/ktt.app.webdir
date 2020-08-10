@@ -6,8 +6,6 @@ import com.kttdevelopment.webdir.generator.tests.LimitedLocaleService;
 import com.kttdevelopment.webdir.generator.tests.LimitedLoggerService;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Vars {
@@ -19,8 +17,8 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
-        public static int port = 4040; // change this if test ports are blocked
-        
+        public static int port = 8080;
+
     }
 
     public static final class Main {
