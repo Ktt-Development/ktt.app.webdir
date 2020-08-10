@@ -18,7 +18,7 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
-        private static final AtomicInteger port = new AtomicInteger(20000);
+        private static final AtomicInteger port = new AtomicInteger(8000);
 
         public synchronized static int assignPort(){
             return port.incrementAndGet();
