@@ -247,7 +247,7 @@ public class ApplicationTest {
         Vars.Test.safemode = true;
         Vars.Test.server = true;
 
-        int port = (Vars.Test.port = 20002);
+        final int port = Vars.Test.assignPort();
 
         Main.main(null);
 
@@ -270,6 +270,8 @@ public class ApplicationTest {
         // test add
         final String value = String.valueOf(System.currentTimeMillis());
         Files.write(targetFile,value.getBytes());
+
+        Thread.sleep(1000 * 2); // give time for server to process
 
         Assert.assertEquals(
             "Server should be able to retrieve newly added file",

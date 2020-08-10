@@ -21,6 +21,10 @@ public final class FileServer {
     private final int port;
     private final File defaults, source, output;
 
+    public final SimpleHttpServer getServer(){
+        return server;
+    }
+
     FileServer(final int port, final File defaults, final File source, final File output) throws IOException{
         this.port     = port;
         this.defaults = defaults;

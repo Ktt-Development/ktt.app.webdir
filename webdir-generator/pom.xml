@@ -53,6 +53,7 @@
                 <configuration>
                     <useFile>false</useFile>
                     <trimStackTrace>false</trimStackTrace>
+                    <threadCount>1</threadCount>
                 </configuration>
             </plugin>
         </plugins>

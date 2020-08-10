@@ -19,7 +19,7 @@ public class IndexTest {
         final String content = String.valueOf(System.currentTimeMillis());
         TestFile.createTestFile(file,content);
 
-        int port = (Vars.Test.port = 20001);
+        final int port = Vars.Test.assignPort();
 
         Main.main(null);
 

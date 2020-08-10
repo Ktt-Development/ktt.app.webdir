@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.generator.tests.LimitedLoggerService;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Vars {
 
@@ -17,7 +18,15 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
-        public static int port = 8080;
+        private static final AtomicInteger port = new AtomicInteger(40000);
+
+        public synchronized static int assignPort(){
+            return port.incrementAndGet();
+        }
+
+        public static int port(){
+            return port.get();
+        }
 
     }
 
