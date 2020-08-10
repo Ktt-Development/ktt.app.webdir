@@ -14,7 +14,7 @@ public class UnmodifiableExchangeTests {
 
     @Test
     public void testUnsupported() throws IOException, ExecutionException, InterruptedException, TimeoutException{
-        final int port = 27006;
+        final int port = 20000;
         final SimpleHttpServer server = SimpleHttpServer.create(port);
 
         final SimpleHttpHandler handler = exchange -> {

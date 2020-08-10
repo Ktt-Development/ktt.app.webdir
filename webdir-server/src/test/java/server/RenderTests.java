@@ -76,7 +76,7 @@ public class RenderTests {
             "---"
         ).forEach(TestFile::createTestFile);
 
-        final int port = Vars.Test.port = 27004;
+        final int port = Vars.Test.port = 20004;
 
         Main.main(null);
 
@@ -120,7 +120,7 @@ public class RenderTests {
             "---"
         ).forEach(TestFile::createTestFile);
 
-        final int port = Vars.Test.port = 27006;
+        final int port = Vars.Test.port = 20006;
 
         Main.main(null);
 
@@ -192,7 +192,7 @@ public class RenderTests {
             new File(".root/defaultTests/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        final int port = Vars.Test.port = 27007;
+        final int port = Vars.Test.port = 20007;
 
         Main.main(null);
 
@@ -270,7 +270,7 @@ public class RenderTests {
             new File(".root/defaultTestsEx/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        final int port = Vars.Test.port = 27008;
+        final int port = Vars.Test.port = 20008;
 
         Main.main(null);
 
@@ -348,7 +348,7 @@ public class RenderTests {
             new File(".test/fileTests/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        final int port =  Vars.Test.port = 27009;
+        final int port =  Vars.Test.port = 20009;
 
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
@@ -428,7 +428,7 @@ public class RenderTests {
         );
         testFiles.forEach(file -> TestFile.createTestFile(file, ""));
 
-        final int port = Vars.Test.port = 27010;
+        final int port = Vars.Test.port = 20010;
 
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
@@ -507,7 +507,7 @@ public class RenderTests {
             new File(".test/fileTestsFH/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
-        final int port = Vars.Test.port = 27011;
+        final int port = Vars.Test.port = 20011;
 
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded

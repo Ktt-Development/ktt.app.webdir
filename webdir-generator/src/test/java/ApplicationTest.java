@@ -247,7 +247,7 @@ public class ApplicationTest {
         Vars.Test.safemode = true;
         Vars.Test.server = true;
 
-        final int port = Vars.Test.port = 27002;
+        final int port = Vars.Test.port = 20002;
 
         Main.main(null);
 
