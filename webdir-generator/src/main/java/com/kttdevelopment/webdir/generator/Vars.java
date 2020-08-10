@@ -19,20 +19,8 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
-        private static int port = -1;
-
-        public synchronized static int getTestPort(){
-            try{
-                if(port != -1) return port;
-
-                final ServerSocket socket = new ServerSocket(0);
-                socket.setReuseAddress(true);
-                return port = socket.getLocalPort();
-            }catch(IOException ignored){
-                return 8080;
-            }
-        }
-
+        public static int port = 4040; // change this if test ports are blocked
+        
     }
 
     public static final class Main {

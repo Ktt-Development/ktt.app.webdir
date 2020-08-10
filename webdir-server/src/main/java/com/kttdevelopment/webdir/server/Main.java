@@ -40,7 +40,7 @@ public abstract class Main {
 
             final String permissionsKey = config.getString(ServerVars.Config.permissionsKey);
             permissions = new PermissionsService(permissionsKey != null ? new File(permissionsKey) : ServerVars.Main.permissionsFile,ServerVars.Main.permissionsFileResource);
-            server = new FileServer(!Vars.Test.server ? config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort) : Vars.Test.getTestPort(),defaults,source,output);
+            server = new FileServer(!Vars.Test.server ? config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort) : Vars.Test.port,defaults,source,output);
         }catch(final Throwable e){
             try{
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + Exceptions.getStackTraceAsString(e)));

@@ -249,7 +249,7 @@ public class ApplicationTest {
         Main.main(null);
 
         final String url = "http://localhost:%s/%s";
-        final int port = Vars.Test.getTestPort();
+        final int port = Vars.Test.port;
         final String target = String.valueOf(System.currentTimeMillis());
         final Path targetFile = new File(".root/" + target + ".html").toPath();
 
