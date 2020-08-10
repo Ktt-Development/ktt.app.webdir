@@ -16,6 +16,7 @@ public class IndexTest {
     public void test() throws ExecutionException, InterruptedException{
         Vars.Test.safemode = true;
         Vars.Test.server = true;
+        Vars.Test.assignPort();
 
         final File file = new File(".root/indexTests/index.html");
         final String content = String.valueOf(System.currentTimeMillis());

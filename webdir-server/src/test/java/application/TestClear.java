@@ -13,6 +13,7 @@ public class TestClear {
      @Test
     public void testClear() throws IOException{
         Vars.Test.safemode = true;
+        Vars.Test.assignPort();
 
         final File testRoot = new File(".root/testClear.html");
         final File testOutput = new File("_site/" + testRoot.getName());
