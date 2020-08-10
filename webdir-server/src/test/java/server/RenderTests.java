@@ -33,6 +33,7 @@ public class RenderTests {
         };
 
         Vars.Test.assignPort();
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final PluginLoader pluginLoader = Vars.Main.getPluginLoader();
@@ -80,6 +81,7 @@ public class RenderTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port + "/renderTests";
@@ -124,6 +126,7 @@ public class RenderTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port + "/renderTestsEx";
@@ -196,6 +199,7 @@ public class RenderTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port + "/defaultTests";
@@ -274,6 +278,7 @@ public class RenderTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port + "/defaultTestsEx";
@@ -352,6 +357,7 @@ public class RenderTests {
 
         final int port =  Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
 
@@ -432,6 +438,7 @@ public class RenderTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
 
@@ -511,6 +518,7 @@ public class RenderTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
 

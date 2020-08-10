@@ -1,8 +1,7 @@
 import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.generator.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +20,7 @@ public class ApplicationTest {
     public void testPluginLoading(){
         Vars.Test.safemode = false;
         Vars.Test.server = false;
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String[] badPlugins = {
@@ -63,6 +63,7 @@ public class ApplicationTest {
     public void testSafeMode(){
         Vars.Test.safemode = true;
         Vars.Test.server = false;
+        Vars.Test.disableLogger = true;
         Main.main(null);
         Assert.assertTrue("Safe-mode should not load any plugins",Vars.Main.getPluginLoader().getPlugins().isEmpty());
     }
@@ -110,6 +111,7 @@ public class ApplicationTest {
             "---"
         ).forEach(TestFile::createTestFile);
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         Assert.assertEquals("Renders lower on the list are expected to run last (thus overriding any content)","second", Files.readString(new File("_site/renderTests/renderOrder.html").toPath()));
@@ -175,6 +177,7 @@ public class ApplicationTest {
             new File(".root/defaultTests/test.log")
         ).forEach(file -> TestFile.createTestFile(file, ""));
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         // test index and no index
@@ -204,12 +207,13 @@ public class ApplicationTest {
             Assert.fail("Failed to create test root directory");
         if(!testRoot.exists() && !testRoot.createNewFile())
             Assert.fail("Failed to create test file");
+        Vars.Test.disableLogger = true;
         Main.main(null);
         Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
 
         if(!testRoot.delete())
             Assert.fail("Failed to delete test file from root");
-        System.out.println("src[1]: " + new File(".root/testClear.html").exists());
+
         Vars.Test.clear = true;
         Main.main(null);
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
@@ -221,6 +225,7 @@ public class ApplicationTest {
     public void testImpl(){
         Vars.Test.safemode = false;
         Vars.Test.server = false;
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final WebDirPlugin plugin = Vars.Main.getPluginLoader().getPlugin("Valid");
@@ -249,6 +254,7 @@ public class ApplicationTest {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:%s/%s";

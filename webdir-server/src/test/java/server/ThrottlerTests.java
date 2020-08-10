@@ -32,6 +32,7 @@ public class ThrottlerTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port;
@@ -60,6 +61,7 @@ public class ThrottlerTests {
 
         final int port = Vars.Test.assignPort();
 
+        Vars.Test.disableLogger = true;
         Main.main(null);
 
         final String url = "http://localhost:" + port;

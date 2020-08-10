@@ -18,6 +18,8 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
+        public static boolean disableLogger = false;
+
         private static final AtomicInteger port = new AtomicInteger(40000);
 
         public synchronized static int assignPort(){
