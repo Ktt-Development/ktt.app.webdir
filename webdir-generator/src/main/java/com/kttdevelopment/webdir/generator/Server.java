@@ -84,6 +84,7 @@ public final class Server {
                     exchange.send(Files.readAllBytes(Paths.get(source.getAbsolutePath(), "index.html")));
                 else
                     super.handle(exchange, source, bytes);
+                exchange.close();
             }
         };
         handler.addDirectory(output,"",true);

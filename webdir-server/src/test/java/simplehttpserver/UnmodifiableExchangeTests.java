@@ -37,7 +37,8 @@ public class UnmodifiableExchangeTests {
                 },
                 () -> {
                     try{ exchangeUnmodifiable.send(new byte[0]);
-                    }catch(final IOException ignored){ }
+                    }catch(final IOException ignored){
+                    }finally{ exchange.close(); }
                 },
                 () -> {
                     try{ exchangeUnmodifiable.send(new byte[0],false);

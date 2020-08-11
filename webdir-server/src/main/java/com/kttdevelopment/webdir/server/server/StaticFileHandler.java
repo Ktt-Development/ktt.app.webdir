@@ -40,6 +40,7 @@ public final class StaticFileHandler extends FileHandler {
             defaultFrontMatterLoader.getDefaultFrontMatter(sourceFile),
             bytes
         ));
+        exchange.close();
     }
 
     //
