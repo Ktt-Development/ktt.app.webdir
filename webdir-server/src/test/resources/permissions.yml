@@ -11,10 +11,10 @@ groups:
     permissions:
       - "*"
 users:
-  "127.0.0.1":
+  "localhost":
     group:
       - admin
     options:
-      connection-limit: -1
+      connections-limit: -1
     permissions:
       - "*"
