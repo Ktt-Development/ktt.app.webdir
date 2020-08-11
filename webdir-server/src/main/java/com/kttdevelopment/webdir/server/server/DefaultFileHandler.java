@@ -27,13 +27,17 @@ public final class DefaultFileHandler extends FileHandler {
 
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
-        exchange.send(render.apply(
-            new SimpleHttpExchangeUnmodifiable(exchange),
-            source,
-            defaultFrontMatterLoader.getDefaultFrontMatter(source.getAbsolutePath()),
-            bytes
-        ));
-        exchange.close();
+        try{
+            exchange.send(render.apply(
+                    new SimpleHttpExchangeUnmodifiable(exchange),
+                    source,
+                    defaultFrontMatterLoader.getDefaultFrontMatter(source.getAbsolutePath()),
+                    bytes
+            ));
+            exchange.close();
+        }catch(final Throwable e){
+            e.printStackTrace();
+        }
     }
 
     //

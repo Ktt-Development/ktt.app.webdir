@@ -59,7 +59,7 @@ public final class FileServer {
         logger.info(locale.getString("server.const.createFileHandler"));
 
         final String fileContext = Vars.Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext);
-        final DefaultFileHandler defaultFileHandler = new DefaultFileHandler(defaults);
+        final FileHandler defaultFileHandler = new DefaultFileHandler(defaults);
         watchService = new RootsWatchService(1000 * 5) {
 
             @Override
