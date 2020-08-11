@@ -8,7 +8,7 @@ EXIT /B
 :build
 jpackage --name "WebDir - %~1" ^
 --input webdir-%~2/target/jar ^
---main-jar webdir-%~2-%version%-jar-with-dependencies.jar ^
+--main-jar webdir-%~2-%version%.jar ^
 --dest deploy ^
 --type app-image ^
 --icon branding/Logo.ico ^
