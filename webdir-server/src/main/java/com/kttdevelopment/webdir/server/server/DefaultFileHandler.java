@@ -30,7 +30,6 @@ public final class DefaultFileHandler extends FileHandler {
         try{
             System.out.println("<--->");
             System.out.println(toString());
-            System.out.println(source);
             exchange.send(render.apply(
                     new SimpleHttpExchangeUnmodifiable(exchange),
                     source,
