@@ -79,11 +79,7 @@ public class UnmodifiableExchangeTests {
                 }catch(final UnsupportedOperationException ignored){ }
             }
 
-            try{
-                exchange.send("CONTENT", 200);
-            }catch(final Exception e){
-                e.printStackTrace();
-            }
+            exchange.send("",200);
         };
 
         server.createContext("",handler);
