@@ -31,10 +31,14 @@
                         <manifest>
                             <mainClass>com.kttdevelopment.webdir.generator.Main</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Built-By>Ktt Development</Built-By>
+                        </manifestEntries>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <outputDirectory>${project.build.directory}/jar</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>

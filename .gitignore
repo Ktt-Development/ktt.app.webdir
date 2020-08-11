@@ -9,6 +9,8 @@ out
 # Maven
 target
 
+# Deploy
+/deploy/
 
 # WebDir
 /*.log

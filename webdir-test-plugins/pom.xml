@@ -23,10 +23,10 @@
                 <version>3.2.0</version>
                 <configuration>
                     <archive>
-                      <manifestEntries>
-                          <!--suppress CheckTagEmptyBody -->
-                          <Built-By></Built-By>
-                      </manifestEntries>
+                        <manifestEntries>
+                            <!--suppress CheckTagEmptyBody -->
+                            <Built-By></Built-By>
+                        </manifestEntries>
                     </archive>
                     <skip>true</skip>
                 </configuration>
