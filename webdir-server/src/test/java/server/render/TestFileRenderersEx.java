@@ -84,6 +84,8 @@ public class TestFileRenderersEx {
 
         final String url = "http://localhost:" + port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, !tabs.startsWith("C:\\") ? "C:\\" + tabs : tabs);
 
+        System.out.println(URI.create(url + "/index1.html"));
+
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstEx", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstEx", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
 

@@ -27,6 +27,7 @@ public final class DefaultFileHandler extends FileHandler {
 
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
+        System.out.println(exchange.getHttpContext().getPath());
         try{
             exchange.send(render.apply(
                     new SimpleHttpExchangeUnmodifiable(exchange),
