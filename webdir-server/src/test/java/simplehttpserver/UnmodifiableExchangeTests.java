@@ -37,8 +37,7 @@ public class UnmodifiableExchangeTests {
                 },
                 () -> {
                     try{ exchangeUnmodifiable.send(new byte[0]);
-                    }catch(final IOException ignored){
-                    }finally{ exchange.close(); }
+                    }catch(final IOException ignored){ }
                 },
                 () -> {
                     try{ exchangeUnmodifiable.send(new byte[0],false);
@@ -77,10 +76,14 @@ public class UnmodifiableExchangeTests {
                 try{
                     method.run();
                     Assert.fail("An unsupported operation ran without permission");
-                }catch(final UnsupportedOperationException ignored){
-                }
+                }catch(final UnsupportedOperationException ignored){ }
             }
-            exchange.send("",200);
+
+            try{
+                exchange.send("CONTENT", 200);
+            }catch(final Exception e){
+                e.printStackTrace();
+            }
         };
 
         server.createContext("",handler);
