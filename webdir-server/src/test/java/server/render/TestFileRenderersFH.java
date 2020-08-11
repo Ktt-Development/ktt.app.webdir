@@ -14,11 +14,17 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 public class TestFileRenderersFH {
 
     @Test
     public void testFileRenderersFH() throws ExecutionException, InterruptedException{
+        if(!System.getProperty("os.name").toLowerCase().contains("win")){
+            Logger.getGlobal().severe("Tests were not designed to run on non-windows systems");
+            return;
+        }
+        
         Vars.Test.server = true;
 
         Map.of(
