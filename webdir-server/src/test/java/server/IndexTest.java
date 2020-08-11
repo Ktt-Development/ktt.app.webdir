@@ -1,8 +1,9 @@
 package server;
 
-import com.kttdevelopment.webdir.generator.Main;
 import com.kttdevelopment.webdir.generator.Vars;
-import org.junit.*;
+import com.kttdevelopment.webdir.server.Main;
+import org.junit.Assert;
+import org.junit.Test;
 import utility.TestFile;
 import utility.TestResponse;
 
@@ -21,9 +22,11 @@ public class IndexTest {
         final String content = String.valueOf(System.currentTimeMillis());
         TestFile.createTestFile(file, content);
 
+        final int port = Vars.Test.assignPort();
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.getTestPort();
+        final String url = "http://localhost:" + port;
+
         // test index and no index
         Assert.assertEquals("Server should resolve index.html to '/'", content, TestResponse.getResponseContent(URI.create(url + "/indexTests")));
         Assert.assertEquals("index.html should still work as expected", content, TestResponse.getResponseContent(URI.create(url + "/indexTests/index")));

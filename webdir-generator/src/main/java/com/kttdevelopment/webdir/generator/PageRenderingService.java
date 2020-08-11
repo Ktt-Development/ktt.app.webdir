@@ -97,16 +97,17 @@ public final class PageRenderingService {
         final Path rel  = source.getAbsoluteFile().toPath().relativize(path);
         final Path out  = Paths.get(output.getAbsolutePath(),rel.toString());
 
-        if(!target.exists()){
+        if(!target.exists() && out.toFile().exists()){
             try{
                 logger.finest(locale.getString("pageRenderer.debug.render.delete", targetABS));
                 Files.delete(out);
                 return true;
             }catch(final IOException e){
+                if(e instanceof NoSuchFileException) return true;
                 logger.warning(locale.getString("pageRenderer.render.failedDelete", target) + '\n' + Exceptions.getStackTraceAsString(e));
                 return false;
             }
-        }else{
+        }else if(target.exists()){
             final File parent = out.toFile().getParentFile();
             if(parent.exists() || parent.mkdirs())
                 try{

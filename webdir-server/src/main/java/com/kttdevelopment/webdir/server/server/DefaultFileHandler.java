@@ -33,6 +33,7 @@ public final class DefaultFileHandler extends FileHandler {
             defaultFrontMatterLoader.getDefaultFrontMatter(source.getAbsolutePath()),
             bytes
         ));
+        exchange.close();
     }
 
     //

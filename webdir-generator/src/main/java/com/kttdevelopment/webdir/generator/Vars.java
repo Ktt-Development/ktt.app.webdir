@@ -6,9 +6,8 @@ import com.kttdevelopment.webdir.generator.tests.LimitedLocaleService;
 import com.kttdevelopment.webdir.generator.tests.LimitedLoggerService;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Vars {
 
@@ -19,18 +18,15 @@ public abstract class Vars {
         public static boolean clear = false;
         public static boolean server = false;
 
-        private static int port = -1;
+        private static final AtomicInteger port = new AtomicInteger(8000);
 
-        public synchronized static int getTestPort(){
-            try{
-                if(port != -1) return port;
+        public synchronized static int assignPort(){
+            server = true;
+            return port.incrementAndGet();
+        }
 
-                final ServerSocket socket = new ServerSocket(0);
-                socket.setReuseAddress(true);
-                return port = socket.getLocalPort();
-            }catch(IOException ignored){
-                return 8080;
-            }
+        public static int port(){
+            return port.get();
         }
 
     }

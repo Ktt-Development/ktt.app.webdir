@@ -49,11 +49,11 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
     @Override
     public final HttpContext createContext(final String context, final HttpHandler handler, final Authenticator authenticator){
-        final HttpContext hc = new HttpContextUnmodifiable(server.createContext(context,handler));
+        final HttpContext hc = server.createContext(context,handler);
         contexts.put(hc,hc.getHandler());
         if(authenticator != null)
             hc.setAuthenticator(authenticator);
-        return hc;
+        return new HttpContextUnmodifiable(hc);
     }
 
     @Override

@@ -22,7 +22,7 @@ public final class LoggerService implements ILoggerService {
         handlers.add(new ConsoleHandler(){{
             setFormatter(new LoggerFormatter(false,false));
             setLevel(Level.ALL);
-        }} );
+        }});
 
         @SuppressWarnings("unchecked")
         final Tuple3<String,Level,Formatter>[] loggers = new Tuple3[]{

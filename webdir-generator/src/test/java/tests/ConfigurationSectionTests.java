@@ -1,3 +1,5 @@
+package tests;
+
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import org.junit.*;

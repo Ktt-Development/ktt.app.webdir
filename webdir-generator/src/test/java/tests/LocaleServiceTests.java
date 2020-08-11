@@ -1,3 +1,5 @@
+package tests;
+
 import com.kttdevelopment.webdir.api.serviceprovider.LocaleBundle;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.locale.LocaleBundleImpl;

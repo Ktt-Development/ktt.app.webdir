@@ -21,6 +21,10 @@ public final class FileServer {
     private final int port;
     private final File defaults, source, output;
 
+    public final SimpleHttpServer getServer(){
+        return server;
+    }
+
     FileServer(final int port, final File defaults, final File source, final File output) throws IOException{
         this.port     = port;
         this.defaults = defaults;
@@ -48,14 +52,14 @@ public final class FileServer {
 
         logger.info(locale.getString("server.const.createStaticHandler"));
         final FileHandler staticFileHandler = new StaticFileHandler(defaults, source, output);
-        staticFileHandler.addDirectory(output, "",ByteLoadingOption.PRELOAD, true);
+        staticFileHandler.addDirectory(output, "",ByteLoadingOption.LIVELOAD, true);
 
         server.createContext("", new ThrottledHandler(staticFileHandler, throttler));
 
         logger.info(locale.getString("server.const.createFileHandler"));
 
         final String fileContext = Vars.Main.getConfigService().getConfig().getString(ServerVars.Config.filesContextKey, ServerVars.Config.defaultFilesContext);
-        final DefaultFileHandler defaultFileHandler = new DefaultFileHandler(defaults);
+        final FileHandler defaultFileHandler = new DefaultFileHandler(defaults);
         watchService = new RootsWatchService(1000 * 5) {
 
             @Override

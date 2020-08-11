@@ -15,6 +15,6 @@ users:
     group:
       - admin
     options:
-      connections-limit: -1
+      connection-limit: -1
     permissions:
       - "*"

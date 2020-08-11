@@ -1,4 +1,4 @@
-package server;
+package server.throttler;
 
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.server.Main;
@@ -12,32 +12,7 @@ import java.net.URI;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ThrottlerTests {
-
-    @Test
-    public void test0(){
-        Vars.Test.safemode = true;
-        Vars.Test.server = true;
-
-        final int conn = 0;
-        final String perm =
-            "groups:\n" +
-            "  default:\n" +
-            "    options:\n" +
-            "      default: true\n" +
-            "      connection-limit: " + conn;
-
-        TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(),perm);
-        TestFile.createTestFile(new File(".root/test.html"),"");
-        Main.main(null);
-
-        final String url = "http://localhost:" + Vars.Test.getTestPort();
-
-        try{
-            TestResponse.getResponseContent(URI.create(url + "/test"));
-            Assert.fail("Server should not have returned response for a connection limit of " + conn);
-        }catch(final ExecutionException | InterruptedException ignored){ }
-    }
+public class TestThrottlerN1 {
 
     @Test
     public void testN1() throws InterruptedException, BrokenBarrierException{
@@ -52,11 +27,13 @@ public class ThrottlerTests {
             "      default: true\n" +
             "      connection-limit: " + conn;
 
-        TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(),perm);
+        TestFile.createTestFile(new File("permissions.yml").getAbsoluteFile(), perm);
         TestFile.createTestFile(new File(".root/test.html"),"");
+
+        final int port = Vars.Test.assignPort();
         Main.main(null);
 
-        final String url = "http://localhost:" + Vars.Test.getTestPort();
+        final String url = "http://localhost:" + port;
 
         final CyclicBarrier pause = new CyclicBarrier(3);
 

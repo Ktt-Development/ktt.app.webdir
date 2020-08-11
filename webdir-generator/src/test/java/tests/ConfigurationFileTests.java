@@ -1,7 +1,10 @@
+package tests;
+
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.config.ConfigurationFile;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import org.junit.*;
+import utility.TestFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +28,7 @@ public class ConfigurationFileTests {
     @Test
     public void testFile() throws IOException{
         final File testFile = new File("src/test/resources/config/testFileRead.yml");
-        TestFile.createTestFile(testFile,testKey + ": " + testValue);
+        TestFile.createTestFile(testFile, testKey + ": " + testValue);
 
         final ConfigurationFile config = new ConfigurationFile();
         Assert.assertTrue("Configuration before file load should have no values but had " + config.toMap().size(),config.toMap().isEmpty());

@@ -21,6 +21,10 @@ public final class Server {
 
     private final SimpleHttpServer server;
 
+    public final SimpleHttpServer getServer(){
+        return server;
+    }
+
     Server(final int port, final File source, final File output) throws IOException{
         this.source = source.getAbsolutePath();
         this.output = output.getAbsolutePath();
@@ -80,6 +84,7 @@ public final class Server {
                     exchange.send(Files.readAllBytes(Paths.get(source.getAbsolutePath(), "index.html")));
                 else
                     super.handle(exchange, source, bytes);
+                exchange.close();
             }
         };
         handler.addDirectory(output,"",true);

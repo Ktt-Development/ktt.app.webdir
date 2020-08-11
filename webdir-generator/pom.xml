@@ -53,6 +53,7 @@
                 <configuration>
                     <useFile>false</useFile>
                     <trimStackTrace>false</trimStackTrace>
+                    <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
         </plugins>
