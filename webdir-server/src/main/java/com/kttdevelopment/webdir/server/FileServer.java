@@ -52,7 +52,7 @@ public final class FileServer {
 
         logger.info(locale.getString("server.const.createStaticHandler"));
         final FileHandler staticFileHandler = new StaticFileHandler(defaults, source, output);
-        staticFileHandler.addDirectory(output, "",ByteLoadingOption.PRELOAD, true);
+        staticFileHandler.addDirectory(output, "",ByteLoadingOption.LIVELOAD, true);
 
         server.createContext("", new ThrottledHandler(staticFileHandler, throttler));
 

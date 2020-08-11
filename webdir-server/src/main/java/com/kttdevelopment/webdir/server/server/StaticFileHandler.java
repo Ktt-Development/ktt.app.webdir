@@ -18,12 +18,14 @@ public final class StaticFileHandler extends FileHandler {
     private final ExchangePageRenderer render = new ExchangePageRenderer();
 
     private final File defaults, source, output;
+    private final Path outputABS;
 
     public StaticFileHandler(final File defaults, final File source, final File output){
         super(new HTMLNameAdapter());
         this.defaults = defaults;
         this.source   = source;
         this.output   = output;
+        this.outputABS = output.getAbsoluteFile().toPath();
         this.defaultFrontMatterLoader = new DefaultFrontMatterLoader(defaults,source);
     }
 
@@ -31,14 +33,14 @@ public final class StaticFileHandler extends FileHandler {
     public final void handle(final SimpleHttpExchange exchange, final File target, final byte[] bytes) throws IOException{
         final File file = target.isDirectory() ? Paths.get(target.getAbsolutePath(),"index.html").toFile() : target;
 
-        final Path rel = output.toPath().relativize(file.toPath());
+        final Path rel = outputABS.relativize(file.getAbsoluteFile().toPath());
         final File sourceFile = Paths.get(source.getAbsolutePath(),rel.toString()).toFile();
         exchange.send(render.apply(
             new SimpleHttpExchangeUnmodifiable(exchange),
             sourceFile,
             file,
             defaultFrontMatterLoader.getDefaultFrontMatter(sourceFile),
-            bytes
+            bytes != null ? bytes : Files.readAllBytes(sourceFile.toPath())
         ));
         exchange.close();
     }
