@@ -13,7 +13,6 @@ public class TestClear {
      @Test
     public void testClear() throws IOException{
         Vars.Test.safemode = true;
-        Vars.Test.assignPort();
 
         final File testRoot = new File(".root/testClear.html");
         final File testOutput = new File("_site/" + testRoot.getName());
@@ -23,12 +22,14 @@ public class TestClear {
         if(!testRoot.exists() && !testRoot.createNewFile())
             Assert.fail("Failed to create test file");
 
+        Vars.Test.assignPort();
         Main.main(null);
         Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
 
         if(!testRoot.delete())
             Assert.fail("Failed to delete test file from root");
 
+        Vars.Test.assignPort();
         Main.main(null);
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
     }

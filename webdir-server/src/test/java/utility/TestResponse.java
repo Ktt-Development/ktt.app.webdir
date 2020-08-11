@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutionException;
 public abstract class TestResponse {
 
     public static String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
-        Thread.sleep(Duration.ofSeconds(2).toMillis()); // travis handicap
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
             .timeout(Duration.ofSeconds(10))
@@ -19,7 +18,6 @@ public abstract class TestResponse {
     }
 
     public static int getResponseCode(final URI uri) throws ExecutionException, InterruptedException{
-        Thread.sleep(Duration.ofSeconds(2).toMillis()); // travis handicap
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
             .timeout(Duration.ofSeconds(10))
