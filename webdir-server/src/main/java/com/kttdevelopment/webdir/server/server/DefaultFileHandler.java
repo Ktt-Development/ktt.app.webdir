@@ -28,8 +28,6 @@ public final class DefaultFileHandler extends FileHandler {
     @Override
     public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
         try{
-            System.out.println("<--->");
-            System.out.println(toString());
             exchange.send(render.apply(
                     new SimpleHttpExchangeUnmodifiable(exchange),
                     source,

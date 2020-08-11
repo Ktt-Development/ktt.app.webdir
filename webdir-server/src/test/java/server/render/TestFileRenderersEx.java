@@ -80,9 +80,9 @@ public class TestFileRenderersEx {
         Main.main(null);
         Thread.sleep(1000); // make sure C:// is loaded
 
-        final String url = "http://localhost:" + port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, new File(".test/fileTestsEx").getAbsolutePath());
+        final String tabs = new File(".test/fileTestsEx").getAbsolutePath();
 
-        System.out.println(URI.create(url + "/index1.html"));
+        final String url = "http://localhost:" + port + ContextUtil.joinContexts(true, false, ServerVars.Config.defaultFilesContext, !tabs.startsWith("C:\\") ? "C:\\" + tabs : tabs);
 
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)", "firstEx", TestResponse.getResponseContent(URI.create(url + "/index1.html")));
         Assert.assertEquals("Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)","firstEx", TestResponse.getResponseContent(URI.create(url + "/index0.html")));
