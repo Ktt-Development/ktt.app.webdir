@@ -78,6 +78,7 @@ public class TestServer {
     //
 
     private String getResponseContent(final URI uri) throws ExecutionException, InterruptedException{
+        Thread.sleep(Duration.ofSeconds(2).toMillis()); // travis handicap
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(uri)
             .timeout(Duration.ofSeconds(10))

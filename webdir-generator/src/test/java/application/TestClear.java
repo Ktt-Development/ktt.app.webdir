@@ -21,6 +21,8 @@ public class TestClear {
             Assert.fail("Failed to create test root directory");
         if(!testRoot.exists() && !testRoot.createNewFile())
             Assert.fail("Failed to create test file");
+
+        Vars.Test.assignPort();
         Main.main(null);
         Assert.assertTrue("Generator did not copy file from root folder",testOutput.exists());
 
@@ -28,6 +30,7 @@ public class TestClear {
             Assert.fail("Failed to delete test file from root");
 
         Vars.Test.clear = true;
+        Vars.Test.assignPort();
         Main.main(null);
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
     }
