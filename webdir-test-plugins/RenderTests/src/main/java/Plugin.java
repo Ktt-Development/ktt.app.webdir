@@ -9,9 +9,9 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        addRenderer("first", (output, yamlFrontMatter, content) -> "first");
-        addRenderer("second", (output, yamlFrontMatter, content) -> "second");
-        addRenderer("exception", (output, yamlFrontMatter, content) -> {
+        addRenderer("first", (input, output, yamlFrontMatter, content) -> "first");
+        addRenderer("second", (input, output, yamlFrontMatter, content) -> "second");
+        addRenderer("exception", (input, output, yamlFrontMatter, content) -> {
             throw new RuntimeException();
         });
     }

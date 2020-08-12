@@ -8,6 +8,8 @@ import java.io.File;
 
 /**
  * A renderer that converts bytes to content.
+ * <br>
+ * For file renders the input and output file are the same.
  *
  * @see Renderer
  * @see FileRenderer
@@ -22,7 +24,7 @@ public interface FileRendererAdapter extends Renderer {
      * Renders content from a file.
      *
      * @param exchange information on client
-     * @param source file being read
+     * @param source file in the sources folder
      * @param defaultFrontMatter default yaml front matter configuration
      * @param bytes content of source file in bytes
      * @return rendered content

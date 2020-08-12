@@ -6,6 +6,10 @@ CALL :build Server, server
 EXIT /B
 
 :build
+
+copy "LICENSE." "webdir-%~2/target/jar"
+copy "MIT-LICENSE." "webdir-%~2/target/jar"
+
 jpackage --name "WebDir - %~1" ^
 --input webdir-%~2/target/jar ^
 --main-jar webdir-%~2-%version%.jar ^

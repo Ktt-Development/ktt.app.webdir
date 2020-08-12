@@ -22,7 +22,8 @@ public interface ExchangeRendererAdapter extends Renderer {
      * Renders content from a file.
      *
      * @param exchange information on the client
-     * @param source equivalent file in the sources folder
+     * @param input file in the sources folder
+     * @param output file in the output folder
      * @param yamlFrontMatter yaml front matter configuration
      * @param content current file content (after previous renders, if any)
      * @return rendered content
@@ -32,6 +33,6 @@ public interface ExchangeRendererAdapter extends Renderer {
      * @since 01.00.00
      * @author Ktt Development
      */
-    String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content);
+    String render(final SimpleHttpExchange exchange, final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content);
 
 }

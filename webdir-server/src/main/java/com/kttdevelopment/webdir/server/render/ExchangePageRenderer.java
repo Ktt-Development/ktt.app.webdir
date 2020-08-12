@@ -28,15 +28,15 @@ import java.util.logging.Logger;
 public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,File,File,ConfigurationSection,byte[],byte[]> {
 
     @Override
-    public final byte[] apply(final SimpleHttpExchange exchange, final File source, final File rendered, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+    public final byte[] apply(final SimpleHttpExchange exchange, final File IN, final File OUT, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("exchangeRenderer"));
-        final String sourceABS      = source.getAbsolutePath();
+        final String sourceABS      = IN.getAbsolutePath();
 
         logger.finest(locale.getString("exchangeRenderer.debug.render",exchange,sourceABS,defaultFrontMatter,bytes));
 
         final String sourceContent;
-        try{ sourceContent = Files.readString(source.toPath());
+        try{ sourceContent = Files.readString(IN.toPath());
         }catch(final IOException e){
             logger.warning(locale.getString("exchangeRenderer.failedRead", sourceABS + '\n' + Exceptions.getStackTraceAsString(e)));
             return bytes; }
@@ -53,7 +53,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
         if(frontMatter.hasFrontMatter())
             mergedFrontMatter.setDefault(frontMatter.getFrontMatter());
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(source,mergedFrontMatter);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,mergedFrontMatter);
     // get renderers
         final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRendererKey,String.class);
 
@@ -71,13 +71,20 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
             final Renderer render = renderer.getRenderer();
             String ct = content.get();
             try{
+                content.set(render.render(IN, OUT,defaultFrontMatter,content.get()));
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
+            }catch(final Throwable e){
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            }
+            try{
+                ct = content.get();
                 // if is an adapter but not a class (adapter has no permissions) or is class and has permission
                 if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, source, finalFrontMatter, content.get()));
+                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, IN, OUT, finalFrontMatter, content.get()));
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 

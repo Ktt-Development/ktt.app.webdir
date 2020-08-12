@@ -8,7 +8,9 @@ import java.io.File;
 /**
  * A renderer that determines how content will appear based on an exchange. Only clients with the correct permission will use this.
  * <br>
- * {@link #render(File, ConfigurationSection, String)} is not affected by the permissions requirement and will run in all cases.
+ * {@link #render(File, File, ConfigurationSection, String)} is not affected by the permissions requirement and will run in all cases.
+ * <br>
+ * For file renders the input and output file are the same.
  *
  * @see com.kttdevelopment.webdir.api.Renderer
  * @see FileRendererAdapter
@@ -44,7 +46,7 @@ public class FileRenderer extends ExchangeRenderer implements FileRendererAdapte
     //
 
     @Override
-    public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+    public String render(final SimpleHttpExchange exchange, final File file, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         return new String(bytes);
     }
 
