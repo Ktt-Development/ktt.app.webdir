@@ -1,4 +1,4 @@
-SET version=R-EAV-02
+SET version=01.00.00
 
 CALL :build Generator, generator
 CALL :build Server, server
