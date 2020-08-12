@@ -1,14 +1,17 @@
 package com.kttdevelopment.webdir.generator.render;
 
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.generator.*;
+import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
-import com.kttdevelopment.webdir.generator.function.*;
+import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.generator.function.QuadriFunction;
 import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
@@ -48,15 +51,27 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 
         renderers.forEach(renderer -> {
-            final String ct = content.get();
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final Future<String> future = executor.submit(() -> {
+                final String ct = content.get();
+                final String out = renderer.getRenderer().render(IN, OUT, finalFrontMatter, ct);
+                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", renderer.getRendererName(),fileABS, ct, out));
+                return out;
+            });
+
             try{
-                content.set(renderer.getRenderer().render(IN, OUT, finalFrontMatter, ct));
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", renderer.getRendererName(),fileABS, ct, content.get()));
+                content.set(Objects.requireNonNull(future.get(Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit)));
+            }catch(final TimeoutException | InterruptedException e){
+                logger.severe(
+                    locale.getString("pageRenderer.pageRenderer.timedOut", renderer.getPluginName(), renderer.getRendererName(), IN.getPath(), Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
+                );
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            }finally{
+                future.cancel(true);
+                executor.shutdownNow();
             }
         });
-
         return content.get().getBytes();
     }
 

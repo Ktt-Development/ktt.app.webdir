@@ -36,7 +36,7 @@ public class Plugin extends WebDirPlugin {
             public String render(final SimpleHttpExchange exchange, final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
                 return "secondEx";
             }
-        });;
+        });
         addRenderer("exceptionEx",new ExchangeRendererAdapter(){
 
             @Override
