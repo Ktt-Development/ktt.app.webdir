@@ -5,8 +5,7 @@ import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.server.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
-import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.function.QuadriFunction;
+import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
@@ -20,13 +19,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange,File,ConfigurationSection,byte[],byte[]> {
+public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,File,File,ConfigurationSection,byte[],byte[]> {
 
     @Override
-    public byte[] apply(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+    public byte[] apply(final SimpleHttpExchange exchange, final File IN, final File OUT, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("fileRenderer"));
-        final String sourceABS      = source.getAbsolutePath();
+        final String sourceABS      = IN.getAbsolutePath();
 
         logger.finest(locale.getString("exchangeRenderer.debug.render",exchange,sourceABS,defaultFrontMatter,bytes));
 
@@ -54,28 +53,29 @@ public final class FilePageRenderer implements QuadriFunction<SimpleHttpExchange
             byte[] ct = content.get();
             try{
                 ct = content.get();
-                content.set(render.render(source,defaultFrontMatter,new String(content.get())).getBytes());
+                content.set(render.render(IN, OUT,defaultFrontMatter,new String(content.get())).getBytes());
                 logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
             }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
             try{
+                ct = content.get();
                 if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, new String(content.get())).getBytes());
+                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, IN, OUT,defaultFrontMatter, new String(content.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
             try{
                 ct = content.get();
                 if((render instanceof FileRendererAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission()))){
-                    content.set(((FileRendererAdapter) renderer.getRenderer()).render(exchange, source, defaultFrontMatter, content.get()).getBytes());
-                    content.set(render.render(source, defaultFrontMatter, new String(content.get())).getBytes());
+                    content.set(((FileRendererAdapter) renderer.getRenderer()).render(exchange, IN, defaultFrontMatter, content.get()).getBytes());
+                    content.set(render.render(IN,OUT, defaultFrontMatter, new String(content.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
                 }
             }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), source.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 

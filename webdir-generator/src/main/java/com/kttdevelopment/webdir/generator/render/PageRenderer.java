@@ -3,8 +3,7 @@ package com.kttdevelopment.webdir.generator.render;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
-import com.kttdevelopment.webdir.generator.function.Exceptions;
-import com.kttdevelopment.webdir.generator.function.TriFunction;
+import com.kttdevelopment.webdir.generator.function.*;
 import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
@@ -13,14 +12,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-public final class PageRenderer implements TriFunction<File,ConfigurationSection,byte[],byte[]> {
+public final class PageRenderer implements QuadriFunction<File,File,ConfigurationSection,byte[],byte[]> {
 
     @Override
-    public final byte[] apply(final File file, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+    public final byte[] apply(final File IN, final File OUT, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final ILocaleService locale  = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 
-        final String fileABS = file.getAbsolutePath();
+        final String fileABS = IN.getAbsolutePath();
         final String str = new String(bytes);
 
         logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fileABS, defaultFrontMatter, str));
@@ -37,7 +36,7 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         if(frontMatter.hasFrontMatter()) // file front matter overrides default
             mergedFrontMatter.setDefault(frontMatter.getFrontMatter());
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(file,mergedFrontMatter);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,mergedFrontMatter);
     // render page
         final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.rendererKey,String.class);
 
@@ -51,10 +50,10 @@ public final class PageRenderer implements TriFunction<File,ConfigurationSection
         renderers.forEach(renderer -> {
             final String ct = content.get();
             try{
-                content.set(renderer.getRenderer().render(file, finalFrontMatter, ct));
+                content.set(renderer.getRenderer().render(IN, OUT, finalFrontMatter, ct));
                 logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", renderer.getRendererName(),fileABS, ct, content.get()));
             }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), file.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught", renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
             }
         });
 

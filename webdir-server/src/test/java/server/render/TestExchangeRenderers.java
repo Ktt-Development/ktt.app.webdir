@@ -25,8 +25,6 @@ public class TestExchangeRenderers {
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n" +
             "  - secondEx\n" +
-            "  - first\n" +
-            "  - second\n" +
             "---",
             new File(".root/renderTestsEx/renderReverseOrder.html"),
             "---\n" +
@@ -35,8 +33,6 @@ public class TestExchangeRenderers {
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n" +
             "  - exceptionEx\n" +
-            "  - first\n" +
-            "  - second\n" +
             "---",
             new File(".root/renderTestsEx/renderExactDuplicate.html"),
             "---\n" +

@@ -9,7 +9,7 @@ public class Plugin extends WebDirPlugin {
 
     @Override
     public void onEnable(){
-        addRenderer("first", (output, yamlFrontMatter, content) -> "DUPLICATE");
+        addRenderer("first", (input, output, yamlFrontMatter, content) -> "DUPLICATE");
     }
 
 }

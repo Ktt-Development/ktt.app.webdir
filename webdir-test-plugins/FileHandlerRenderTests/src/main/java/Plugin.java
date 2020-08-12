@@ -21,7 +21,7 @@ public class Plugin extends WebDirPlugin {
             }
 
             @Override
-            public String render(final File output, final ConfigurationSection yamlFrontMatter, final String content){
+            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
                 return content;
             }
         });
@@ -32,7 +32,7 @@ public class Plugin extends WebDirPlugin {
             }
 
             @Override
-            public String render(final File output, final ConfigurationSection yamlFrontMatter, final String content){
+            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
                 return content;
             }
         });
@@ -43,7 +43,7 @@ public class Plugin extends WebDirPlugin {
             }
 
             @Override
-            public String render(final File output, final ConfigurationSection yamlFrontMatter, final String content){
+            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
                 return content;
             }
         });

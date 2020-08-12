@@ -30,6 +30,7 @@ public final class DefaultFileHandler extends FileHandler {
         exchange.send(render.apply(
             new SimpleHttpExchangeUnmodifiable(exchange),
             source,
+            source,
             defaultFrontMatterLoader.getDefaultFrontMatter(source.getAbsolutePath()),
             bytes
         ));

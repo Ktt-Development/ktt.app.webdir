@@ -82,44 +82,44 @@ public final class PageRenderingService {
     }
 
     // target is the source file
-    public final boolean render(final File target){
+    public final boolean render(final File IN){
         final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
-        final String targetABS      = target.getAbsolutePath();
+        final String targetABS      = IN.getAbsolutePath();
         logger.finest(locale.getString("pageRenderer.debug.render",targetABS));
 
-        if(target.isDirectory()){
-            logger.warning(locale.getString("pageRenderer.render.noRenderDirectory", target));
+        if(IN.isDirectory()){
+            logger.warning(locale.getString("pageRenderer.render.noRenderDirectory", IN));
             return false;
         }
 
-        final Path path = target.getAbsoluteFile().toPath();
-        final Path rel  = source.getAbsoluteFile().toPath().relativize(path);
-        final Path out  = Paths.get(output.getAbsolutePath(),rel.toString());
+        final Path path = IN.getAbsoluteFile().toPath();
+        final Path rel  = this.source.getAbsoluteFile().toPath().relativize(path);
+        final File OUT  = Paths.get(this.output.getAbsolutePath(), rel.toString()).toFile();
 
-        if(!target.exists() && out.toFile().exists()){
+        if(!IN.exists() && OUT.exists()){
             try{
                 logger.finest(locale.getString("pageRenderer.debug.render.delete", targetABS));
-                Files.delete(out);
+                Files.delete(OUT.toPath());
                 return true;
             }catch(final IOException e){
                 if(e instanceof NoSuchFileException) return true;
-                logger.warning(locale.getString("pageRenderer.render.failedDelete", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                logger.warning(locale.getString("pageRenderer.render.failedDelete", IN) + '\n' + Exceptions.getStackTraceAsString(e));
                 return false;
             }
-        }else if(target.exists()){
-            final File parent = out.toFile().getParentFile();
+        }else if(IN.exists()){
+            final File parent = OUT.getParentFile();
             if(parent.exists() || parent.mkdirs())
                 try{
                     final byte[] bytes = Files.readAllBytes(path);
                     try{
-                        logger.finest(locale.getString("pageRenderer.debug.render.write",out.toFile().getAbsolutePath()));
-                        Files.write(out, render.apply(target,defaultFrontMatterLoader.getDefaultFrontMatter(target),bytes));
+                        logger.finest(locale.getString("pageRenderer.debug.render.write",OUT.getAbsolutePath()));
+                        Files.write(OUT.toPath(), render.apply(IN,OUT,defaultFrontMatterLoader.getDefaultFrontMatter(IN),bytes));
                         return true;
                     }catch(final IOException e){
-                        logger.warning(locale.getString("pageRenderer.render.failedWrite", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pageRenderer.render.failedWrite", IN) + '\n' + Exceptions.getStackTraceAsString(e));
                     }catch(final SecurityException e){
-                        logger.warning(locale.getString("pageRenderer.render.writeSecurity", target) + '\n' + Exceptions.getStackTraceAsString(e));
+                        logger.warning(locale.getString("pageRenderer.render.writeSecurity", IN) + '\n' + Exceptions.getStackTraceAsString(e));
                     }
                 }catch(final IOException e){
                     logger.warning(locale.getString("pageRenderer.render.failedRead", path) + '\n' + Exceptions.getStackTraceAsString(e));

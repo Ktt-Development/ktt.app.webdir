@@ -17,12 +17,12 @@ public class Plugin extends WebDirPlugin {
         addRenderer("firstEx", new ExchangeRendererAdapter(){
 
             @Override
-            public String render(final File output, final ConfigurationSection yamlFrontMatter, final String content){
+            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
                 return content;
             }
 
             @Override
-            public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection yamlFrontMatter, final String content){
+            public String render(final SimpleHttpExchange exchange, final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
                 return "DUPLICATEEX";
             }
         });
