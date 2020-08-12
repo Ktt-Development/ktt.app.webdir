@@ -2,8 +2,8 @@ package com.kttdevelopment.webdir.server.render;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.webdir.api.Renderer;
-import com.kttdevelopment.webdir.api.server.ExchangeRendererAdapter;
 import com.kttdevelopment.webdir.api.server.ExchangeRenderer;
+import com.kttdevelopment.webdir.api.server.ExchangeRendererAdapter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
@@ -69,25 +71,44 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
         logger.finest(locale.getString("exchangeRenderer.debug.permissions",permissions,address.getHostAddress()));
         renderers.forEach(renderer -> {
             final Renderer render = renderer.getRenderer();
-            String ct = content.get();
-            try{
-                content.set(render.render(IN, OUT,defaultFrontMatter,content.get()));
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
-            }catch(final Throwable e){
-                logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-            }
-            try{
-                ct = content.get();
-                // if is an adapter but not a class (adapter has no permissions) or is class and has permission
-                if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                    content.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, IN, OUT, finalFrontMatter, content.get()));
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,content.get()));
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final Future<String> future = executor.submit(() -> {
+                final AtomicReference<String> buffer = new AtomicReference<>(content.get());
+                String ct = content.get();
+
+                try{
+                    buffer.set(render.render(IN, OUT,defaultFrontMatter,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
+
+                try{
+                    ct = buffer.get();
+                    // if is an adapter but not a class (adapter has no permissions) or is class and has permission
+                    if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
+                        buffer.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, IN, OUT, finalFrontMatter, buffer.get()));
+                        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
+                    }
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                return buffer.get();
+            });
+
+            try{
+                content.set(Objects.requireNonNull(future.get(Vars.Plugin.loadTimeout, Vars.Plugin.loadTimeoutUnit)));
+            }catch(TimeoutException | InterruptedException e){
+                logger.severe(
+                    locale.getString("pageRenderer.pageRenderer.timedOut", renderer.getPluginName(), renderer.getRendererName(), IN.getPath(), Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
+                );
             }catch(final Throwable e){
                 logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+            }finally{
+                future.cancel(true);
+                executor.shutdownNow();
             }
         });
-
         return content.get().getBytes();
     }
 

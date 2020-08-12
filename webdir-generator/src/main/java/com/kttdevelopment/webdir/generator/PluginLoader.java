@@ -54,7 +54,7 @@ public final class PluginLoader {
     @SuppressWarnings("SpellCheckingInspection")
     private final boolean safemode;
 
-    @SuppressWarnings({"unchecked", "SpellCheckingInspection"})
+    @SuppressWarnings({"SpellCheckingInspection"})
     public PluginLoader(){
         final ILocaleService locale = Vars.Main.getLocaleService();
         final ConfigService config  = Vars.Main.getConfigService();
@@ -292,7 +292,7 @@ public final class PluginLoader {
                     });
                     plugins.add(plugin);
                     loadedPlugins.incrementAndGet();
-                }catch(final TimeoutException e){
+                }catch(final TimeoutException | InterruptedException e){
                     logger.severe(
                         locale.getString("pluginLoader.const.loader.timedOut", pluginName, Vars.Plugin.loadTimeout + " " + Vars.Plugin.loadTimeoutUnit.name().toLowerCase())
                     );
@@ -301,12 +301,13 @@ public final class PluginLoader {
                     logger.severe(locale.getString("pluginLoader.const.loader.failed",pluginName));
                     iterator.remove();
                 }catch(final Throwable e){
-                    future.cancel(true);
-                    executor.shutdownNow();
                     logger.severe(
                         locale.getString("pluginLoader.const.loader.uncaught", pluginName) + '\n' + Exceptions.getStackTraceAsString(e)
                     );
                     iterator.remove();
+                }finally{
+                    future.cancel(true);
+                    executor.shutdownNow();
                 }
             }
         }
