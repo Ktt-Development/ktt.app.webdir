@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.generator.render;
 
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
@@ -50,13 +52,32 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
 
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 
+        final SimpleHttpServer server = Vars.Main.getServer();
         renderers.forEach(renderer -> {
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future<String> future = executor.submit(() -> {
-                final String ct = content.get();
-                final String out = renderer.getRenderer().render(IN, OUT, finalFrontMatter, ct);
-                logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply", renderer.getRendererName(),fileABS, ct, out));
-                return out;
+            final Renderer render           = renderer.getRenderer();
+            final ExecutorService executor  = Executors.newSingleThreadExecutor();
+            final Future<String> future     = executor.submit(() -> {
+                final AtomicReference<String> buffer = new AtomicReference<>(content.get());
+                String before;
+
+                // initial static render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(IN, OUT,defaultFrontMatter,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),fileABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                // initial server render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(server,IN, OUT,defaultFrontMatter,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),fileABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+
+                return buffer.get();
             });
 
             try{

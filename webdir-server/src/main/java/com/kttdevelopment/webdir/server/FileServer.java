@@ -25,7 +25,8 @@ public final class FileServer {
         return server;
     }
 
-    FileServer(final int port, final File defaults, final File source, final File output) throws IOException{
+    FileServer(final SimpleHttpServer server, final int port, final File defaults, final File source, final File output) throws IOException{
+        this.server   = server;
         this.port     = port;
         this.defaults = defaults;
         this.source   = source;
@@ -36,7 +37,7 @@ public final class FileServer {
 
         logger.fine(locale.getString("server.debug.const.port", port));
         try{
-            server = SimpleHttpServer.create(port);
+            server.bind(port);
         }catch(final BindException e){
             logger.severe(locale.getString("server.const.blockedPort", port));
             throw e;

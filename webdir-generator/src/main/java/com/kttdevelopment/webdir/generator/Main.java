@@ -40,7 +40,7 @@ public abstract class Main {
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + "--- UNCAUGHT EXCEPTION ---" + '\n' + Exceptions.getStackTraceAsString(e)));
                 Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(final IOException e2){
-                e2.printStackTrace();
+                throw new RuntimeException(e2);
             }
             throw new RuntimeException(e);
         }

@@ -1,8 +1,10 @@
 package com.kttdevelopment.webdir.server;
 
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.*;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
+import com.kttdevelopment.webdir.server.httpserver.SimpleHttpServerUnmodifiable;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +22,9 @@ public abstract class Main {
         return permissions;
     }
 
-    private static FileServer server;
+    private static FileServer fileServer;
 
-    public static FileServer getServer(){ return server; }
+    public static FileServer getServer(){ return fileServer; }
 
     public static void main(String[] args){
         try{
@@ -32,6 +34,18 @@ public abstract class Main {
 
             final ConfigurationSection config = Vars.Main.getConfigService().getConfig();
 
+            // server creation
+            final SimpleHttpServer server;
+            {
+                try{
+                    server = SimpleHttpServer.create();
+                    Vars.Main.setServer(new SimpleHttpServerUnmodifiable(server));
+                }catch(final IOException e){
+                    Vars.Main.getLoggerService().getLogger(Vars.Main.getLocaleService().getString("server")).severe(Vars.Main.getLocaleService().getString("server.const.failedCreate") + '\n' + Exceptions.getStackTraceAsString(e));
+                    throw e;
+                }
+            }
+
             Vars.Main.setPluginLoader(new PluginLoader());
             final File defaults = new File(config.getString(Vars.Config.defaultsKey,Vars.Config.defaultsDir));
             final File source   = new File(config.getString(Vars.Config.sourcesKey,Vars.Config.defaultSource));
@@ -40,13 +54,13 @@ public abstract class Main {
 
             final String permissionsKey = config.getString(ServerVars.Config.permissionsKey);
             permissions = new PermissionsService(permissionsKey != null ? new File(permissionsKey) : ServerVars.Main.permissionsFile,ServerVars.Main.permissionsFileResource);
-            server = new FileServer(!Vars.Test.server ? config.getInteger(Vars.Config.portKey,Vars.Config.defaultPort) : Vars.Test.port(),defaults,source,output);
+            fileServer = new FileServer(server, !Vars.Test.server ? config.getInteger(Vars.Config.portKey, Vars.Config.defaultPort) : Vars.Test.port(), defaults, source, output);
         }catch(final Throwable e){
             try{
                 Exceptions.runIgnoreException(() -> Vars.Main.getLoggerService().getLogger("Crash").severe('\n' + "--- UNCAUGHT EXCEPTION ---" + '\n' + Exceptions.getStackTraceAsString(e)));
                 Files.write(new File("crash-" + System.currentTimeMillis() + ".txt").toPath(), Exceptions.getStackTraceAsString(e).getBytes());
             }catch(final IOException e2){
-                e2.printStackTrace();
+                throw new RuntimeException(e2);
             }
             throw new RuntimeException(e);
         }

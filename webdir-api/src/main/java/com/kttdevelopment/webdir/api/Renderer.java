@@ -60,7 +60,7 @@ public class Renderer {
      * Renders content from a file. <br>
      *
      * <b>Scope:</b> All files. <br>
-     * <b>Execution:</b> At initial load.
+     * <b>Execution:</b> <code>renderers</code>, <code>exchangeRenderers</code>.
      *
      * @param input file in the sources folder
      * @param output file in the output folder
@@ -80,7 +80,7 @@ public class Renderer {
      * Renders content from a file. <br>
      *
      * <b>Scope:</b> Server files only. <br>
-     * <b>Execution:</b> At initial load.
+     * <b>Execution:</b> <code>renderers</code>, <code>exchangeRenderers</code>.
      *
      * @param server webdir server
      * @param input file in the sources folder
@@ -102,7 +102,7 @@ public class Renderer {
      * Renders content from a file. <br>
      *
      * <b>Scope:</b> Server files only. <br>
-     * <b>Execution:</b> At exchange.
+     * <b>Execution:</b> <code>exchangeRenderers</code>.
      *
      * @param server webdir server
      * @param exchange http exchange
@@ -126,7 +126,7 @@ public class Renderer {
      * Renders content from a file. <br>
      *
      * <b>Scope:</b> Server file requst only. <br>
-     * <b>Execution:</b> At exchange.
+     * <b>Execution:</b> <code>exchangeRenderers</code>.
      *
      * @param server webdir server
      * @param exchange http exchange

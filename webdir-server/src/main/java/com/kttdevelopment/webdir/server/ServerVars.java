@@ -13,7 +13,7 @@ public abstract class ServerVars {
 
     public static class Config {
         
-        public static final String permissionsKey     = "permissions";
+        public static final String permissionsKey      = "permissions";
 
         public static final String filesContextKey     = "files_dir";
         public static final String defaultFilesContext = "files";
@@ -28,9 +28,9 @@ public abstract class ServerVars {
         public static final String defaultKey       = "default";
         public static final String permissionsKey   = "permissions";
 
-        public static final String usersKey = "users";
+        public static final String usersKey         = "users";
 
-        public static final String connectionOption = "connection-limit";
+        public static final String connectionOption     = "connection-limit";
         public static final int defaultConnectionOption = 0;
 
     }

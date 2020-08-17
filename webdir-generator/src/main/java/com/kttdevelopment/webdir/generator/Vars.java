@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.generator;
 
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.logger.ILoggerService;
 import com.kttdevelopment.webdir.generator.tests.LimitedLocaleService;
@@ -33,10 +34,10 @@ public abstract class Vars {
 
     public static final class Main {
 
-        private static ConfigService configService;
+        private static ConfigService configService  = null;
         private static ILocaleService localeService = new LimitedLocaleService();
         private static ILoggerService loggerService = new LimitedLoggerService();
-        private static PluginLoader pluginLoader;
+        private static PluginLoader pluginLoader    = null;
 
         public static ConfigService getConfigService(){
             return configService;
@@ -60,6 +61,18 @@ public abstract class Vars {
 
         public static void setLoggerService(final LoggerService loggerService){
             Main.loggerService = loggerService;
+        }
+
+        //
+
+        private static SimpleHttpServer server;
+
+        public static SimpleHttpServer getServer(){
+            return server;
+        }
+
+        public static void setServer(final SimpleHttpServer server){
+            Main.server = server;
         }
 
         //
@@ -93,7 +106,7 @@ public abstract class Vars {
         public static final String pluginsKey       = "plugins_dir";
         public static final String defaultPlugins   = ".plugins";
 
-        public static final String cleanKey     = "clean";
+        public static final String cleanKey         = "clean";
 
         public static final String serverKey        = "preview";
         public static final boolean defaultServer   = false;
@@ -112,7 +125,7 @@ public abstract class Vars {
         public static final String authorsKey       = "authors";
         public static final String dependenciesKey  = "dependencies";
 
-        public static final int loadTimeout = 30;
+        public static final int loadTimeout          = 30;
         public static final TimeUnit loadTimeoutUnit = TimeUnit.SECONDS;
 
     }
