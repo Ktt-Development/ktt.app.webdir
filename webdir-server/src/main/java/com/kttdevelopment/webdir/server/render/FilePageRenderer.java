@@ -1,8 +1,8 @@
 package com.kttdevelopment.webdir.server.render;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.Renderer;
-import com.kttdevelopment.webdir.api.server.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
@@ -12,6 +12,8 @@ import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
+import com.kttdevelopment.webdir.server.httpserver.SimpleHttpExchangeUnmodifiable;
+import com.kttdevelopment.webdir.server.httpserver.SimpleHttpServerUnmodifiable;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.File;
@@ -39,50 +41,64 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
 
         if((renderersStr == null || renderersStr.isEmpty()) && (renderersExStr == null || renderersExStr.isEmpty())) return bytes;
 
-        final List<PluginRendererEntry> renders = YamlFrontMatter.getRenderers(Vars.Renderer.rendererKey, Objects.requireNonNullElse(renderersStr,new ArrayList<>()));
-        final List<PluginRendererEntry> rendersEx = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, Objects.requireNonNullElse(renderersExStr,new ArrayList<>()));
+        final List<PluginRendererEntry> renders      = YamlFrontMatter.getRenderers(Vars.Renderer.rendererKey, Objects.requireNonNullElse(renderersStr,new ArrayList<>()));
+        final List<PluginRendererEntry> rendersEx    = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, Objects.requireNonNullElse(renderersExStr,new ArrayList<>()));
         final List<PluginRendererEntry> allRenderers = new ArrayList<>();
         allRenderers.addAll(renders);
         allRenderers.addAll(rendersEx);
     // render page
-        final AtomicReference<byte[]> content = new AtomicReference<>("".getBytes());
+        final SimpleHttpServer unmodifiableServer     = new SimpleHttpServerUnmodifiable(Main.getServer().getServer());
+        final SimpleHttpExchange unmodifiableExchange = new SimpleHttpExchangeUnmodifiable(exchange);
+        final AtomicReference<byte[]> content         = new AtomicReference<>("".getBytes());
 
         final InetAddress address     = exchange.getPublicAddress().getAddress();
         final Permissions permissions = Main.getPermissions().getPermissions();
         logger.finest(locale.getString("exchangeRenderer.debug.permissions",permissions,address.getHostAddress()));
         allRenderers.forEach(renderer -> {
-            final Renderer render = renderer.getRenderer();
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future<byte[]> future = executor.submit(() -> {
+            final Renderer render           = renderer.getRenderer();
+            final ExecutorService executor  = Executors.newSingleThreadExecutor();
+            final Future<byte[]> future     = executor.submit(() -> {
+                final String permission     = render.getPermission();
+                final boolean hasPermission = permission == null || permissions.hasPermission(address,permission);
+
+                if(!hasPermission) return content.get();
+
                 final AtomicReference<byte[]> buffer = new AtomicReference<>(content.get());
-                byte[] ct = content.get();
+                byte[] before;
 
+                // initial static render
                 try{
+                    before = buffer.get();
                     buffer.set(render.render(IN, OUT,defaultFrontMatter,new String(buffer.get())).getBytes());
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                // initial server render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(unmodifiableServer,IN, OUT,defaultFrontMatter,new String(buffer.get())).getBytes());
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                // exchange render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN, OUT,defaultFrontMatter,new String(buffer.get())).getBytes());
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                // file render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN,defaultFrontMatter,buffer.get()).getBytes());
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
 
-                try{
-                    ct = buffer.get();
-                    if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                        buffer.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, IN, OUT,defaultFrontMatter, new String(buffer.get())).getBytes());
-                        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
-                    }
-                }catch(final Throwable e){
-                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-                }
-
-                try{
-                    ct = buffer.get();
-                    if((render instanceof FileRendererAdapter && !(render instanceof FileRenderer)) || (render instanceof FileRenderer && permissions.hasPermission(address, ((FileRenderer) render).getPermission()))){
-                        buffer.set(((FileRendererAdapter) renderer.getRenderer()).render(exchange, IN, defaultFrontMatter, buffer.get()).getBytes());
-                        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
-                    }
-                }catch(final Throwable e){
-                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-                }
                 return buffer.get();
             });
 

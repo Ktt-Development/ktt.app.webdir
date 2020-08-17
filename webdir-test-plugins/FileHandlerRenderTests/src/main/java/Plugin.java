@@ -1,52 +1,46 @@
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
-import com.kttdevelopment.webdir.api.PluginService;
-import com.kttdevelopment.webdir.api.WebDirPlugin;
-import com.kttdevelopment.webdir.api.server.FileRendererAdapter;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.io.File;
 
-public class Plugin extends WebDirPlugin {
+public final class Plugin extends WebDirPlugin {
 
     public Plugin(final PluginService service){
         super(service);
     }
 
     @Override
-    public void onEnable(){
-        addRenderer("firstFH", new FileRendererAdapter() {
+    public final void onEnable(){
+
+        addRenderer("firstFH",new Renderer(){
+
             @Override
-            public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+            public final String render(final SimpleHttpServer server, final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
                 return "firstFH";
             }
 
-            @Override
-            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
-                return content;
-            }
         });
-        addRenderer("secondFH", new FileRendererAdapter() {
+
+        addRenderer("secondFH",new Renderer(){
+
             @Override
-            public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+            public final String render(final SimpleHttpServer server, final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
                 return "secondFH";
             }
 
-            @Override
-            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
-                return content;
-            }
         });
-        addRenderer("exceptionFH", new FileRendererAdapter() {
+
+        addRenderer("exceptionFH",new Renderer(){
+
             @Override
-            public String render(final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
+            public final String render(final SimpleHttpServer server, final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
                 throw new RuntimeException();
             }
 
-            @Override
-            public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
-                return content;
-            }
         });
+
     }
 
 }

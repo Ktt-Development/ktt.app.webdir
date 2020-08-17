@@ -1,9 +1,8 @@
 package com.kttdevelopment.webdir.server.render;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.Renderer;
-import com.kttdevelopment.webdir.api.server.ExchangeRenderer;
-import com.kttdevelopment.webdir.api.server.ExchangeRendererAdapter;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.generator.Vars;
 import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
@@ -15,6 +14,8 @@ import com.kttdevelopment.webdir.generator.render.YamlFrontMatter;
 import com.kttdevelopment.webdir.generator.render.YamlFrontMatterReader;
 import com.kttdevelopment.webdir.server.Main;
 import com.kttdevelopment.webdir.server.ServerVars;
+import com.kttdevelopment.webdir.server.httpserver.SimpleHttpExchangeUnmodifiable;
+import com.kttdevelopment.webdir.server.httpserver.SimpleHttpServerUnmodifiable;
 import com.kttdevelopment.webdir.server.permissions.Permissions;
 
 import java.io.File;
@@ -64,35 +65,50 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
 
         final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, renderersStr);
     // render page
-        final AtomicReference<String> content = new AtomicReference<>(new String(bytes));
+        final SimpleHttpServer unmodifiableServer     = new SimpleHttpServerUnmodifiable(Main.getServer().getServer());
+        final SimpleHttpExchange unmodifiableExchange = new SimpleHttpExchangeUnmodifiable(exchange);
+        final AtomicReference<String> content         = new AtomicReference<>(new String(bytes));
 
         final InetAddress address     = exchange.getPublicAddress().getAddress();
         final Permissions permissions = Main.getPermissions().getPermissions();
         logger.finest(locale.getString("exchangeRenderer.debug.permissions",permissions,address.getHostAddress()));
         renderers.forEach(renderer -> {
-            final Renderer render = renderer.getRenderer();
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future<String> future = executor.submit(() -> {
+            final Renderer render           = renderer.getRenderer();
+            final ExecutorService executor  = Executors.newSingleThreadExecutor();
+            final Future<String> future     = executor.submit(() -> {
+                final String permission     = render.getPermission();
+                final boolean hasPermission = permission == null || permissions.hasPermission(address,permission);
+
+                if(!hasPermission) return content.get();
+
                 final AtomicReference<String> buffer = new AtomicReference<>(content.get());
-                String ct = content.get();
+                String before;
 
+                // initial static render
                 try{
+                    before = buffer.get();
                     buffer.set(render.render(IN, OUT,defaultFrontMatter,buffer.get()));
-                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                // initial server render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(unmodifiableServer,IN, OUT,defaultFrontMatter,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
+                }catch(final Throwable e){
+                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
+                }
+                // exchange render
+                try{
+                    before = buffer.get();
+                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN, OUT,defaultFrontMatter,buffer.get()));
+                    logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
                 }
 
-                try{
-                    ct = buffer.get();
-                    // if is an adapter but not a class (adapter has no permissions) or is class and has permission
-                    if((render instanceof ExchangeRendererAdapter && !(render instanceof ExchangeRenderer)) || render instanceof ExchangeRenderer && permissions.hasPermission(address, ((ExchangeRenderer) render).getPermission())){
-                        buffer.set(((ExchangeRendererAdapter) renderer.getRenderer()).render(exchange, IN, OUT, finalFrontMatter, buffer.get()));
-                        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,ct,buffer.get()));
-                    }
-                }catch(final Throwable e){
-                    logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
-                }
                 return buffer.get();
             });
 

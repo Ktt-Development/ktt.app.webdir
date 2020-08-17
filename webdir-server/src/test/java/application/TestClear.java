@@ -34,5 +34,4 @@ public class TestClear {
         Assert.assertFalse("Generator did not remove file that was no longer present in root folder",testOutput.exists());
     }
 
-
 }
