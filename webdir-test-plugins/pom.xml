@@ -98,7 +98,7 @@
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
             <version>01.00.00</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
