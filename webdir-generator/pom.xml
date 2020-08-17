@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.kttdevelopment</groupId>
         <artifactId>webdir</artifactId>
-        <version>01.00.00</version>
+        <version>R-EAV-03</version>
     </parent>
 
     <artifactId>webdir-generator</artifactId>
-    <version>01.00.00</version>
+    <version>R-EAV-03</version>
     <packaging>jar</packaging>
 
     <url>https://github.com/Ktt-Development/webdir</url>
@@ -22,7 +22,18 @@
 
     <build>
         <plugins>
-            <!-- Jar w/dep Compile [Used for launch4j] -->
+            <!-- use assembly jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -70,7 +81,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
-            <version>01.00.00</version>
+            <version>R-EAV-03</version>
         </dependency>
         <!-- yaml -->
         <dependency>

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>webdir</artifactId>
         <groupId>com.kttdevelopment</groupId>
-        <version>01.00.00</version>
+        <version>R-EAV-03</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,8 +24,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <!--suppress CheckTagEmptyBody -->
-                            <Built-By></Built-By>
+                            <Built-By>Ktt Development</Built-By>
                         </manifestEntries>
                     </archive>
                     <skip>true</skip>
@@ -49,16 +48,6 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -97,7 +86,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
-            <version>01.00.00</version>
+            <version>R-EAV-03</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
