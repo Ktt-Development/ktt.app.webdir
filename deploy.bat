@@ -8,7 +8,7 @@ EXIT /B
 :build
 
 copy "LICENSE." "webdir-%~2/target/jar"
-copy "MIT-LICENSE." "webdir-%~2/target/jar"
+copy "third-party-license/yamlbeans-LICENSE." "webdir-%~2/target/jar"
 
 jpackage --name "WebDir - %~1" ^
 --input webdir-%~2/target/jar ^

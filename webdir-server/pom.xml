@@ -22,7 +22,6 @@
 
     <build>
         <plugins>
-            <!-- Jar w/dep Compile [Used for launch4j] -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
