@@ -14,10 +14,6 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
     public SimpleHttpServerUnmodifiable(final SimpleHttpServer server){
         this.server = server;
     }
-    
-    //
-
-    private final Map<HttpContext,HttpHandler> contexts = new HashMap<>();
 
     //
 
@@ -31,7 +27,6 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
         return server.getExecutor();
     }
 
-    // only allow operations to plugin added contexts
     @Override
     public final HttpContext createContext(final String context){
         return createContext(context, (HttpExchange exchange) -> {},null);
@@ -49,53 +44,32 @@ public final class SimpleHttpServerUnmodifiable extends SimpleHttpServer {
 
     @Override
     public final HttpContext createContext(final String context, final HttpHandler handler, final Authenticator authenticator){
-        final HttpContext hc = server.createContext(context,handler);
-        contexts.put(hc,hc.getHandler());
-        if(authenticator != null)
-            hc.setAuthenticator(authenticator);
-        return new HttpContextUnmodifiable(hc);
+        return new HttpContextUnmodifiable(server.createContext(context,handler,authenticator));
     }
 
     @Override
     public final void removeContext(final String context){
-        for(final HttpContext hc : new HashSet<>(contexts.keySet())){
-            if(hc.getPath().equalsIgnoreCase(context)){
-                removeContext(hc);
-                return;
-            }
-        }
+            server.removeContext(context);
     }
 
     @Override
     public final void removeContext(final HttpContext context){
-        for(final HttpContext hc : new HashSet<>(contexts.keySet())){
-            if(context == hc){
-                contexts.remove(hc);
-                server.removeContext(hc);
-                return;
-            }
-        }
+        server.removeContext(context);
     }
 
     @Override
     public final HttpHandler getContextHandler(final String context){
-        for(final Map.Entry<HttpContext, HttpHandler> entry : new HashSet<>(contexts.entrySet()))
-            if(entry.getKey().getPath().equalsIgnoreCase(context))
-                return entry.getValue();
-        return null;
+        return server.getContextHandler(context);
     }
 
     @Override
     public final HttpHandler getContextHandler(final HttpContext context){
-        for(final Map.Entry<HttpContext, HttpHandler> entry : new HashSet<>(contexts.entrySet()))
-            if(context == entry.getKey())
-                return entry.getValue();
-        return null;
+        return server.getContextHandler(context);
     }
 
     @Override
     public final Map<HttpContext,HttpHandler> getContexts(){
-        return Collections.unmodifiableMap(contexts);
+        return Collections.unmodifiableMap(server.getContexts());
     }
 
     @Override
