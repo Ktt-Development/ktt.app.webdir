@@ -7,8 +7,7 @@ import com.kttdevelopment.webdir.generator.config.ConfigurationSectionImpl;
 import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +26,7 @@ public final class YamlFrontMatterReader {
         final Matcher matcher = pattern.matcher(content);
 
         boolean hasFrontMatter           = false;
-        ConfigurationSection frontMatter = new ConfigurationSectionImpl();
+        ConfigurationSection frontMatter = null;
         String frontMatterStr            = null;
         String cont                      = content;
 
@@ -38,11 +37,11 @@ public final class YamlFrontMatterReader {
 
             final YamlReader IN = new YamlReader(g2);
             try{
-                frontMatter    = new ConfigurationSectionImpl(Objects.requireNonNull((Map) IN.read()));
+                frontMatter    = new ConfigurationSectionImpl(Objects.requireNonNullElse((Map) IN.read(),new HashMap()));
                 hasFrontMatter = true;
                 frontMatterStr = g2;
                 cont           = ct;
-            }catch(final ClassCastException | NullPointerException | YamlException ignored){
+            }catch(final ClassCastException | YamlException ignored){
                 // invalid yaml
             }finally{
                 // causes exception if method ref
