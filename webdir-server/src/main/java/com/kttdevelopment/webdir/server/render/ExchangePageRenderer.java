@@ -46,9 +46,9 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
     // create front matter from source
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(sourceContent).read();
 
-        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter",sourceABS,frontMatter));
-
         if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes;
+
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter",sourceABS,frontMatter));
 
         final ConfigurationSection mergedFrontMatter = new ConfigurationSectionImpl();
         if(defaultFrontMatter != null)

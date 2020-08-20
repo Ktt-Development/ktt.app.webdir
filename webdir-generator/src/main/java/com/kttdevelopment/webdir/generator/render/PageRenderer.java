@@ -27,13 +27,13 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
         final String fileABS = IN.getAbsolutePath();
         final String str = new String(bytes);
 
-        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fileABS, defaultFrontMatter, str));
-
         final YamlFrontMatter frontMatter = new YamlFrontMatterReader(str).read();
+
+        if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
 
         logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter", fileABS, frontMatter));
 
-        if(!frontMatter.hasFrontMatter() && defaultFrontMatter == null) return bytes; // return raw if both are null
+        logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fileABS, defaultFrontMatter, str));
     // create front matter
         final ConfigurationSection mergedFrontMatter = new ConfigurationSectionImpl();
         if(defaultFrontMatter != null)
