@@ -26,7 +26,7 @@ public final class YamlFrontMatterReader {
         final Matcher matcher = pattern.matcher(content);
 
         boolean hasFrontMatter           = false;
-        ConfigurationSection frontMatter = null;
+        ConfigurationSection frontMatter = new ConfigurationSectionImpl();
         String frontMatterStr            = null;
         String cont                      = content;
 
@@ -44,7 +44,7 @@ public final class YamlFrontMatterReader {
             }catch(final ClassCastException | YamlException ignored){
                 // invalid yaml
             }finally{
-                // causes exception
+                // causes exception if method ref
                 //noinspection Convert2MethodRef
                 Exceptions.runIgnoreException(() -> IN.close());
             }
