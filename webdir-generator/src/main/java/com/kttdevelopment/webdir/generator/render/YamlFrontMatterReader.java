@@ -42,7 +42,7 @@ public final class YamlFrontMatterReader {
                 hasFrontMatter = true;
                 frontMatterStr = g2;
                 cont           = ct;
-            }catch(final ClassCastException | YamlException ignored){
+            }catch(final ClassCastException | NullPointerException | YamlException ignored){
                 // invalid yaml
             }finally{
                 // causes exception if method ref
