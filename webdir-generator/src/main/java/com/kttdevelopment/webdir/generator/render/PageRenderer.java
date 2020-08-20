@@ -43,12 +43,12 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
 
         final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,mergedFrontMatter);
     // render page
-        final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.rendererKey,String.class);
+        final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.renderersKey,String.class);
 
         // if no renderers then return given bytes
         if(renderersStr == null || renderersStr.isEmpty()) return frontMatter.getContent().getBytes();
 
-        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(Vars.Renderer.rendererKey,renderersStr);
+        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
 
         final AtomicReference<String> content = new AtomicReference<>(frontMatter.getContent());
 

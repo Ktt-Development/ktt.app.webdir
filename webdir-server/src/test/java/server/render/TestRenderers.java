@@ -21,7 +21,7 @@ public class TestRenderers {
         Map.of(
             new File(".root/renderTests/renderOrder.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n" +
             "  - second\n" +
@@ -31,7 +31,7 @@ public class TestRenderers {
             "---",
             new File(".root/renderTests/renderReverseOrder.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - second\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n" +
@@ -40,7 +40,7 @@ public class TestRenderers {
             "---",
             new File(".root/renderTests/renderExactDuplicate.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: DuplicateRenderTests\n" +
             "    renderer: first\n" +
             "---"

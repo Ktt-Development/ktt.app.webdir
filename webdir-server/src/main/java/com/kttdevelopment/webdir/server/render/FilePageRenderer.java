@@ -36,13 +36,13 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
         if(defaultFrontMatter == null)
             return bytes;
     // load renders
-        final List<String> renderersStr   = defaultFrontMatter.getList(Vars.Renderer.rendererKey, String.class);
-        final List<String> renderersExStr = defaultFrontMatter.getList(ServerVars.Renderer.exchangeRendererKey,String.class);
+        final List<String> renderersStr   = defaultFrontMatter.getList(Vars.Renderer.renderersKey, String.class);
+        final List<String> renderersExStr = defaultFrontMatter.getList(ServerVars.Renderer.exchangeRenderersKey, String.class);
 
         if((renderersStr == null || renderersStr.isEmpty()) && (renderersExStr == null || renderersExStr.isEmpty())) return bytes;
 
-        final List<PluginRendererEntry> renders      = YamlFrontMatter.getRenderers(Vars.Renderer.rendererKey, Objects.requireNonNullElse(renderersStr,new ArrayList<>()));
-        final List<PluginRendererEntry> rendersEx    = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, Objects.requireNonNullElse(renderersExStr,new ArrayList<>()));
+        final List<PluginRendererEntry> renders      = YamlFrontMatter.getRenderers(Objects.requireNonNullElse(renderersStr, new ArrayList<>()));
+        final List<PluginRendererEntry> rendersEx    = YamlFrontMatter.getRenderers(Objects.requireNonNullElse(renderersExStr, new ArrayList<>()));
         final List<PluginRendererEntry> allRenderers = new ArrayList<>();
         allRenderers.addAll(renders);
         allRenderers.addAll(rendersEx);

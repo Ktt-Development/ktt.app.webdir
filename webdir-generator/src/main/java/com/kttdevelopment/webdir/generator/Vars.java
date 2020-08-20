@@ -135,6 +135,8 @@ public abstract class Vars {
         public static final String importKey            = "import";
         public static final String importRelativeKey    = "import_relative";
 
+        public static final String renderersKey = "renderers";
+
         public static final String pluginKey    = "plugin";
         public static final String rendererKey  = "renderer";
 

@@ -56,6 +56,8 @@ public class TestServer {
         final String newValue = String.valueOf(System.currentTimeMillis());
         Files.write(targetFile,newValue.getBytes());
 
+        Thread.sleep(1000 * 2); // give time for server to process
+
         Assert.assertEquals(
             "Server should be able to retrieve modified file",
             newValue,

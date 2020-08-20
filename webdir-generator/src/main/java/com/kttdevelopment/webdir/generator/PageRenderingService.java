@@ -39,8 +39,8 @@ public final class PageRenderingService {
 
         final Path sourcePath = source.getAbsoluteFile().toPath();
 
-        logger.fine(locale.getString("pageRenderer.debug.const.source",defABS));
-        logger.fine(locale.getString("pageRenderer.debug.const.output",defABS));
+        logger.fine(locale.getString("pageRenderer.debug.const.source",source.getAbsolutePath()));
+        logger.fine(locale.getString("pageRenderer.debug.const.output",output.getAbsolutePath()));
 
         final AtomicInteger total    = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);

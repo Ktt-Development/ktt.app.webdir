@@ -27,26 +27,26 @@ public class TestRenderer {
         Map.of(
             new File(".root/renderTests/renderOrder.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - first\n" +
             "  - second\n" +
             "  - exception\n" +
             "---",
             new File(".root/renderTests/renderReverseOrder.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - second\n" +
             "  - first\n" +
             "---",
             new File(".root/renderTests/renderExactFirst.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n" +
             "---",
             new File(".root/renderTests/renderExactDuplicate.html"),
             "---\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: DuplicateRenderTests\n" +
             "    renderer: first\n" +
             "---"

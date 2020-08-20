@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public final class YamlFrontMatterReader {
 
-    private static final Pattern pattern = Pattern.compile("^(---)$\\n(.*)\\n^(---)$",Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern pattern = Pattern.compile("^(---)$\\n?(.*)\\n^(---)$",Pattern.MULTILINE | Pattern.DOTALL);
 
     private final String content;
 

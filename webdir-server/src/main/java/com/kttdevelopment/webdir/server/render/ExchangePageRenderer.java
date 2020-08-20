@@ -58,12 +58,12 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
 
         final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,mergedFrontMatter);
     // get renderers
-        final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRendererKey,String.class);
+        final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRenderersKey, String.class);
 
         // if no renderers then return given bytes
         if(renderersStr == null || renderersStr.isEmpty()) return bytes;
 
-        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(ServerVars.Renderer.exchangeRendererKey, renderersStr);
+        final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
     // render page
         final SimpleHttpServer unmodifiableServer     = new SimpleHttpServerUnmodifiable(Main.getServer().getServer());
         final SimpleHttpExchange unmodifiableExchange = new SimpleHttpExchangeUnmodifiable(exchange);

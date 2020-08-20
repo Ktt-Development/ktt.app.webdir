@@ -113,7 +113,7 @@ public abstract class YamlFrontMatter {
     // renderer
 
     @SuppressWarnings("rawtypes")
-    public static List<PluginRendererEntry> getRenderers(final String renderKey, final List renderers){
+    public static List<PluginRendererEntry> getRenderers(final List renderers){
         final ILocaleService locale = Vars.Main.getLocaleService();
         final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("pageRenderer"));
 

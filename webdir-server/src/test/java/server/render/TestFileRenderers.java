@@ -32,7 +32,7 @@ public class TestFileRenderers {
             "default:\n" +
             "  scope:\n" +
             "     - /C:/*/fileTests/index0.html\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n",
             new File(".default/index1.yml"),
@@ -40,7 +40,7 @@ public class TestFileRenderers {
             "  index: 1\n" +
             "  scope:\n" +
             "     - /C:/*/fileTests/index1.html\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n",
             new File(".default/index-1.yml"),
@@ -49,13 +49,13 @@ public class TestFileRenderers {
             "  scope:\n" +
             "     - /C:/*/fileTests/index0.html\n" +
             "     - /C:/*/fileTests/index1.html\n" +
-            "renderer: second",
+            "renderers: second",
             new File(".default/negative.yml"),
             "default:\n" +
             "  scope:\n" +
             "    - /C:/*/fileTests/negative.html\n" +
             "    - \"!/C:/*/fileTests/negative.html\"\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n",
             new File(".default/scope.yml"),
@@ -65,7 +65,7 @@ public class TestFileRenderers {
             "    - /C:/*/fileTests/*.cfg\n" +
             "    - /C:/*/fileTests/file.*\n" +
             "    - \"*.log\"\n" +
-            "renderer:\n" +
+            "renderers:\n" +
             "  - plugin: RenderTests\n" +
             "    renderer: first\n"
         ).forEach(TestFile::createTestFile);

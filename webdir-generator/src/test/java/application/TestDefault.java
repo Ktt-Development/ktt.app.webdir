@@ -26,26 +26,26 @@ public class TestDefault {
             "default:\n" +
             "  scope:\n" +
             "     - /defaultTests/index.html\n" +
-            "renderer: first",
+            "renderers: first",
             new File(".default/index1.yml"),
             "default:\n" +
             "  index: 1\n" +
             "  scope:\n" +
             "     - /defaultTests/index1.html\n" +
-            "renderer: first",
+            "renderers: first",
             new File(".default/index-1.yml"),
             "default:\n" +
             "  index: -1\n" +
             "  scope:\n" +
             "     - /defaultTests/index.html\n" +
             "     - /defaultTests/index1.html\n" +
-            "renderer: second",
+            "renderers: second",
             new File(".default/negative.yml"),
             "default:\n" +
             "  scope:\n" +
             "    - /defaultTests/negative.html\n" +
             "    - \"!/defaultTests/negative.html\"\n" +
-            "renderer: first",
+            "renderers: first",
             new File(".default/scope.yml"),
             "default:\n" +
             "  scope:\n" +
@@ -53,7 +53,7 @@ public class TestDefault {
             "    - /defaultTests/*.cfg\n" +
             "    - /defaultTests/file.*\n" +
             "    - \"*.log\"\n" +
-            "renderer: first"
+            "renderers: first"
         ).forEach(TestFile::createTestFile);
 
         // test files
