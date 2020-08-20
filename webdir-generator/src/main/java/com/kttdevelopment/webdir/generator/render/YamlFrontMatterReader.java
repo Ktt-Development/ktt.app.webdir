@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.generator.function.Exceptions;
 import com.kttdevelopment.webdir.generator.function.toStringBuilder;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ public final class YamlFrontMatterReader {
 
             final YamlReader IN = new YamlReader(g2);
             try{
-                frontMatter    = new ConfigurationSectionImpl((Map) IN.read());
+                frontMatter    = new ConfigurationSectionImpl(Objects.requireNonNull((Map) IN.read()));
                 hasFrontMatter = true;
                 frontMatterStr = g2;
                 cont           = ct;
