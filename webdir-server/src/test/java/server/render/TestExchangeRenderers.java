@@ -21,14 +21,14 @@ public class TestExchangeRenderers {
         Map.of(
             new File(".root/renderTestsEx/renderOrder.html"),
             "---\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n" +
             "  - secondEx\n" +
             "---",
             new File(".root/renderTestsEx/renderReverseOrder.html"),
             "---\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - secondEx\n" +
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n" +
@@ -36,7 +36,7 @@ public class TestExchangeRenderers {
             "---",
             new File(".root/renderTestsEx/renderExactDuplicate.html"),
             "---\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: ExchangeDuplicateRenderTests\n" +
             "    renderer: firstEx\n" +
             "---"

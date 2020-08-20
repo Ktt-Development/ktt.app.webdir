@@ -32,7 +32,7 @@ public class TestFileRenderersFH {
             "default:\n" +
             "  scope:\n" +
             "     - /C:/*/fileTestsFH/index0.html\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: FileHandlerRenderTests\n" +
             "    renderer: firstFH\n",
             new File(".default/index1.yml"),
@@ -40,7 +40,7 @@ public class TestFileRenderersFH {
             "  index: 1\n" +
             "  scope:\n" +
             "     - /C:/*/fileTestsFH/index1.html\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: FileHandlerRenderTests\n" +
             "    renderer: firstFH\n",
             new File(".default/index-1.yml"),
@@ -49,13 +49,13 @@ public class TestFileRenderersFH {
             "  scope:\n" +
             "     - /C:/*/fileTestsFH/index0.html\n" +
             "     - /C:/*/fileTestsFH/index1.html\n" +
-            "exchangeRenderer: secondFH",
+            "exchangeRenderers: secondFH",
             new File(".default/negative.yml"),
             "default:\n" +
             "  scope:\n" +
             "    - /C:/*/fileTestsFH/negative.html\n" +
             "    - \"!/C:/*/fileTestsFH/negative.html\"\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: FileHandlerRenderTests\n" +
             "    renderer: firstFH\n",
             new File(".default/scope.yml"),
@@ -65,7 +65,7 @@ public class TestFileRenderersFH {
             "    - /C:/*/fileTestsFH/*.cfg\n" +
             "    - /C:/*/fileTestsFH/file.*\n" +
             "    - \"*.log\"\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: FileHandlerRenderTests\n" +
             "    renderer: firstFH\n"
         ).forEach(TestFile::createTestFile);

@@ -24,7 +24,7 @@ public class TestDefaultExchangeRenderers {
             "default:\n" +
             "  scope:\n" +
             "     - /defaultTestsEx/index0.html\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n",
             new File(".default/index1.yml"),
@@ -32,7 +32,7 @@ public class TestDefaultExchangeRenderers {
             "  index: 1\n" +
             "  scope:\n" +
             "     - /defaultTestsEx/index1.html\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n",
             new File(".default/index-1.yml"),
@@ -41,13 +41,13 @@ public class TestDefaultExchangeRenderers {
             "  scope:\n" +
             "     - /defaultTestsEx/index0.html\n" +
             "     - /defaultTestsEx/index1.html\n" +
-            "exchangeRenderer: secondEx",
+            "exchangeRenderers: secondEx",
             new File(".default/negative.yml"),
             "default:\n" +
             "  scope:\n" +
             "    - /defaultTestsEx/negative.html\n" +
             "    - \"!/defaultTestsEx/negative.html\"\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n",
             new File(".default/scope.yml"),
@@ -57,7 +57,7 @@ public class TestDefaultExchangeRenderers {
             "    - /defaultTestsEx/*.cfg\n" +
             "    - /defaultTestsEx/file.*\n" +
             "    - \"*.log\"\n" +
-            "exchangeRenderer:\n" +
+            "exchangeRenderers:\n" +
             "  - plugin: ExchangeRenderTests\n" +
             "    renderer: firstEx\n"
         ).forEach(TestFile::createTestFile);
