@@ -11,14 +11,14 @@ import com.kttdevelopment.webdir.generator.locale.ILocaleService;
 import com.kttdevelopment.webdir.generator.pluginLoader.PluginRendererEntry;
 
 import java.io.File;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 public final class PageRenderer implements QuadriFunction<File,File,ConfigurationSection,byte[],byte[]> {
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public final byte[] apply(final File IN, final File OUT, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final ILocaleService locale  = Vars.Main.getLocaleService();
@@ -35,13 +35,13 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
 
         logger.finest(locale.getString("pageRenderer.debug.PageRenderer.render", fileABS, defaultFrontMatter, str));
     // create front matter
-        final ConfigurationSection mergedFrontMatter = new ConfigurationSectionImpl();
+        final Map merged = new HashMap<>();
         if(defaultFrontMatter != null)
-            mergedFrontMatter.setDefault(defaultFrontMatter);
+            merged.putAll(defaultFrontMatter.toMapWithDefaults());
         if(frontMatter.hasFrontMatter()) // file front matter overrides default
-            mergedFrontMatter.setDefault(frontMatter.getFrontMatter());
+            merged.putAll(frontMatter.getFrontMatter().toMapWithDefaults());
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,mergedFrontMatter);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,new ConfigurationSectionImpl(merged));
     // render page
         final List<String> renderersStr = finalFrontMatter.getList(Vars.Renderer.renderersKey,String.class);
 
