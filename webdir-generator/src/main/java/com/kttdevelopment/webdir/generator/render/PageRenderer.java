@@ -63,7 +63,7 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
                 // initial static render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(IN, OUT,defaultFrontMatter,buffer.get()));
+                    buffer.set(render.render(IN, OUT,finalFrontMatter,buffer.get()));
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),fileABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -71,7 +71,7 @@ public final class PageRenderer implements QuadriFunction<File,File,Configuratio
                 // initial server render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(server,IN, OUT,defaultFrontMatter,buffer.get()));
+                    buffer.set(render.render(server,IN, OUT,finalFrontMatter,buffer.get()));
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),fileABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));

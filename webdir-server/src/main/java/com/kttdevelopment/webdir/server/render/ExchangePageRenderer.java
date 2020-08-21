@@ -22,14 +22,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchange,File,File,ConfigurationSection,byte[],byte[]> {
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public final byte[] apply(final SimpleHttpExchange exchange, final File IN, final File OUT, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         final ILocaleService locale = Vars.Main.getLocaleService();
@@ -50,13 +50,13 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
 
         logger.finest(locale.getString("pageRenderer.debug.PageRenderer.frontMatter",sourceABS,frontMatter));
 
-        final ConfigurationSection mergedFrontMatter = new ConfigurationSectionImpl();
+        final Map merged = new HashMap<>();
         if(defaultFrontMatter != null)
-            mergedFrontMatter.setDefault(defaultFrontMatter);
-        if(frontMatter.hasFrontMatter())
-            mergedFrontMatter.setDefault(frontMatter.getFrontMatter());
+            merged.putAll(defaultFrontMatter.toMapWithDefaults());
+        if(frontMatter.hasFrontMatter()) // file front matter overrides default
+            merged.putAll(frontMatter.getFrontMatter().toMapWithDefaults());
 
-        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,mergedFrontMatter);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,new ConfigurationSectionImpl(merged));
     // get renderers
         final List<String> renderersStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRenderersKey, String.class);
 
@@ -87,7 +87,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
                 // initial static render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(IN, OUT,defaultFrontMatter,buffer.get()));
+                    buffer.set(render.render(IN, OUT,finalFrontMatter,buffer.get()));
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -95,7 +95,7 @@ public final class ExchangePageRenderer implements QuinFunction<SimpleHttpExchan
                 // initial server render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(unmodifiableServer,IN, OUT,defaultFrontMatter,buffer.get()));
+                    buffer.set(render.render(unmodifiableServer,IN, OUT,finalFrontMatter,buffer.get()));
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));

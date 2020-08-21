@@ -36,8 +36,10 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
         if(defaultFrontMatter == null)
             return bytes;
     // load renders
-        final List<String> renderersStr   = defaultFrontMatter.getList(Vars.Renderer.renderersKey, String.class);
-        final List<String> renderersExStr = defaultFrontMatter.getList(ServerVars.Renderer.exchangeRenderersKey, String.class);
+        final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,defaultFrontMatter);
+
+        final List<String> renderersStr   = finalFrontMatter.getList(Vars.Renderer.renderersKey, String.class);
+        final List<String> renderersExStr = finalFrontMatter.getList(ServerVars.Renderer.exchangeRenderersKey, String.class);
 
         if((renderersStr == null || renderersStr.isEmpty()) && (renderersExStr == null || renderersExStr.isEmpty())) return bytes;
 
@@ -69,7 +71,7 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
                 // initial static render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(IN, OUT,defaultFrontMatter,new String(buffer.get())).getBytes());
+                    buffer.set(render.render(IN, OUT,finalFrontMatter,new String(buffer.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -77,7 +79,7 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
                 // initial server render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(unmodifiableServer,IN, OUT,defaultFrontMatter,new String(buffer.get())).getBytes());
+                    buffer.set(render.render(unmodifiableServer,IN, OUT,finalFrontMatter,new String(buffer.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -85,7 +87,7 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
                 // exchange render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN, OUT,defaultFrontMatter,new String(buffer.get())).getBytes());
+                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN, OUT,finalFrontMatter,new String(buffer.get())).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
@@ -93,7 +95,7 @@ public final class FilePageRenderer implements QuinFunction<SimpleHttpExchange,F
                 // file render
                 try{
                     before = buffer.get();
-                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN,defaultFrontMatter,buffer.get()).getBytes());
+                    buffer.set(render.render(unmodifiableServer,unmodifiableExchange,IN,finalFrontMatter,buffer.get()).getBytes());
                     logger.finest(locale.getString("pageRenderer.debug.PageRenderer.apply",renderer.getRendererName(),sourceABS,before,buffer.get()));
                 }catch(final Throwable e){
                     logger.warning(locale.getString("pageRenderer.pageRenderer.rendererUncaught",renderer.getPluginName(), renderer.getRendererName(), IN.getPath()) + '\n' + Exceptions.getStackTraceAsString(e));
