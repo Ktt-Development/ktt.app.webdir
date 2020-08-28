@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.kttdevelopment</groupId>
         <artifactId>webdir</artifactId>
-        <version>R-EAV-03</version>
+        <version>02.00.00</version>
     </parent>
 
     <artifactId>webdir-generator</artifactId>
-    <version>R-EAV-03</version>
+    <version>02.00.00</version>
     <packaging>jar</packaging>
 
     <url>https://github.com/Ktt-Development/webdir</url>
@@ -59,6 +59,7 @@
                     <useFile>false</useFile>
                     <trimStackTrace>false</trimStackTrace>
                     <reuseForks>false</reuseForks>
+                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
         </plugins>
@@ -69,7 +70,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
-            <version>R-EAV-03</version>
+            <version>02.00.00</version>
         </dependency>
         <!-- yaml -->
         <dependency>

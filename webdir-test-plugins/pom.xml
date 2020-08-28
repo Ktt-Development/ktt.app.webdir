@@ -5,7 +5,7 @@
     <parent>
         <artifactId>webdir</artifactId>
         <groupId>com.kttdevelopment</groupId>
-        <version>R-EAV-03</version>
+        <version>02.00.00</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>webdir-api</artifactId>
-            <version>R-EAV-03</version>
+            <version>02.00.00</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

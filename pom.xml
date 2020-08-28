@@ -6,7 +6,7 @@
 
     <groupId>com.kttdevelopment</groupId>
     <artifactId>webdir</artifactId>
-    <version>R-EAV-03</version>
+    <version>02.00.00</version>
     <packaging>pom</packaging>
 
     <url>https://github.com/Ktt-Development/webdir</url>
@@ -27,6 +27,7 @@
         <module>webdir-api</module>
         <module>webdir-generator</module>
         <module>webdir-test-plugins</module>
+        <module>webdir-client</module>
     </modules>
 
     <build>
@@ -55,7 +56,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>simplehttpserver</artifactId>
-            <version>03.05.07</version>
+            <version>03.05.08</version>
         </dependency>
     </dependencies>
 
