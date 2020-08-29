@@ -32,7 +32,7 @@ public abstract class Main {
 
     public static void main(String[] args){
         setLoggerService(new LoggerService());
-        setConfigService(new ConfigService(new File(directory,"config.yml"),args));
+        setConfigService(new ConfigService(new File(directory,"config.yml")));
     }
 
     @Override

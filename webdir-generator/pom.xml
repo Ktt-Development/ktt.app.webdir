@@ -59,7 +59,7 @@
                     <useFile>false</useFile>
                     <trimStackTrace>false</trimStackTrace>
                     <reuseForks>false</reuseForks>
-                     <skipTests>true</skipTests>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
         </plugins>

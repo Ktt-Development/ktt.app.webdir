@@ -1,35 +1,19 @@
 package com.kttdevelopment.webdir.client.config;
 
-public class Setting<T> {
+import com.kttdevelopment.core.classes.ToStringBuilder;
 
-    private final String yaml;
+public final class Setting<T> {
 
-    private final String argName, flag, longFlag;
+    private final String desc, yaml;
+    
+    private final String key;
+    private final T defaultValue;
 
-    private final String desc;
-    private final T def;
-    private final Class<?> type;
-
-    public Setting(final String argName, final String flag, final String longFlag, final String desc, final T def){
-        this.argName    = argName;
-        this.flag       = flag;
-        this.longFlag   = longFlag;
-        this.desc       = String.format("%s\nDefault: %s",desc,def);
-        this.def        = def;
-        this.type       = def.getClass();
-        this.yaml       = desc.replaceAll("^(.*)$", "# " + "$1");
-    }
-
-    public final String getArgName(){
-        return argName;
-    }
-
-    public final String getFlag(){
-        return flag;
-    }
-
-    public final String getLongFlag(){
-        return longFlag;
+    public Setting(final String key, final T defaultValue, final String desc){
+        this.key          = key;
+        this.defaultValue = defaultValue;
+        this.desc         = String.format("%s\nDefault: %s",desc,defaultValue);
+        this.yaml         = String.format("%s\n%s: %s", desc.replaceAll("^(.*)$","# $1"),key,defaultValue);
     }
 
     public final String getDesc(){
@@ -40,12 +24,25 @@ public class Setting<T> {
         return yaml;
     }
 
-    public final T getDefault(){
-        return def;
+    public final String getKey(){
+        return key;
     }
 
-    public final Class<?> getType(){
-        return type;
+    public final T getDefaultValue(){
+        return defaultValue;
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("<type>",defaultValue.getClass().getSimpleName())
+            .addObject("key",key)
+            .addObject("defaultValue",defaultValue)
+            .addObject("desc",desc)
+            .addObject("yaml",yaml)
+            .toString();
     }
 
 }
