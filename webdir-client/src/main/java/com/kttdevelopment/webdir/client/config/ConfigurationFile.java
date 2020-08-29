@@ -9,7 +9,7 @@ import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import java.io.*;
 import java.util.Map;
 
-public class ConfigurationFile extends ConfigurationSectionImpl implements ConfigurationSection {
+public final class ConfigurationFile extends ConfigurationSectionImpl implements ConfigurationSection {
 
     public ConfigurationFile(){
         super();
@@ -45,7 +45,7 @@ public class ConfigurationFile extends ConfigurationSectionImpl implements Confi
 
     @Override
     public String toString(){
-        return new ToStringBuilder("ConfigurationFile")
+        return new ToStringBuilder(getClass().getSimpleName())
             .addObject("configuration",config)
             .toString();
     }

@@ -1,20 +1,22 @@
 package com.kttdevelopment.webdir.client;
 
 import com.esotericsoftware.yamlbeans.YamlException;
+import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.client.config.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ConfigService {
 
-    private final File configFile;
-
-    private final Setting<?>[] settings = new Setting[]{
-        new Setting<>("safe"        ,false      ,"Plugins will not load in safe-mode."),
-        new Setting<>("locale"      ,"en_US"    ,"The language that the application will use for logging and plugins."),
+    private static final Setting<?>[] settings = new Setting[]{
+        new Setting<>("safe"        ,false      ,"Plugins will not load in safe mode."),
+        new Setting<>("lang", "en_US"    , "The language that the application will use for logging and plugins."),
         new Setting<>("plugins_dir" ,".plugins" ,"The folder where plugins will be loaded from."),
         new Setting<>("sources_dir" ,".root"    ,"The folder where files will be loaded from."),
         new Setting<>("default_dir" ,".default" ,"The folder where default configurations will be loaded from."),
@@ -26,9 +28,16 @@ public final class ConfigService {
         new Setting<>("permissions"   ,"permissions.yml","The permissions file.")
     };
 
-    public ConfigService(final File configFile){
-        final LoggerService loggerService = Main.getLoggerService();
-        final Logger logger = loggerService.getLogger("Configuration Service");
+    private final File configFile;
+    private final ConfigurationSection config;
+
+    public final ConfigurationSection getConfig(){
+        return new ConfigurationSectionImpl(config.toMapWithDefaults());
+    }
+
+    ConfigService(final File configFile){
+        final LoggerService loggerService   = Main.getLoggerService();
+        final Logger logger                 = loggerService.getLogger("Configuration Service");
 
         loggerService.addQueuedLoggerMessage(
             "configService", "configService.const.started",
@@ -50,7 +59,7 @@ public final class ConfigService {
         final String defaultYaml;
         {
             final StringBuilder defaultYamlBuilder = new StringBuilder();
-            defaultYamlBuilder.append(
+            defaultYamlBuilder.append( // header
                 "############################################################\n" +
                 "# +------------------------------------------------------+ #\n" +
                 "# |                 WebDir Configuration                 | #\n" +
@@ -72,34 +81,64 @@ public final class ConfigService {
         // load configuration
         final ConfigurationFile config = new ConfigurationFile();
         {
-            final Runnable createNewDefault = () -> {
-
-            };
-
             try{
                 loggerService.addQueuedLoggerMessage(
                     "configService","configService.const.loadConfig",
-                    logger.getName(),"Loading configuration file from %s",
+                    logger.getName(),"Loading configuration from %s",
                     Level.FINER,configFile
                 );
-                if(!configFile.exists()){
-                
-                }
-                else if(!configFile.canRead())
-                    throw new IOException();
+                config.load(configFile);
+            }catch(final FileNotFoundException e){
+                loggerService.addQueuedLoggerMessage(
+                    "configService","configService.const.configNotFound",
+                    logger.getName(),"Configuration file not found, creating a new configuration file",
+                    Level.WARNING
+                );
+                // create default file
+                if(!configFile.exists())
+                    try{
+                        Files.write(configFile.toPath(),defaultYaml.getBytes(StandardCharsets.UTF_8));
+                    }catch(final IOException e2){
+                        loggerService.addQueuedLoggerMessage(
+                            "configService","configService.const.failedCreateDefault",
+                            logger.getName(),"Failed to create default configuration file\n%s",
+                            Level.SEVERE,LoggerService.getStackTraceAsString(e2)
+                        );
+                    }
                 else
-                    config.load(configFile);
-            }catch(YamlException e){
-                e.printStackTrace();
-            }catch(FileNotFoundException e){
-                e.printStackTrace();
-            }catch(IOException e){
-                e.printStackTrace();
+                    loggerService.addQueuedLoggerMessage(
+                        "configService","configService.const.configAlreadyExists",
+                        logger.getName(),"Failed to create default configuration file (file already exists)\n %s",
+                        Level.SEVERE,LoggerService.getStackTraceAsString(e)
+                    );
+            }catch(final ClassCastException | YamlException e){
+                loggerService.addQueuedLoggerMessage(
+                    "configService","configService.const.invalidConfigSyntax",
+                    logger.getName(),"Failed to load configuration file (invalid syntax)\n %s",
+                    Level.WARNING,LoggerService.getStackTraceAsString(e)
+                );
             }
         }
         config.setDefault(new ConfigurationSectionImpl(defaultConfiguration));
 
+        this.config = config;
 
+        loggerService.addQueuedLoggerMessage(
+            "configService","configService.const.finished",
+            logger.getName(),"Finished configuration service initialization",
+            Level.INFO
+        );
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("defaultConfiguration",settings)
+            .addObject("configurationFile",configFile)
+            .addObject("configuration",config)
+            .toString();
     }
 
 }

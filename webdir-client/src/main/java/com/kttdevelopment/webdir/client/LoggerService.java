@@ -16,7 +16,7 @@ public final class LoggerService {
 
     private final List<QueuedLoggerMessage> queuedMessages = new ArrayList<>();
 
-    public final void addQueuedLoggerMessage(final String localizedLogger, final String key, final String defaultLogger, final String defaultMessage, final Level level, final Object... args){
+    public synchronized final void addQueuedLoggerMessage(final String localizedLogger, final String key, final String defaultLogger, final String defaultMessage, final Level level, final Object... args){
         queuedMessages.add(new QueuedLoggerMessage(localizedLogger, key, defaultLogger, defaultMessage, level, args));
         getLogger(defaultLogger).log(level, String.format(defaultMessage, args));
     }
@@ -29,7 +29,7 @@ public final class LoggerService {
 
     private final List<Handler> handlers = new ArrayList<>();
 
-    public LoggerService(){
+    LoggerService(){
         Logger logger = Logger.getLogger("Logger Service");
         logger.setLevel(Level.ALL);
 

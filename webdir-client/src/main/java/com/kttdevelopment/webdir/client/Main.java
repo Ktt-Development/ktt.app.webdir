@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.client;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.io.File;
 
@@ -14,25 +15,42 @@ public abstract class Main {
 
     public static LoggerService getLoggerService(){ return loggerService; }
 
-    public static void setLoggerService(final LoggerService loggerService){ Main.loggerService = loggerService; }
+    private static void setLoggerService(final LoggerService loggerService){ Main.loggerService = loggerService; }
 
     private static ConfigService configService;
 
     public static ConfigService getConfigService(){ return configService; }
 
-    public static void setConfigService(final ConfigService configService){ Main.configService = configService; }
+    private static void setConfigService(final ConfigService configService){ Main.configService = configService; }
 
     private static LocaleService localeService;
 
     public static LocaleService getLocaleService(){ return localeService; }
 
-    public static void setLocaleService(final LocaleService localeService){ Main.localeService = localeService; }
+    private static void setLocaleService(final LocaleService localeService){ Main.localeService = localeService; }
+    
+    private static PluginLoader pluginLoader;
+
+    public static PluginLoader getPluginLoader(){
+        return pluginLoader;
+    }
+
+    private static void setPluginLoader(final PluginLoader pluginLoader){
+        Main.pluginLoader = pluginLoader;
+    }
 
     //
 
     public static void main(String[] args){
         setLoggerService(new LoggerService());
         setConfigService(new ConfigService(new File(directory,"config.yml")));
+        setLocaleService(new LocaleService("lang/bundle"));
+        
+        final ConfigurationSection config = getConfigService().getConfig();
+        
+        final File pluginFolder = new File(directory,config.getString("plugins_dir"));
+        setPluginLoader(new PluginLoader(pluginFolder));
+        
     }
 
     @Override

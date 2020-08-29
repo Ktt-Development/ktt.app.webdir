@@ -294,7 +294,7 @@ public class ConfigurationSectionImpl implements ConfigurationSection {
 
     @Override
     public String toString(){
-        return new ToStringBuilder("ConfigurationSection")
+        return new ToStringBuilder(getClass().getSimpleName())
             .addObject("root",root == this ? "this" : root)
             .addObject("parent",parent)
             .addObject("config",config)
