@@ -66,7 +66,7 @@ public final class ConfigService {
                 "# +------------------------------------------------------+ #\n" +
                 "############################################################");
             for(final Setting<?> setting : settings){
-                defaultYamlBuilder.append('\n').append(setting.getYaml());
+                defaultYamlBuilder.append("\n\n").append(setting.getYaml());
                 defaultConfiguration.put(setting.getKey(),setting.getDefaultValue());
             }
 
@@ -97,7 +97,14 @@ public final class ConfigService {
                 // create default file
                 if(!configFile.exists())
                     try{
-                        Files.write(configFile.toPath(),defaultYaml.getBytes(StandardCharsets.UTF_8));
+                        if(!configFile.getParentFile().exists() && !configFile.getParentFile().mkdirs())
+                            loggerService.addQueuedLoggerMessage(
+                                "configService","configService.const.failedCreateDirs",
+                                logger.getName(),"Failed to create parent directories for %s",
+                                Level.SEVERE
+                            );
+                        else
+                            Files.write(configFile.toPath(),defaultYaml.getBytes(StandardCharsets.UTF_8));
                     }catch(final IOException e2){
                         loggerService.addQueuedLoggerMessage(
                             "configService","configService.const.failedCreateDefault",

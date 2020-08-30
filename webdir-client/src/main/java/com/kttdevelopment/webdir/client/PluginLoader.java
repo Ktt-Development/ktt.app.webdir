@@ -1,7 +1,8 @@
 package com.kttdevelopment.webdir.client;
 
+import com.kttdevelopment.webdir.api.PluginYml;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
-import com.kttdevelopment.webdir.client.plugins.JarFilter;
+import com.kttdevelopment.webdir.client.plugins.filter.*;
 
 import java.io.File;
 import java.net.URL;
@@ -26,16 +27,24 @@ public final class PluginLoader {
             return;
         }
 
-        logger.fine(locale.getString("pluginLoader.const.filter.jar"));
         // jar filter
-        final Map<File,URL> pluginJars = new LinkedHashMap<>();
-        {
-            final File[] plugins = Objects.requireNonNullElse(pluginFolder.listFiles(new JarFilter()), new File[0]);
-            Arrays.sort(plugins);
-            for(final File file : plugins){
-                
-            }
-        }
+        logger.fine(locale.getString("pluginLoader.const.filter.jar"));
+        final Map<File,URL> pluginJars = new JarFilter().filter(pluginFolder);
+
+        // plugin.yml filter
+        logger.fine(locale.getString("pluginLoader.const.filter.yml"));
+        final Map<File,URL> pluginYMLs = new PluginYMLFilter().filter(pluginJars);
+
+        // validate plugin.yml
+        logger.fine(locale.getString("pluginLoader.const.filter.validYML"));
+        final Map<File,PluginYml> validYMLs = new ValidPluginYMLFilter().filter(pluginYMLs);
+
+        // validate dep
+        logger.finest(locale.getString("pluginLoader.const.filter.validDep"));
+
+        // sort dep
+
+        // enable & check #main
 
     }
 
