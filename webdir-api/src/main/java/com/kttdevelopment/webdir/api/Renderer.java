@@ -5,6 +5,7 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A renderer determines how content will appear.
@@ -56,6 +57,16 @@ public class Renderer {
 
     //
 
+    public byte[] render(final FileRender render){
+        return render.getContentAsBytes();
+    }
+
+    public final byte[] asBytes(final String string){
+        return string.getBytes(StandardCharsets.UTF_8);
+    }
+
+    //
+
     /**
      * Renders content from a file. <br>
      *
@@ -72,6 +83,7 @@ public class Renderer {
      * @since 01.00.00
      * @author Ktt Development
      */
+    @Deprecated
     public String render(final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
         return content;
     }
@@ -94,6 +106,7 @@ public class Renderer {
      * @since 01.00.00
      * @author Ktt Development
      */
+    @Deprecated
     public String render(final SimpleHttpServer server, final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
         return content;
     }
@@ -118,6 +131,7 @@ public class Renderer {
      * @since 01.00.00
      * @author Ktt Development
      */
+    @Deprecated
     public String render(final SimpleHttpServer server, final SimpleHttpExchange exchange, final File input, final File output, final ConfigurationSection yamlFrontMatter, final String content){
         return content;
     }
@@ -141,6 +155,7 @@ public class Renderer {
      * @since 01.00.00
      * @author Ktt Development
      */
+    @Deprecated
     public String render(final SimpleHttpServer server, final SimpleHttpExchange exchange, final File source, final ConfigurationSection defaultFrontMatter, final byte[] bytes){
         return new String(bytes);
     }

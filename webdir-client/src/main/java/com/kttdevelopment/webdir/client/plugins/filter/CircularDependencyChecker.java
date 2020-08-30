@@ -9,31 +9,53 @@ import java.util.*;
 final class CircularDependencyChecker {
 
     private final PluginYml plugin;
-    private final Map<String,PluginYml> plugins;
+    private final Map<String,PluginYml> plugins = new LinkedHashMap<>();
 
-    public CircularDependencyChecker(final PluginYml plugin, final Map<String,PluginYml> plugins){
+    private final String pluginName;
+
+    public CircularDependencyChecker(final PluginYml plugin, final List<PluginYml> plugins){
         this.plugin = plugin;
-        this.plugins = plugins;
+
+        for(final PluginYml pluginYml : plugins)
+            this.plugins.put(pluginYml.getPluginName(),pluginYml);
+
+        pluginName = plugin.getPluginName();
     }
 
-    private final List<String> checked = new ArrayList<>();
-
+    // test each dependency for a circular loop
     public final boolean test(){
-        return test(plugin);
+        final List<String> parent = List.of(pluginName);
+        for(final PluginYml dependency : getDependencies(plugin))
+            if(test(dependency,new ArrayList<>(parent)))
+                return true;
+        return false;
     }
 
-    private boolean test(final PluginYml plugin){
+    // test each dependency for a circular reference
+    private boolean test(final PluginYml plugin, final List<String> checked){
+        checked.add(plugin.getPluginName());
+        for(final PluginYml dependency : getDependencies(plugin)){
+            final String dependencyName = dependency.getPluginName();
+            if(checked.contains(dependencyName))
+                return true;
+            else{
+                checked.add(dependencyName);
+                if(test(dependency,checked))
+                    return true;
+            }
+        }
         return false;
     }
 
     private List<PluginYml> getDependencies(final PluginYml plugin){
-        final List<String> deps = Arrays.asList(plugin.getDependencies());
+        final List<String> required = Arrays.asList(plugin.getDependencies());
         final List<PluginYml> dependencies = new ArrayList<>();
 
         plugins.forEach((name,yml) -> {
-
+            if(required.contains(name))
+                dependencies.add(yml);
         });
-        return null;
+        return dependencies;
     }
 
     //
@@ -43,7 +65,7 @@ final class CircularDependencyChecker {
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("plugin",plugin)
             .addObject("plugins",plugins)
-            .addObject("checked",checked)
+            .addObject("pluginName",pluginName)
             .toString();
     }
 

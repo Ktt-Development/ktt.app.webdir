@@ -21,7 +21,7 @@ public final class LocaleService {
     private final List<LocaleBundle> watching = new ArrayList<>();
 
     public synchronized final void setLocale(final Locale locale){
-
+        Main.getLoggerService().getLogger(getString("localeService")).info(getString("localeService.setLocale.changed",currentLocale.getDisplayName(locale),currentLocale.getDisplayName(Locale.US),locale.getDisplayName(locale),locale.getDisplayName(Locale.US)));
         this.locale.setLocale(locale);
         currentLocale = locale;
         watching.forEach(bundle -> ((LocaleBundleImpl) bundle).setLocale(locale));
@@ -29,7 +29,7 @@ public final class LocaleService {
 
     // this method guarantees that the watching list is thread safe
     public synchronized final void addWatchedLocale(final LocaleBundle localeBundle){
-
+        Main.getLoggerService().getLogger(getString("localeService")).info(getString("localeService.addWatchedLocale.added",localeBundle));
         watching.add(localeBundle);
         ((LocaleBundleImpl) localeBundle).setLocale(currentLocale);
     }

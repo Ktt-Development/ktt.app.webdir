@@ -7,7 +7,7 @@ import java.io.File;
 
 public abstract class Main {
 
-    public static final File directory = new File(""); // '../' for exe
+    public static final File directory = new File("").getAbsoluteFile(); // '../' for exe
 
     //
 
@@ -39,6 +39,20 @@ public abstract class Main {
         Main.pluginLoader = pluginLoader;
     }
 
+    private static PageRenderingService pageRenderingService;
+
+    public static File getDirectory(){
+        return directory;
+    }
+
+    public static PageRenderingService getPageRenderingService(){
+        return pageRenderingService;
+    }
+
+    private static void setPageRenderingService(final PageRenderingService pageRenderingService){
+        Main.pageRenderingService = pageRenderingService;
+    }
+
     //
 
     public static void main(String[] args){
@@ -50,7 +64,11 @@ public abstract class Main {
         
         final File pluginFolder = new File(directory,config.getString("plugins_dir"));
         setPluginLoader(new PluginLoader(pluginFolder));
-        
+
+        final File defaults = new File(directory,config.getString("default_dir"));
+        final File sources  = new File(directory,config.getString("sources_dir"));
+        final File output   = new File(directory,config.getString("output_dir"));
+        setPageRenderingService(new PageRenderingService(defaults,sources,output));
     }
 
     @Override

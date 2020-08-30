@@ -1,33 +1,58 @@
 package com.kttdevelopment.webdir.client.plugins.filter;
 
 import com.kttdevelopment.webdir.api.PluginYml;
+import com.kttdevelopment.webdir.client.LocaleService;
+import com.kttdevelopment.webdir.client.Main;
 import com.kttdevelopment.webdir.client.function.Filter;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Logger;
 
 public final class DependencyFilter implements Filter<Map<File, PluginYml>> {
 
+    private final LocaleService locale;
+    private final Logger logger;
+
+    public DependencyFilter(){
+        locale = Main.getLocaleService();
+        logger = Main.getLoggerService().getLogger(locale.getString("pluginLoader"));
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
     @Override
     public final Map<File,PluginYml> filter(final Map<File,PluginYml> in){
-        final Map<File,PluginYml> map = new LinkedHashMap<>();
-        final List<String> plugins = new ArrayList<>();
-        // remove circular dependencies
-        in.forEach((file,yml) -> {
-            if(false /* no circular */)
-                plugins.add(yml.getPluginName());
-            else; // severe
-        });
         // remove missing
-        in.forEach((file,yml) -> {
-            for(final String dependency : yml.getDependencies()){
-                if(!plugins.contains(dependency));
-                else
-                    map.put(file,yml);
-            }
-        });
+        final Map<File,PluginYml> validDeps = new LinkedHashMap<>();
+        {
+            final List<String> plugins = new ArrayList<>();
+            for(final PluginYml value : in.values())
+                plugins.add(value.getPluginName());
 
-        return map;
+            in.forEach((file, yml) -> {
+                final String name = yml.getPluginName();
+                for(final String dependency : yml.getDependencies()){
+                    if(!plugins.contains(dependency))
+                        logger.severe(locale.getString("pluginLoader.validDepFilter.missingRequired", name, dependency));
+                    else
+                        validDeps.put(file, yml);
+                }
+            });
+        }
+
+        // remove circular
+        final Map<File,PluginYml> safeDeps = new LinkedHashMap<>();
+        {
+            final List<PluginYml> plugins = new ArrayList<>(validDeps.values());
+
+            in.forEach((file,yml) -> {
+                if(!(new CircularDependencyChecker(yml,plugins).test()))
+                    safeDeps.put(file,yml);
+                else
+                    logger.severe(locale.getString("pluginLoader.validDepFilter.circularDependency",yml.getPluginName()));
+            });
+        }
+        return safeDeps;
     }
 
 }
