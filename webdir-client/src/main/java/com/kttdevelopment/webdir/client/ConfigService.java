@@ -45,8 +45,7 @@ public final class ConfigService {
             Level.INFO
         );
 
-        Objects.requireNonNull(configFile);
-        this.configFile = configFile;
+        this.configFile = Objects.requireNonNull(configFile);
 
         // default configuration
         loggerService.addQueuedLoggerMessage(

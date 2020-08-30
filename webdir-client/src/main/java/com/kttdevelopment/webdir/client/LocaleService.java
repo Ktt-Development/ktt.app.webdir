@@ -37,7 +37,7 @@ public final class LocaleService {
     //
 
     public final String getString(final String key){
-        return getString(key, (Object) null);
+        return getString(key, (Object[]) null);
     }
 
     public final String getString(final String key, final Object... args){
@@ -74,7 +74,7 @@ public final class LocaleService {
 
         Locale.setDefault(Locale.US);
         locale = new LocaleBundleImpl(resource_prefix);
-        final Locale configLocale = new Locale(Main.getConfigService().getConfig().getString("localeService"));
+        final Locale configLocale = new Locale(Main.getConfigService().getConfig().getString("lang"));
         locale.setLocale(configLocale);
         currentLocale = configLocale;
 
