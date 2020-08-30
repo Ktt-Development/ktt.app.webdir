@@ -74,7 +74,7 @@ public final class LocaleService {
 
         Locale.setDefault(Locale.US);
         locale = new LocaleBundleImpl(resource_prefix);
-        final Locale configLocale = new Locale(Main.getConfigService().getConfig().getString("locale"));
+        final Locale configLocale = new Locale(Main.getConfigService().getConfig().getString("localeService"));
         locale.setLocale(configLocale);
         currentLocale = configLocale;
 

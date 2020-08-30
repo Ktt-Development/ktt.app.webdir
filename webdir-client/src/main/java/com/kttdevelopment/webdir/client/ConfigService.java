@@ -74,7 +74,7 @@ public final class ConfigService {
         }
         loggerService.addQueuedLoggerMessage(
             "configService", "configService.const.loadedDefault",
-            logger.getName(), "Loaded default configuration \n %s \n",
+            logger.getName(), "Loaded default configuration \n%s\n",
             Level.FINE,defaultYaml
         );
 
