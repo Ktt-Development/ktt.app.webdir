@@ -90,7 +90,7 @@ public final class PageRenderingService {
         try{
             final File parent = rendered.toFile().getParentFile();
             if(parent.exists() || parent.mkdirs()){
-                Files.write(rendered, renderer.render(in));
+                Files.write(rendered, renderer.render(in,rendered.toFile()));
                 logger.finest(locale.getString("pageRenderer.render.rendered",in,rendered.toFile()));
                 return true;
             }else{
