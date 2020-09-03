@@ -93,7 +93,11 @@ public final class PageRenderingService {
         try{
             final File parent = rendered.toFile().getParentFile();
             if(parent.exists() || parent.mkdirs()){
-                Files.write(rendered, renderer.render(in,rendered.toFile()));
+                final byte[] bytes = renderer.render(in,rendered.toFile());
+                if(bytes != null)
+                    Files.write(rendered, bytes);
+                else
+                    logger.fine(locale.getString("pageRenderer.render.null"));
                 logger.finest(locale.getString("pageRenderer.render.rendered",in,rendered.toFile()));
                 return true;
             }else{

@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.client.renderer;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
+import com.kttdevelopment.webdir.api.FileRender;
 import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.api.serviceprovider.ConfigurationSection;
 import com.kttdevelopment.webdir.client.*;
@@ -71,6 +72,8 @@ public final class PageRenderer {
         final ConfigurationSection finalFrontMatter = YamlFrontMatter.loadImports(IN,new ConfigurationSectionImpl(merged));
         logger.fine(locale.getString("pageRenderer.render.frontMatter",IN) + '\n' + frontMatter);
         // render
+        // todo: server reference
+        final FileRender fileRender = new FileRenderImpl(IN,OUT,finalFrontMatter,bytes.get(),/* todo: server */null,exchange);
         {
             final List<String> renderersStr = finalFrontMatter.getList("renderers", new ArrayList<>());
 
@@ -79,7 +82,6 @@ public final class PageRenderer {
 
             final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
 
-            // todo: server reference
             for(final PluginRendererEntry entry : renderers){
                 final Renderer renderer         = entry.getRenderer();
                 final ExecutorService executor  = Executors.newSingleThreadExecutor();
@@ -91,7 +93,8 @@ public final class PageRenderer {
                     logger.finest(locale.getString("pageRenderer.render.apply",pluginName,rendererName,IN));
                     // server is null for first page render so null check is ok
                     try{
-                        buffer.set(renderer.render(new FileRenderImpl(IN,OUT,finalFrontMatter,bytes.get(),/* todo: server */null,exchange)));
+                        // todo: permissions check
+                        buffer.set(renderer.render(fileRender));
                     }catch(final Throwable e){
                         logger.finest(locale.getString("pageRenderer.render.exception",pluginName,rendererName,IN) + '\n' + LoggerService.getStackTraceAsString(e));
                     }
@@ -110,7 +113,7 @@ public final class PageRenderer {
                 }
             }
         }
-        return bytes.get();
+        return fileRender.getOutputFile() == null ? null : bytes.get();
     }
 
     //

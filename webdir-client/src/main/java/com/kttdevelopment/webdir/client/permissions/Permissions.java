@@ -2,6 +2,8 @@ package com.kttdevelopment.webdir.client.permissions;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
 import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
+import com.kttdevelopment.webdir.client.*;
+import com.kttdevelopment.webdir.client.function.SymbolicStringMatcher;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,21 +19,21 @@ public final class Permissions {
 
     @SuppressWarnings("unchecked")
     public Permissions(final Map obj){
-        final ILocaleService locale = Vars.Main.getLocaleService();
-        final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
+        final LocaleService locale = Main.getLocaleService();
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
 
         try{
             final Map g = (Map) Objects.requireNonNull(obj.get("groups"));
             g.forEach((k, v) -> {
                 try{ groups.add(new PermissionsGroup(k.toString(), (Map) v));
-                }catch(final ClassCastException ignored){
-                    logger.severe(locale.getString("permissions.Permissions.invalidGroupType",k));
+                }catch(final ClassCastException e){
+                    logger.severe(locale.getString("permissions.permissions.invalidGroupType",k) + '\n' + LoggerService.getStackTraceAsString(e));
                 }
             });
-        }catch(final ClassCastException ignored){
-            logger.severe(locale.getString("permissions.Permissions.invalidGroups"));
-        }catch(final NullPointerException ignored){
-            logger.severe(locale.getString("permissions.Permissions.missingGroups"));
+        }catch(final ClassCastException e){
+            logger.severe(locale.getString("permissions.permissions.invalidGroups") + '\n' + LoggerService.getStackTraceAsString(e));
+        }catch(final NullPointerException e){
+            logger.severe(locale.getString("permissions.permissions.missingGroups") + '\n' + LoggerService.getStackTraceAsString(e));
         }
 
         try{
@@ -39,15 +41,15 @@ public final class Permissions {
             u.forEach((k, v) -> {
                 try{ users.add(new PermissionsUser(k.toString(), (Map) v));
                 }catch(final ClassCastException ignored){
-                    logger.severe(locale.getString("permissions.Permissions.invalidUserType",k));
+                    logger.severe(locale.getString("permissions.permissions.invalidUserType",k));
                 }catch(final UnknownHostException e){
-                    logger.severe(locale.getString("permissions.Permissions.invalidUser",k) + '\n' + Exceptions.getStackTraceAsString(e));
+                    logger.severe(locale.getString("permissions.permissions.invalidUser",k) + '\n' + LoggerService.getStackTraceAsString(e));
                 }
             });
         }catch(final ClassCastException ignored){
-            logger.severe(locale.getString("permissions.Permissions.invalidUsers"));
+            logger.severe(locale.getString("permissions.permissions.invalidUsers"));
         }catch(final NullPointerException ignored){
-            logger.severe(locale.getString("permissions.Permissions.missingUsers"));
+            logger.severe(locale.getString("permissions.permissions.missingUsers"));
         }
     }
 
@@ -124,7 +126,7 @@ public final class Permissions {
     private boolean hasPermission(final String permission, final List<String> permissions){
         boolean hasPermission = false;
         for(final String perm : permissions)
-            switch(SymbolicStringMatcher.matches(perm,permission)){
+            switch(SymbolicStringMatcher.matches(perm, permission)){
                 case NEGATIVE_MATCH:
                     return false;
                 case MATCH:
