@@ -40,5 +40,4 @@ public final class JarFilter implements IOFilter<File,Map<File,URL>> {
         return map;
     }
 
-
 }

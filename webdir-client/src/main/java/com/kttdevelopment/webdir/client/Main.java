@@ -41,16 +41,22 @@ public abstract class Main {
 
     private static PageRenderingService pageRenderingService;
 
-    public static File getDirectory(){
-        return directory;
-    }
-
     public static PageRenderingService getPageRenderingService(){
         return pageRenderingService;
     }
 
     private static void setPageRenderingService(final PageRenderingService pageRenderingService){
         Main.pageRenderingService = pageRenderingService;
+    }
+
+    private static PermissionsService permissionsService;
+
+    public static PermissionsService getPermissionsService(){
+        return permissionsService;
+    }
+
+    private static void setPermissionsService(final PermissionsService permissionsService){
+        Main.permissionsService = permissionsService;
     }
 
     //

@@ -37,7 +37,6 @@ public final class JarClassLoader {
 
     //
 
-
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())

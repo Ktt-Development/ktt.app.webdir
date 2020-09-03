@@ -83,7 +83,6 @@ public final class FileRenderImpl extends FileRender {
 
     //
 
-
     @Override
     public String toString(){
         return new ToStringBuilder("FileRender")

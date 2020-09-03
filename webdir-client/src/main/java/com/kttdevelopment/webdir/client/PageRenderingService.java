@@ -4,8 +4,7 @@ import com.kttdevelopment.core.classes.ToStringBuilder;
 import com.kttdevelopment.webdir.client.renderer.DefaultFrontMatterLoader;
 import com.kttdevelopment.webdir.client.renderer.PageRenderer;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.Comparator;
 import java.util.Objects;
@@ -36,7 +35,7 @@ public final class PageRenderingService {
         this.output   = Objects.requireNonNull(output);
 
         // if clean and dir exists and dir is parent of project folder (safety check)
-        final boolean clean = output.exists() && config.getConfig().getBoolean("clean") && output.getAbsolutePath().startsWith(Main.getDirectory().getAbsolutePath());
+        final boolean clean = output.exists() && config.getConfig().getBoolean("clean") && output.getAbsolutePath().startsWith(Main.directory.getAbsolutePath());
 
         if(clean){
             final AtomicBoolean failedDelete = new AtomicBoolean(false);
@@ -63,16 +62,20 @@ public final class PageRenderingService {
 
         final AtomicInteger total    = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
-        try{
-            Files.walk(sources.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> {
-                total.incrementAndGet();
-                if(render(path.toFile()))
-                    rendered.incrementAndGet();
-            });
-        }catch(final IOException e){
-            logger.warning(locale.getString("pageRenderer.const.failedWalk",sources) + '\n' + LoggerService.getStackTraceAsString(e));
-        }
 
+        if(!output.exists() && !output.mkdirs()){
+            logger.severe(locale.getString("pageRenderer.const.failedCreate",output));
+        }else{
+             try{
+                Files.walk(sources.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> {
+                    total.incrementAndGet();
+                    if(render(path.toFile()))
+                        rendered.incrementAndGet();
+                });
+            }catch(final IOException e){
+                logger.warning(locale.getString("pageRenderer.const.failedWalk",sources) + '\n' + LoggerService.getStackTraceAsString(e));
+            }
+        }
         logger.info(locale.getString("pageRenderer.const.finished",rendered.get(),total.get()));
     }
 
@@ -105,7 +108,6 @@ public final class PageRenderingService {
     }
 
     //
-
 
     @Override
     public String toString(){
