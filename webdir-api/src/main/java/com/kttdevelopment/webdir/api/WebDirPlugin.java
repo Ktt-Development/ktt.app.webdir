@@ -200,6 +200,56 @@ public class WebDirPlugin {
     @SuppressWarnings("EmptyMethod")
     public void onEnable(){}
 
+    // sys
+
+    /**
+     * Returns the sources folder.
+     *
+     * @return sources folder
+     *
+     * @since 02.00.00
+     * @author Ktt Development
+     */
+    public final File getSourcesFolder(){
+        return service.getSourcesFolder();
+    }
+
+    /**
+     * Returns the output folder.
+     *
+     * @return output folder
+     *
+     * @since 02.00.00
+     * @author Ktt Development
+     */
+    public final File getOutputFolder(){
+        return service.getOutputFolder();
+    }
+
+    /**
+     * Returns the defaults folder.
+     *
+     * @return defaults folder
+     *
+     * @since 02.00.00
+     * @author Ktt Development
+     */
+    public final File getDefaultsFolder(){
+        return service.getDefaultsFolder();
+    }
+
+    /**
+     * Returns the plugins folder.
+     *
+     * @return plugins folder
+     *
+     * @since 02.00.00
+     * @author Ktt Development
+     */
+    public final File getPluginsFolder(){
+        return service.getPluginsFolder();
+    }
+
     //
 
     @Override

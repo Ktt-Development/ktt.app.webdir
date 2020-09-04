@@ -23,11 +23,17 @@ public final class PluginServiceImpl extends PluginService {
     private final File pluginFolder;
     private final PluginYml pluginYml;
 
+    private final File sources, output, defaults, plugins;
+
     @SuppressWarnings("ConstantExpression")
     public PluginServiceImpl(final PluginYml pluginYml, final File pluginFolder){
         this.pluginYml      = pluginYml;
         this.pluginFolder   = new File(pluginFolder,pluginYml.getPluginName().replaceAll('[' + badFileChars + ']',"_"));
         this.logger         = Main.getLoggerService().getLogger(pluginYml.getPluginName());
+        this.sources        = Main.getPageRenderingService().getSources();
+        this.output         = Main.getPageRenderingService().getOutput();
+        this.defaults       = Main.getPageRenderingService().getDefaults();
+        this.plugins        = Main.getPluginLoader().getPluginFolder();
     }
 
     @Override
@@ -89,6 +95,26 @@ public final class PluginServiceImpl extends PluginService {
     @Override
     public LocaleBundle getLocaleBundle(final String resource){
         return new LocaleBundleImpl(Main.getLocaleService(), resource);
+    }
+
+    @Override
+    public final File getSourcesFolder(){
+        return sources;
+    }
+
+    @Override
+    public final File getOutputFolder(){
+        return output;
+    }
+
+    @Override
+    public final File getDefaultsFolder(){
+        return defaults;
+    }
+
+    @Override
+    public final File getPluginsFolder(){
+        return plugins;
     }
 
     //

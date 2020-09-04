@@ -33,4 +33,12 @@ public abstract class PluginService {
 
     public abstract LocaleBundle getLocaleBundle(String resource);
 
+    public abstract File getSourcesFolder();
+
+    public abstract File getOutputFolder();
+
+    public abstract File getDefaultsFolder();
+
+    public abstract File getPluginsFolder();
+
 }

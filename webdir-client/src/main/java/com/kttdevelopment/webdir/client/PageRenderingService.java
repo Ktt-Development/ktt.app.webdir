@@ -79,6 +79,18 @@ public final class PageRenderingService {
         logger.info(locale.getString("pageRenderer.const.finished",rendered.get(),total.get()));
     }
 
+    public final File getSources(){
+        return sources;
+    }
+
+    public final File getOutput(){
+        return output;
+    }
+
+    public final File getDefaults(){
+        return defaults;
+    }
+
     public final boolean render(final File in){
         logger.finest(locale.getString("pageRenderer.renderer",in));
         if(!in.exists()){

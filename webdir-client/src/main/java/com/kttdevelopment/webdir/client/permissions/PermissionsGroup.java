@@ -1,9 +1,9 @@
 package com.kttdevelopment.webdir.client.permissions;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.webdir.client.*;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 @SuppressWarnings("rawtypes")
@@ -15,46 +15,47 @@ public final class PermissionsGroup {
 
     @SuppressWarnings("unchecked")
     public PermissionsGroup(final String group, final Map value){
-        super(
-            group,
-            ((Supplier<String[]>) () -> {
-                final ILocaleService locale = Vars.Main.getLocaleService();
-                final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
+        final LocaleService locale = Main.getLocaleService();
+        final Logger logger = Main.getLoggerService().getLogger(locale.getString("permissions"));
 
-                try{
-                    final Object inheritance = Objects.requireNonNull(value.get(ServerVars.Permissions.inheritanceKey));
-                    if(inheritance instanceof List)
-                        return Arrays.copyOf(((List<?>) inheritance).toArray(), ((List<?>) inheritance).size(), String[].class);
-                    else
-                        return new String[]{inheritance.toString()};
-                }catch(final ClassCastException | NullPointerException ignored){
-                    logger.warning(locale.getString("permissions.PermissionsGroup.missingInheritance",group));
-                    return new String[0];
-                }
-            }).get(),
-            ((Supplier<Map>) () -> {
-                final ILocaleService locale = Vars.Main.getLocaleService();
-                final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
-
-                try{
-                    return Collections.unmodifiableMap((Map) Objects.requireNonNull(value.get(ServerVars.Permissions.optionsKey)));
-                }catch(final ClassCastException | NullPointerException ignored){
-                    logger.warning(locale.getString("permissions.PermissionsGroup.missingOptions",group));
-                    return new HashMap();
-                }
-            }).get(),
-            ((Supplier<String[]>) () -> {
-                final ILocaleService locale = Vars.Main.getLocaleService();
-                final Logger logger         = Vars.Main.getLoggerService().getLogger(locale.getString("permissions"));
-
-                try{
-                    return ((List<String>) value.get(ServerVars.Permissions.permissionsKey)).toArray(new String[0]);
-                }catch(final ClassCastException | NullPointerException ignored){
-                    logger.warning(locale.getString("permissions.PermissionsGroup.missingPermissions",group));
-                    return new String[0];
-                }
-            }).get()
-        );
+        this.group = group;
+        {
+            String[] tInheritance = new String[0];
+            try{
+                final Object inheritance = Objects.requireNonNull(value.get("inheritance"));
+                if(inheritance instanceof List)
+                    tInheritance = Arrays.copyOf(((List<?>) inheritance).toArray(), ((List<?>) inheritance).size(), String[].class);
+                else
+                    tInheritance = new String[]{inheritance.toString()};
+            }catch(final ClassCastException e){
+                logger.warning(locale.getString("permissions.permissionsGroup.invalidInheritance", group) + '\n' + LoggerService.getStackTraceAsString(e));
+            }catch(final NullPointerException e){
+                logger.warning(locale.getString("permissions.permissionsGroup.missingInheritance", group) + '\n' + LoggerService.getStackTraceAsString(e));
+            }
+            this.inheritance = tInheritance;
+        }
+        {
+            Map tOptions = new HashMap();
+            try{
+                tOptions = Collections.unmodifiableMap((Map) Objects.requireNonNull(value.get("options")));
+            }catch(final ClassCastException e){
+                logger.warning(locale.getString("permissions.permissionsGroup.invalidOptions", group) + '\n' + LoggerService.getStackTraceAsString(e));
+            }catch(final NullPointerException e){
+                logger.warning(locale.getString("permissions.permissionsGroup.missingOptions", group) + '\n' + LoggerService.getStackTraceAsString(e));
+            }
+            this.options = tOptions;
+        }
+        {
+            String[] tPermissions = new String[0];
+            try{
+                tPermissions = ((List<String>) value.get("permissions")).toArray(new String[0]);
+            }catch(final ClassCastException e){
+                logger.warning(locale.getString("permissions.permissionsGroup.invalidPermissions", group) + '\n' + LoggerService.getStackTraceAsString(e));
+            }catch(final NullPointerException e){
+                logger.warning(locale.getString("permissions.permissionsGroup.missingPermissions", group) + '\n' + LoggerService.getStackTraceAsString(e));
+            }
+            this.permissions = tPermissions;
+        }
     }
 
     public final String getGroup(){

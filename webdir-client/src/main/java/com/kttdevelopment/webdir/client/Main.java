@@ -75,6 +75,7 @@ public abstract class Main {
         final File sources  = new File(directory,config.getString("sources_dir"));
         final File output   = new File(directory,config.getString("output_dir"));
         setPageRenderingService(new PageRenderingService(defaults,sources,output));
+        setPermissionsService(new PermissionsService(new File(directory,"permissions.yml")));
     }
 
     @Override

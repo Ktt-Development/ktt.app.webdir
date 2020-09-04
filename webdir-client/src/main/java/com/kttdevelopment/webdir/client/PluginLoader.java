@@ -102,6 +102,10 @@ public final class PluginLoader {
         logger.info(locale.getString("pluginLoader.const.finished"));
     }
 
+    public final File getPluginFolder(){
+        return pluginFolder;
+    }
+
     //
 
     @Override
