@@ -44,8 +44,8 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>ktt-development</id>
+            <url>https://repository.kttdevelopment.com</url>
         </repository>
     </repositories>
 
