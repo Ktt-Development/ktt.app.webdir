@@ -42,18 +42,11 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>ktt-development</id>
-            <url>https://repository.kttdevelopment.com</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>simplehttpserver</artifactId>
-            <version>03.05.08</version>
+            <version>03.06.01</version>
         </dependency>
     </dependencies>
 
