@@ -1,3 +1,0 @@
-main: Plugin
-name: CircularDependency1
-dependencies: CircularDependency2

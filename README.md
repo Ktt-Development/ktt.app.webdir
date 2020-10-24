@@ -7,8 +7,3 @@
 [![license](https://img.shields.io/github/license/ktt-development/webdir)](https://github.com/Ktt-Development/webdir/blob/main/LICENSE)
 
 Extensible site generator and file explorer.
-
-By default JitPack will load the entire repository (Webdir api/generator/server). 
-For plugin developers only the API is required. To get the API only make sure to select **`Subproject`** then **`webdir-api`**.
-
-[![Select Subproject/webdir-api](https://raw.githubusercontent.com/Ktt-Development/webdir/main/readme-jitpack-api.png)](https://jitpack.io/#com.kttdevelopment/webdir)

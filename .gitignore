@@ -3,23 +3,5 @@
 out
 *.iml
 
-# Gradle
-.gradle
-
 # Maven
-target
-
-# Deploy
-/deploy/
-
-# WebDir
-/*.log
-/*.yml
-
-/webdir-*/_site
-/webdir-*/*.yml
-/webdir-*/*.log
-/webdir-*/*.log.*
-/webdir-*/*.log.lck
-/webdir-*/*.log.lck.*
-/webdir-*/crash-*.txt
+/target/
