@@ -1,9 +1,28 @@
-# WebDir
+<p align="center">
+    <a href="https://github.com/Ktt-Development/webdir">
+        <img src="https://raw.githubusercontent.com/Ktt-Development/webdir/main/branding/Logo.png" alt="Logo" width="100" height="100">
+    </a>
+    <h3 align="center">WebDir</h3>
+    <p align="center">
+        // todo
+        <br />
+        <a href="https://docs.kttdevelopment.com/webdir/">Docs</a>
+        •
+        <a href="https://wiki.kttdevelopment.com/webdir/">Wiki</a>
+        •
+        <a href="https://github.com/Ktt-Development/webdir/issues">Issues</a>
+    </p>
+</p>
 
-[![jitpack](https://jitpack.io/v/com.kttdevelopment/webdir.svg)](https://jitpack.io/#com.kttdevelopment/webdir)
-[![jitci](https://jitci.com/gh/ktt-development/webdir/svg)](https://jitci.com/gh/ktt-development/webdir)
 ![Java CI](https://github.com/Ktt-Development/webdir/workflows/Java%20CI/badge.svg)
 [![version](https://img.shields.io/github/v/release/ktt-development/webdir?include_prereleases)](https://github.com/ktt-development/webdir/releases)
 [![license](https://img.shields.io/github/license/ktt-development/webdir)](https://github.com/Ktt-Development/webdir/blob/main/LICENSE)
+---
 
-Extensible site generator and file explorer.
+# Setup
+
+// todo
+
+# Features
+
+// todo
