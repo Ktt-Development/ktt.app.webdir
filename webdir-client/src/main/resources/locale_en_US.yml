@@ -1,0 +1,37 @@
+name: English (US)
+
+logger:
+  name: Logger Service
+  constructor:
+    start: Started logger service initialization.
+    console_log: Added console log to logger.
+    log:
+      success: Started logging to file %s.
+      fail: Failed to start logging for file %s. %s
+    finish: Finished logger service initialization.
+  level:
+    SEVERE: SEVERE
+    WARNING: WARNING
+    INFO: INFO
+    CONFIG: CONFIG
+    FINE: FINE
+    FINER: FINER
+    FINEST: FINEST
+
+config:
+  name: Configuration Service
+  constructor:
+    start: Started configuration service initialization.
+    default:
+      start: Loading default configuration.
+      fail: Failed to load default configuration. %s
+      finish: Loaded default configuration.
+    config:
+      start: Loading configuration from file %s.
+      missing: Failed to load configuration from file %s (file not found). Using default configuration. %s
+      malformed: Failed to load configurtion from file %s (malformed yaml). Using defualt configuration. %s
+      default:
+        success: Created default configuration file at %s.
+        fail: Failed to create default configuration file at %s. %s
+      finish: Loaded configuration.
+    finish: Finished configuration service initialization.

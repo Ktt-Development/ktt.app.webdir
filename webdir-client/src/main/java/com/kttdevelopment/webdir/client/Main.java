@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.client;
 
+import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 import com.kttdevelopment.webdir.client.utility.FileUtility;
 
@@ -11,7 +12,7 @@ import java.util.logging.Logger;
 
 public abstract class Main {
 
-    private static LoggerService logger;
+    static LoggerService logger = null;
 
     public static LoggerService getLogger(){
         return logger;
@@ -21,9 +22,16 @@ public abstract class Main {
         return logger.getLogger(loggerName);
     }
 
+    static ConfigService config = null;
+
+    public static YamlMapping getConfig(){
+        return config.getConfiguration();
+    }
+
     public static void main(String[] args){
         try{
             logger = new LoggerService();
+            config = new ConfigService(new File("config.yml"));
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();
             final String response = "---- WebDir Crash Log ----\n" +
@@ -31,6 +39,7 @@ public abstract class Main {
                                     "OS: " + System.getProperty("os.name").toLowerCase() + '\n' +
                                     "Java Version: " + System.getProperty("java.version") + '\n' +
                                     "Logger: " + logger + '\n' +
+                                    "Config: " + config + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
                                     ExceptionUtility.getStackTraceAsString(e);
             try{

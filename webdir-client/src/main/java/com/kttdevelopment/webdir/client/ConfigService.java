@@ -3,9 +3,14 @@ package com.kttdevelopment.webdir.client;
 import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.client.config.Setting;
+import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.io.*;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.logging.Level;
 
 public final class ConfigService {
 
@@ -24,7 +29,7 @@ public final class ConfigService {
 
     private static final Setting[] settings = new Setting[]{
         new Setting(SAFE, String.valueOf(false), "Safe mode disables plugin loading."),
-        new Setting(LANG, "en_US", "The Language that the application will use for logging."),
+        new Setting(LANG, Locale.getDefault().getLanguage() + '_' + Locale.getDefault().getCountry(), "The Language that the application will use for logging."),
         new Setting(PLUGINS, "_plugins", "The folder where plugins will be loaded from."),
         new Setting(SOURCES, "_root", "The folder where files will be loaded from."),
         new Setting(DEFAULT, "_default", "The folder where defaults will be loaded from."),
@@ -41,11 +46,20 @@ public final class ConfigService {
     private final File configFile;
     private final YamlMapping configuration;
 
+    public final YamlMapping getConfiguration(){
+        return configuration;
+    }
+
     ConfigService(final File configFile) throws IOException{
         final LoggerService loggerService = Main.getLogger();
         final String loggerName = "Configuration Service";
+        final String fileName = configFile.getName();
 
-        // todo: init message
+        loggerService.addQueuedLoggerMessage(
+            "config.name", "config.constructor.start",
+            loggerName, "Started configuration service initialization.",
+            Level.INFO
+        );
 
         this.configFile = Objects.requireNonNull(configFile);
 
@@ -53,7 +67,11 @@ public final class ConfigService {
         final YamlMapping defaultConfig;
         final String defaultYaml;
         {
-            // todo: loading def message
+            loggerService.addQueuedLoggerMessage(
+                "config.name", "config.constructor.default.start",
+                loggerName, "Loading default configuration.",
+                Level.FINE
+            );
 
             final StringBuilder defaultYamlBuilder = new StringBuilder();
             defaultYamlBuilder.append( // header
@@ -69,30 +87,92 @@ public final class ConfigService {
             try{
                 defaultConfig = Yaml.createYamlInput(defaultYaml).readYamlMapping();
             }catch(final IOException e){
-                // todo: severe message (this should never happen!)
+                loggerService.addQueuedLoggerMessage(
+                    "config.name", "config.constructor.default.fail",
+                    loggerName, "Failed to load default configuration.",
+                    Level.SEVERE, LoggerService.getStackTraceAsString(e)
+                );
                 throw e;
             }
 
-            // todo: finished def message
+            loggerService.addQueuedLoggerMessage(
+                "config.name", "config.constructor.default.finished",
+                loggerName, "Loaded default configuration.",
+                Level.FINE
+            );
         }
 
         // load configuration
         {
-            // todo: loading config message
+            loggerService.addQueuedLoggerMessage(
+                "config.name", "config.constructor.config.start",
+                loggerName, "Loading configuration from file %s.",
+                Level.INFO, fileName
+            );
 
             YamlMapping yaml = null;
             try{
                 yaml = Yaml.createYamlInput(configFile).readYamlMapping();
             }catch(final IOException e){
-                // todo: e instanceof file not found
-                e.printStackTrace();
-                // todo: message
+                loggerService.addQueuedLoggerMessage(
+                    "config.name", "config.constructor.config." + (e instanceof FileNotFoundException ? "missing" : "malformed"),
+                    loggerName, "Loading configuration from file %s.",
+                    Level.WARNING, fileName
+                );
+                // copy default if missing
+                if(!configFile.exists())
+                    try{
+                        Files.write(configFile.toPath(), defaultYaml.getBytes(StandardCharsets.UTF_8));
+                            loggerService.addQueuedLoggerMessage(
+                                "config.name", "config.constructor.config.default.success",
+                                loggerName, "Created default configuration file at %s.",
+                                Level.INFO, fileName
+                            );
+                    }catch(final IOException | SecurityException e2){
+                        loggerService.addQueuedLoggerMessage(
+                            "config.name", "config.constructor.config.default.fail",
+                            loggerName, "Failed to create default configuration file at %s. %s",
+                            Level.SEVERE, fileName, LoggerService.getStackTraceAsString(e2)
+                        );
+                    }
             }
-            configuration = yaml == null ? defaultConfig: yaml;
 
-            // todo: finish config message
+            // populate with defaults
+            configuration = yaml == null ? defaultConfig : Yaml.createYamlMappingBuilder()
+                .add(SAFE       , Objects.requireNonNullElse(yaml.string(SAFE)          , defaultConfig.string(SAFE)))
+                .add(LANG       , Objects.requireNonNullElse(yaml.string(LANG)          , defaultConfig.string(LANG)))
+                .add(PLUGINS    , Objects.requireNonNullElse(yaml.string(PLUGINS)       , defaultConfig.string(PLUGINS)))
+                .add(SOURCES    , Objects.requireNonNullElse(yaml.string(SOURCES)       , defaultConfig.string(SOURCES)))
+                .add(DEFAULT    , Objects.requireNonNullElse(yaml.string(DEFAULT)       , defaultConfig.string(DEFAULT)))
+                .add(OUTPUT     , Objects.requireNonNullElse(yaml.string(OUTPUT)        , defaultConfig.string(OUTPUT)))
+                .add(CLEAN      , Objects.requireNonNullElse(yaml.string(CLEAN)         , defaultConfig.string(CLEAN)))
+                .add(SERVER     , Objects.requireNonNullElse(yaml.string(SERVER)        , defaultConfig.string(SERVER)))
+                .add(PORT       , Objects.requireNonNullElse(yaml.string(PORT)          , defaultConfig.string(PORT)))
+                .add(CONTEXT    , Objects.requireNonNullElse(yaml.string(CONTEXT)       , defaultConfig.string(CONTEXT)))
+                .add(PERMISSIONS, Objects.requireNonNullElse(yaml.string(PERMISSIONS)   , defaultConfig.string(PERMISSIONS)))
+                .build();
+
+            loggerService.addQueuedLoggerMessage(
+                "config.name", "config.constructor.config.finish",
+                loggerName, "Loaded configuration.",
+                Level.INFO
+            );
         }
 
+        loggerService.addQueuedLoggerMessage(
+            "config.name", "config.constructor.finish",
+            loggerName, "Finished configuration service initialization.",
+            Level.INFO
+        );
+    }
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("configFile", configFile)
+            .addObject("default", settings)
+            .addObject("configuration", configuration)
+            .toString();
     }
 
 }

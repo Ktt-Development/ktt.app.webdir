@@ -5,3 +5,9 @@ out
 
 # Maven
 /target/
+/*/target/
+
+# WebDir
+
+/*.log
+/*.lck

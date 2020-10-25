@@ -6,19 +6,19 @@ import java.util.logging.Level;
 
 public final class QueuedLoggerMessage {
 
-    private final String localizedLoggerName, localeKey, defaultLoggerName, defaultMessage;
+    private final String localizedLoggerKey, localeKey, defaultLoggerName, defaultMessage;
     private final Level level;
     private final Object[] args;
 
     public QueuedLoggerMessage(
-        final String localizedLoggerName,
+        final String localizedLoggerKey,
         final String localeKey,
         final String defaultLoggerName,
         final String defaultMessage,
         final Level level,
         final Object[] args
     ){
-        this.localizedLoggerName    = localizedLoggerName;
+        this.localizedLoggerKey = localizedLoggerKey;
         this.localeKey              = localeKey;
         this.defaultLoggerName      = defaultLoggerName;
         this.defaultMessage         = defaultMessage;
@@ -26,8 +26,8 @@ public final class QueuedLoggerMessage {
         this.args                   = args;
     }
 
-    public final String getLocalizedLoggerName(){
-        return localizedLoggerName;
+    public final String getLocalizedLoggerKey(){
+        return localizedLoggerKey;
     }
 
     public final String getLocaleKey(){
@@ -55,7 +55,7 @@ public final class QueuedLoggerMessage {
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
-            .addObject("localizedLoggerName", localizedLoggerName)
+            .addObject("localizedLoggerKey", localizedLoggerKey)
             .addObject("localeKey", localeKey)
             .addObject("defaultLoggerName", defaultLoggerName)
             .addObject("defaultMessage", defaultMessage)
