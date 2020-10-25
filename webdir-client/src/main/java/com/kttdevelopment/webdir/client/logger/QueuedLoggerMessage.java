@@ -4,7 +4,7 @@ import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.util.logging.Level;
 
-public class QueuedLoggerMessage {
+public final class QueuedLoggerMessage {
 
     private final String localizedLoggerName, localeKey, defaultLoggerName, defaultMessage;
     private final Level level;

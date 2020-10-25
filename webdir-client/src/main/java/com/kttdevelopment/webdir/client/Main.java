@@ -11,10 +11,15 @@ import java.util.logging.Logger;
 
 public abstract class Main {
 
-    // root directory is one above binaries
-    public static final File root = new File(".").getParentFile().getAbsoluteFile();
+    private static LoggerService logger;
 
-    static LoggerService logger;
+    public static LoggerService getLogger(){
+        return logger;
+    }
+
+    public static Logger getLogger(final String loggerName){
+        return logger.getLogger(loggerName);
+    }
 
     public static void main(String[] args){
         try{
@@ -34,7 +39,7 @@ public abstract class Main {
                 Logger.getGlobal().severe('\n' + response);
             }
             ExceptionUtility.runIgnoreException(
-                () -> Files.write(FileUtility.getFreeFile(new File(root, "crash-log-" + time + ".log")).toPath(), response.getBytes(StandardCharsets.UTF_8))
+                () -> Files.write(FileUtility.getFreeFile(new File("crash-log-" + time + ".log")).toPath(), response.getBytes(StandardCharsets.UTF_8))
             );
         }
     }

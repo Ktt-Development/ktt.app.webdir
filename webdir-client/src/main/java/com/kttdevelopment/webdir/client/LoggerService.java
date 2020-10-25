@@ -2,9 +2,9 @@ package com.kttdevelopment.webdir.client;
 
 import com.kttdevelopment.webdir.client.logger.LoggerFormatter;
 import com.kttdevelopment.webdir.client.logger.QueuedLoggerMessage;
-import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
-import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
+import com.kttdevelopment.webdir.client.utility.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
@@ -40,7 +40,7 @@ public final class LoggerService {
             setFormatter(new LoggerFormatter(false, false));
         }});
         // todo: add add message
-        handlers.add(new FileHandler(System.currentTimeMillis() + ".log"){{
+        handlers.add(new FileHandler(FileUtility.getFreeFile(new File(System.currentTimeMillis() + ".log")).getName()){{
             setLevel(Level.INFO);
             setFormatter(new LoggerFormatter(true, false));
         }});

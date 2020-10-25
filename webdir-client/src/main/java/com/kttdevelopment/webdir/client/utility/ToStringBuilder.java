@@ -38,7 +38,7 @@ public final class ToStringBuilder {
         if(object == null)
             return null;
         else if(object instanceof String)
-            return '"' + object.toString() + '"';
+            return '\'' + object.toString() + '\'';
         else if(object instanceof Object[])
             return Arrays.toString((Object[]) object);
         else
