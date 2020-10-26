@@ -1,9 +1,7 @@
 package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.kttdevelopment.webdir.client.permissions.PermissionsGroup;
-import com.kttdevelopment.webdir.client.permissions.PermissionsUser;
+import com.kttdevelopment.webdir.client.permissions.*;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
@@ -150,12 +148,157 @@ public class PermissionsServiceTests {
 
         // test none
         {
-            final String testValue = UUID.randomUUID().toString();
-
             final PermissionsUser user = new PermissionsUser("255.255.255.255", Yaml.createYamlInput("").readYamlMapping());
             Assertions.assertEquals(0, user.getGroups().size());
             Assertions.assertEquals(0, user.getOptions().size());
             Assertions.assertEquals(0, user.getPermissions().size());
+        }
+    }
+
+    @Test
+    public void testPermissions() throws IOException{
+        // test null
+        Assertions.assertDoesNotThrow(() -> new Permissions(null));
+
+        // test invalid
+        {
+            final String testValue = UUID.randomUUID().toString();
+            final String yml = (
+                "groups: %s\n" +
+                "users: %s\n"
+            ).replace("%s", testValue);
+
+            final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+            Assertions.assertEquals(0, perm.getGroups().size());
+            Assertions.assertEquals(0, perm.getUsers().size());
+            Assertions.assertFalse(perm.hasPermission(""));
+        }
+        // test none
+        {
+            final Permissions perm = new Permissions(Yaml.createYamlInput("").readYamlMapping());
+            Assertions.assertEquals(0, perm.getGroups().size());
+            Assertions.assertEquals(0, perm.getUsers().size());
+            Assertions.assertFalse(perm.hasPermission(""));
+        }
+        // test valid
+        {
+            {
+                final String testValue = UUID.randomUUID().toString();
+                final String testValueInherit = UUID.randomUUID().toString();
+                final String yml = (
+                    "groups:\n" +
+                    "  $1:\n" +
+                    "    inheritance:\n" +
+                    "      - $2\n" +
+                    "    options:\n" +
+                    "      $1: $1\n" +
+                    "    permissions:\n" +
+                    "      - $1\n" +
+                    "  $2:\n" +
+                    "    options:\n" +
+                    "      $2: $2\n" +
+                    "    permissions:\n" +
+                    "      - $2\n" +
+                    "users:\n" +
+                    "  255.255.255.255:\n" +
+                    "    groups:\n" +
+                    "      - $1"
+                )
+                .replace("$1", testValue)
+                .replace("$2", testValueInherit);
+
+                final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+
+                Assertions.assertEquals(2, perm.getGroups().size());
+                Assertions.assertEquals(1, perm.getUsers().size());
+                // test get option + perm
+                Assertions.assertEquals(testValue, perm.getOption(InetAddress.getByName("255.255.255.255"), testValue));
+                Assertions.assertTrue(perm.hasPermission(InetAddress.getByName("255.255.255.255"), testValue));
+
+                // test get inherited option + perm
+                Assertions.assertEquals(testValueInherit, perm.getOption(InetAddress.getByName("255.255.255.255"), testValueInherit));
+                Assertions.assertTrue(perm.hasPermission(InetAddress.getByName("255.255.255.255"), testValueInherit));
+            }
+            {
+                final String testValue = UUID.randomUUID().toString();
+                final String testValueInherit = UUID.randomUUID().toString();
+                final String yml = (
+                    "groups:\n" +
+                    "  $1:\n" +
+                    "    inheritance:\n" +
+                    "      - $2\n" +
+                    "    options:\n" +
+                    "      default: true\n" +
+                    "      $1: $1\n" +
+                    "  $2:\n" +
+                    "    options:\n" +
+                    "      default: false\n" +
+                    "      $2: $2\n" +
+                    "    permissions:\n" +
+                    "      - $2\n" +
+                    "users:\n" +
+                    "  255.255.255.255:\n" +
+                    "    options:\n" +
+                    "      $1: $2\n" +
+                    "    permissions:\n" +
+                    "      - $1"
+                )
+                .replace("$1", testValue)
+                .replace("$2", testValueInherit);
+
+                final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+                Assertions.assertEquals(2, perm.getGroups().size());
+                Assertions.assertEquals(1, perm.getUsers().size());
+
+                // test user override inherited option + perm
+                Assertions.assertEquals(testValueInherit, perm.getOption(InetAddress.getByName("255.255.255.255"), testValue));
+                Assertions.assertTrue(perm.hasPermission(InetAddress.getByName("255.255.255.255"), testValue));
+
+                // test default option + perm + inherited
+                Assertions.assertNull(perm.getOption(InetAddress.getByName("255.255.255.255"), "default"));
+                Assertions.assertTrue(perm.hasPermission(InetAddress.getByName("255.255.255.255"), testValueInherit));
+                Assertions.assertEquals(testValueInherit, perm.getOption(InetAddress.getByName("255.255.255.255"), testValue));
+
+                Assertions.assertEquals("true", perm.getOption("default"));
+                Assertions.assertTrue(perm.hasPermission(testValueInherit));
+                Assertions.assertEquals(testValueInherit, testValueInherit);
+            }
+            {
+                final String testValue = UUID.randomUUID().toString();
+                final String testValueInherit = UUID.randomUUID().toString();
+                final String yml = (
+                    "groups:\n" +
+                    "  $1:\n" +
+                    "    inheritance:\n" +
+                    "      - $2\n" +
+                    "    options:\n" +
+                    "      default: true\n" +
+                    "    permissions:\n" +
+                    "      - $1\n" +
+                    "      - !$2\n" +
+                    "  $2:\n" +
+                    "    permissions:\n" +
+                    "      - $1\n" +
+                    "      - $2\n" +
+                    "users:\n" +
+                    "  255.255.255.255:\n" +
+                    "    permissions:\n" +
+                    "      - !$1"
+                )
+                .replace("$1", testValue)
+                .replace("$2", testValueInherit);
+
+                final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+                Assertions.assertEquals(2, perm.getGroups().size());
+                Assertions.assertEquals(1, perm.getUsers().size());
+
+                // test negative user & group perm override default
+                Assertions.assertFalse(perm.hasPermission(InetAddress.getByName("255.255.255.255"), testValue));
+                Assertions.assertFalse(perm.hasPermission(InetAddress.getByName("255.255.255.255"), testValueInherit));
+
+                Assertions.assertTrue(perm.hasPermission(testValue));
+                Assertions.assertFalse(perm.hasPermission(testValueInherit));
+            }
         }
 
     }

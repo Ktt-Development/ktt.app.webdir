@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ConfigServiceTests {
 
     @TempDir
-    File configTest;
+    final File configTest = new File(UUID.randomUUID().toString());
 
     @Test
     public void testConfig() throws IOException{

@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.kttdevelopment.webdir.client.utility.SymbolicStringMatcher.MatchState.*;
+
 public final class Permissions {
 
     private final Set<PermissionsGroup> groups = new HashSet<>();
@@ -22,6 +24,14 @@ public final class Permissions {
         final Logger logger = Main.getLogger(locale.getString("permissions.name"));
 
         logger.finer(locale.getString("permissions.permissions.start", value));
+
+        // null
+        {
+            if(value == null){
+                logger.severe(locale.getString("permissions.permissions.null"));
+                return;
+            }
+        }
 
         // groups
         {
@@ -76,13 +86,17 @@ public final class Permissions {
     }
 
     // options
-    public final Object getOption(final InetAddress address, final String option){
+    public final String getOption(final String option){
+        return getOption(null, option);
+    }
+
+    public final String getOption(final InetAddress address, final String option){
         final PermissionsUser user = getUser(address);
 
         // default
-        Object defaultValue = null;
+        String defaultValue = null;
         for(final PermissionsGroup group : getDefaultGroupsAndInherited())
-            if(group.getOptions().get(option) != null)
+            if(defaultValue == null && group.getOptions().get(option) != null)
                 defaultValue = group.getOptions().get(option);
 
         if(user == null) return defaultValue;
@@ -103,52 +117,65 @@ public final class Permissions {
     }
 
     // permissions
+    public final boolean hasPermission(final String permission){
+        return hasPermission((InetAddress) null, permission);
+    }
+
+    // switch to case equals instead of boolean
     public final boolean hasPermission(final InetAddress address, final String permission){
         final PermissionsUser user = getUser(address);
 
         // default
-        boolean hasDefaultPermission = false;
+        SymbolicStringMatcher.MatchState hasDefaultPermission = NO_MATCH;
+        SymbolicStringMatcher.MatchState perm;
         for(final PermissionsGroup group : getDefaultGroupsAndInherited())
-            if(hasPermission(group,permission))
-                hasDefaultPermission = true;
+            if(hasDefaultPermission != NEGATIVE_MATCH && (perm = hasPermission(group,permission)) != NO_MATCH) // let negative match take precedence
+                hasDefaultPermission = perm;
 
-        if(user == null) return hasDefaultPermission;
+        if(user == null) return hasDefaultPermission == MATCH; // only if has perm
 
         // user
-        if(hasPermission(permission,user.getPermissions()))
-            return true;
+        if((perm = hasPermission(permission, user.getPermissions())) != NO_MATCH) // only if has perm
+            return perm == MATCH;
+
         // group
         for(final PermissionsGroup group : getGroupsAndInherited(user.getGroups()))
-            if(hasPermission(permission,group.getPermissions()))
+            if(hasPermission(group, permission) == MATCH)
                 return true;
-        return hasDefaultPermission;
+        return hasDefaultPermission == MATCH;
     }
 
-    private boolean hasPermission(final PermissionsGroup group, final String permission){
-        for(final PermissionsGroup g : getGroupsAndInherited(Collections.singletonList(group.getGroup())))
-            if(hasPermission(permission,g.getPermissions()))
-                return true;
-        return false;
+    private SymbolicStringMatcher.MatchState hasPermission(final PermissionsGroup group, final String permission){
+        boolean hasPermission = false;
+        for(final PermissionsGroup g : getGroupsAndInherited(Collections.singletonList(group.getGroup()))){
+            final SymbolicStringMatcher.MatchState hp = hasPermission(permission, g.getPermissions());
+            if(hp == MATCH)
+                hasPermission = true;
+            else if(hp == NEGATIVE_MATCH)
+                return NEGATIVE_MATCH;
+        }
+        return hasPermission ? MATCH : NO_MATCH;
     }
 
-    private boolean hasPermission(final String permission, final List<String> permissions){
+    private SymbolicStringMatcher.MatchState hasPermission(final String permission, final List<String> permissions){
         boolean hasPermission = false;
         for(final String perm : permissions)
             switch(SymbolicStringMatcher.matches(perm, permission)){
                 case NEGATIVE_MATCH:
-                    return false;
+                    return NEGATIVE_MATCH;
                 case MATCH:
                     hasPermission = true;
             }
-        return hasPermission;
+        return hasPermission ? MATCH : NO_MATCH;
     }
 
     // get default groups + inherited
 
-    public final List<PermissionsGroup> getDefaultGroupsAndInherited(){
+    private List<PermissionsGroup> getDefaultGroupsAndInherited(){
         final List<PermissionsGroup> defaultGroups = new ArrayList<>();
 
         for(final PermissionsGroup group : groups){
+            // try catch not needed because invalid boolean resolves to false
             if(group.getOptions().containsKey(PermissionsService.def) && Boolean.parseBoolean(group.getOptions().get(PermissionsService.def))){
                 defaultGroups.add(group);
                 defaultGroups.addAll(getInheritedGroups(group));
@@ -160,7 +187,7 @@ public final class Permissions {
 
     // get groups + inherited groups
 
-    public final List<PermissionsGroup> getGroupsAndInherited(final List<String> groups){
+    private List<PermissionsGroup> getGroupsAndInherited(final List<String> groups){
         final List<PermissionsGroup> fullGroups = new ArrayList<>();
         for(final PermissionsGroup group : this.groups){
             if(groups.contains(group.getGroup())){
@@ -207,6 +234,5 @@ public final class Permissions {
             .addObject("users", users)
             .toString();
     }
-
 
 }
