@@ -3,17 +3,20 @@ package com.kttdevelopment.webdir.client;
 import com.amihaiemil.eoyaml.Yaml;
 import com.kttdevelopment.webdir.client.permissions.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.UUID;
 
 public class PermissionsServiceTests {
 
-    @BeforeEach
-    public void before(){
-        Assertions.assertDoesNotThrow(() -> Main.logger = new LoggerService(), getClass().getSimpleName() + " depends on LoggerService for tests.");
-        Assertions.assertDoesNotThrow(() -> Main.locale = new LocaleService(), getClass().getSimpleName() + " depends on LoggerService for tests.");
+    @BeforeAll
+    public static void before(){
+        Assertions.assertDoesNotThrow(() -> Main.logger = new LoggerService(), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
+        Assertions.assertDoesNotThrow(() -> Main.locale = new LocaleService(), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
     }
 
     @AfterAll
@@ -301,6 +304,54 @@ public class PermissionsServiceTests {
             }
         }
 
+    }
+
+    @TempDir
+    public final File permTest = new File(UUID.randomUUID().toString());
+
+    @Test
+    public void testService() throws IOException{
+        final File permissions = new File(permTest, UUID.randomUUID().toString() + ".yml");
+
+        PermissionsService service = new PermissionsService(permissions);
+
+        // test file exists and is valid
+        Assertions.assertTrue(permissions.exists());
+        Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(permissions).readYamlMapping());
+
+        Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
+        Assertions.assertEquals(2, service.getPermissions().getGroups().size());
+        Assertions.assertEquals(1, service.getPermissions().getUsers().size());
+
+        // test OK
+        service = new PermissionsService(permissions);
+        Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(permissions).readYamlMapping());
+
+        Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
+        Assertions.assertEquals(2, service.getPermissions().getGroups().size());
+        Assertions.assertEquals(1, service.getPermissions().getUsers().size());
+
+        // test malformed
+        // malformed seems to be ignored by the library, it is unclear if this will cause issues.
+        // config also runs this check
+        Files.write(permissions.toPath(), "X: {".getBytes());
+        service = new PermissionsService(permissions);
+        Assertions.assertTrue(permissions.exists());
+        Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(permissions).readYamlMapping());
+
+        Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
+        // Assertions.assertEquals(2, service.getPermissions().getGroups().size());
+        // Assertions.assertEquals(1, service.getPermissions().getUsers().size());
+
+        // test empty
+        Files.write(permissions.toPath(),"".getBytes());
+        service = new PermissionsService(permissions);
+        Assertions.assertTrue(permissions.exists());
+        Assertions.assertEquals(permissions.length(), 0);
+
+        Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
+        Assertions.assertEquals(0, service.getPermissions().getGroups().size());
+        Assertions.assertEquals(0, service.getPermissions().getUsers().size());
     }
 
 }

@@ -72,6 +72,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.kttdevelopment</groupId>
+            <artifactId>webdir-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.amihaiemil.web</groupId>
             <artifactId>eo-yaml</artifactId>
             <version>5.1.6</version>

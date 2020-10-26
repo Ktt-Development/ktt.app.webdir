@@ -34,10 +34,10 @@ public class LoggerServiceTests {
         Assertions.assertEquals(4, service.getLogger("logger").getHandlers().length);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void clearLogFiles(){
-        for(final File file : Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log")), new File[0])){
-            file.deleteOnExit();
-        }
+        for(final File file : Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log") || name.endsWith(".lck")), new File[0]))
+            file.delete();
     }
 
 }

@@ -11,3 +11,9 @@ out
 
 /*.log
 /*.lck
+/*/*.log
+/*/*.lck
+/*.log.*
+/*.lck.*
+/*/*.log.*
+/*/*.lck.*

@@ -1,6 +1,8 @@
 package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.YamlMapping;
+import com.kttdevelopment.webdir.client.permissions.Permissions;
+import com.kttdevelopment.webdir.client.permissions.PermissionsGroup;
 import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 import com.kttdevelopment.webdir.client.utility.FileUtility;
 
@@ -34,11 +36,22 @@ public abstract class Main {
         return locale;
     }
 
+    static PermissionsService permissions = null;
+
+    public static Permissions getPermissions(){
+        return permissions.getPermissions();
+    }
+
     public static void main(String[] args){
         try{
             logger = new LoggerService();
             config = new ConfigService(new File("config.yml"));
             locale = new LocaleService();
+
+            // server only
+            if(Boolean.parseBoolean(getConfig().string(ConfigService.SERVER))){
+                permissions = new PermissionsService(new File("permissions.yml"));
+            }
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();
             final String response = "---- WebDir Crash Log ----\n" +

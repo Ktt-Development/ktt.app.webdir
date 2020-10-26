@@ -7,7 +7,7 @@ public class LocaleService {
     }
 
     public final String getString(final String key, final Object... args){
-        return "FIXME: this hasn't been implemented yet"; // todo
+        return "TODO"; // todo
     }
 
 }

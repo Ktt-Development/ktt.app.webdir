@@ -29,7 +29,7 @@ config:
     config:
       start: Loading configuration from file %s.
       missing: Failed to load configuration from file %s (file not found). Using default configuration. %s
-      malformed: Failed to load configurtion from file %s (malformed yaml). Using defualt configuration. %s
+      malformed: Failed to load configuration from file %s (malformed yaml). Using defualt configuration. %s
       default:
         success: Created default configuration file at %s.
         fail: Failed to create default configuration file at %s. %s
@@ -38,6 +38,21 @@ config:
 
 permissions:
   name: Permissions Service
+  constructor:
+    start: Started permissions service initialization.
+    default:
+      start: Loading default permissions.
+      fail: Failed to load default permissions.
+      finish: Loaded default configuration.
+    permissions:
+      start: Loading permissions from file %s.
+      missing: Failed to load permissions from file %s (file not found). Using default permissions.
+      malformed: Failed to load permissions from file %s (malformed yaml). Using defualt permissions.
+      default:
+        success: Created default permissions file at %s.
+        fail: Failed to create default permissions file at %s. %s
+      finish: Loaded permissions.
+    finish: Finished permissions service initialization.
   permissions:
     start: Creating permissions from %s.
     null: Failed to create permissions (value was not a map or was missing).
