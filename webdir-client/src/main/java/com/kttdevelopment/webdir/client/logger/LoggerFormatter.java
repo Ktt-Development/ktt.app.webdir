@@ -1,5 +1,7 @@
 package com.kttdevelopment.webdir.client.logger;
 
+import com.kttdevelopment.webdir.client.Main;
+import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.text.SimpleDateFormat;
@@ -21,8 +23,7 @@ public final class LoggerFormatter extends Formatter {
 
     @Override
     public final String format(final LogRecord record){
-        // final String level = ExceptionUtil.requireNonExceptionElse(() -> Main.getLocaleService().getString("logger.level." + record.getLevel().getName().toUpperCase()),record.getLevel().getName().toUpperCase());
-        final String level = record.getLevel().getName(); // todo: localized level
+        final String level = ExceptionUtility.requireNonExceptionElse(() -> Main.getLocale().getString("logger.level." + record.getLevel().getName().toUpperCase()), record.getLevel().getName().toUpperCase());
         return
             (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
             '[' + level + ']' + ' ' +

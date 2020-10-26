@@ -28,10 +28,17 @@ public abstract class Main {
         return config.getConfiguration();
     }
 
+    static LocaleService locale = null;
+
+    public static LocaleService getLocale(){
+        return locale;
+    }
+
     public static void main(String[] args){
         try{
             logger = new LoggerService();
             config = new ConfigService(new File("config.yml"));
+            locale = new LocaleService();
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();
             final String response = "---- WebDir Crash Log ----\n" +

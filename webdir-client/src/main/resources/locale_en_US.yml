@@ -35,3 +35,20 @@ config:
         fail: Failed to create default configuration file at %s. %s
       finish: Loaded configuration.
     finish: Finished configuration service initialization.
+
+permissions:
+  name: Permissions Service
+  permissions:
+    start: Creating permissions from %s.
+    unknownUser: Failed to create user %s (unknown address).
+    finish: Created permissions.
+  permissionsGroup:
+    null: Failed to create permissions group %s (value was not a map or was missing).
+    start: Creating permissions group %s from %s.
+    string: Failed to parse node %s in group %s (value was not a string).
+    finish: Created permissions group %s.
+  permissionsUser:
+    null: Failed to create permissions user %s (value was not a map or was missing).
+    start: Creating permissions user %s from %s.
+    string: Failed to parse node %s in user %s (value was not a string).
+    finish: Created permissions user %s.

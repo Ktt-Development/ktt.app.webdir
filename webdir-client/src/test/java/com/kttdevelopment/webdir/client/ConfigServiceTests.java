@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -18,7 +17,7 @@ public class ConfigServiceTests {
 
     @Test
     public void testConfig() throws IOException{
-        Main.logger = new LoggerService();
+        Assertions.assertDoesNotThrow(() -> Main.logger = new LoggerService(), getClass().getSimpleName() + " depends on LoggerService for tests.");
 
         final File config = new File(configTest, UUID.randomUUID().toString() + ".yml");
         final AtomicReference<ConfigService> service = new AtomicReference<>();
@@ -48,8 +47,8 @@ public class ConfigServiceTests {
 
         Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(config).readYamlMapping());
 
-        Assertions.assertEquals("true", service.get().getConfiguration().string("server"));
-        Assertions.assertEquals("80", service.get().getConfiguration().string("port"));
+        Assertions.assertEquals("true", service.get().getConfiguration().string(ConfigService.SERVER));
+        Assertions.assertEquals("80", service.get().getConfiguration().string(ConfigService.PORT));
 
         LoggerServiceTests.clearLogFiles();
     }

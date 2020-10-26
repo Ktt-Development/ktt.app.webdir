@@ -46,7 +46,7 @@ public class ToStringBuilderTests {
 
         final String className = getClass().getSimpleName();
 
-        Assertions.assertEquals(className + String.format("{%s=\"%s\", %s=%s}", v1, o1, v2, Arrays.toString((Object[]) o2)), new ToStringBuilder(className).addObject(v1, o1).addObject(v2, o2).toString());
+        Assertions.assertEquals(className + String.format("{%s='%s', %s=%s}", v1, o1, v2, Arrays.toString((Object[]) o2)), new ToStringBuilder(className).addObject(v1, o1).addObject(v2, o2).toString());
     }
 
 }
