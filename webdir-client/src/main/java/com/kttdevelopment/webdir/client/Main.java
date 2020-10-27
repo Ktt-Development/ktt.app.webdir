@@ -41,6 +41,12 @@ public abstract class Main {
         return permissions.getPermissions();
     }
 
+    static PluginLoader pluginLoader = null;
+
+        public static PluginLoader getPluginLoader(){
+            return pluginLoader;
+        }
+
     static PageRenderingService pageRenderingService = null;
 
         public static PageRenderingService getPageRenderingService(){
@@ -52,6 +58,8 @@ public abstract class Main {
             logger = new LoggerService();
             config = new ConfigService(new File("config.yml"));
             locale = new LocaleService("lang/locale");
+
+            pluginLoader = new PluginLoader(new File(getConfig().string(ConfigService.PLUGINS)));
 
             // server only
             if(Boolean.parseBoolean(getConfig().string(ConfigService.SERVER))){

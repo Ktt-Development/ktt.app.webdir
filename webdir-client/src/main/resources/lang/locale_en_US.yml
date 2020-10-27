@@ -86,5 +86,8 @@ permissions:
     string: Failed to parse node %s in user %s (value was not a string).
     finish: Created permissions user %s.
 
+plugin-loader:
+  name: Plugin Loader
+
 page-render:
   name: Page Rendering Service

@@ -21,9 +21,7 @@ public class LoggerServiceTests {
         Assertions.assertTrue(debug.exists());
 
         // check if current file
-        Assertions.assertEquals(3, Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> {
-            return name.endsWith(".log");
-        }), new File[0]).length);
+        Assertions.assertEquals(3, Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log")), new File[0]).length);
         clearLogFiles();
 
         // queued messages

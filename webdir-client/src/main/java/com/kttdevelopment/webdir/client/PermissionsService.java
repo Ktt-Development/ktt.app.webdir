@@ -3,17 +3,15 @@ package com.kttdevelopment.webdir.client;
 import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.client.permissions.Permissions;
-import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PermissionsService {
+public final class PermissionsService {
 
     public static final String
         groups      = "groups",
