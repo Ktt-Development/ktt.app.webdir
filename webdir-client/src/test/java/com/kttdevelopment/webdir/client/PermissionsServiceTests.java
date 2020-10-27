@@ -16,7 +16,7 @@ public class PermissionsServiceTests {
     @BeforeAll
     public static void before(){
         Assertions.assertDoesNotThrow(() -> Main.logger = new LoggerService(), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
-        Assertions.assertDoesNotThrow(() -> Main.locale = new LocaleService(), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
+        Assertions.assertDoesNotThrow(() -> Main.locale = new LocaleService("lang/locale"), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
     }
 
     @AfterAll

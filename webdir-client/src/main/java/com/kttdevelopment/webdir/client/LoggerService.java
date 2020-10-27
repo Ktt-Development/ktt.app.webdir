@@ -24,7 +24,7 @@ public final class LoggerService {
     }
 
     public final List<QueuedLoggerMessage> getQueuedLoggerMessages(){
-        return Collections.unmodifiableList(queuedMessages);
+        return queuedMessages;
     }
 
     private final List<Handler> handlers = new ArrayList<>();
