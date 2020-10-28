@@ -12,6 +12,10 @@ public class WebDirPlugin {
         this.service = service;
     }
 
+    public final String getPluginName(){
+        return service.getPluginName();
+    }
+
     public final Logger getLogger(){
         return service.getLogger();
     }

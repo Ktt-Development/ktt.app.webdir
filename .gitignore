@@ -4,16 +4,11 @@ out
 *.iml
 
 # Maven
-/target/
-/*/target/
+target
+
 
 # WebDir
 
-/*.log
-/*.lck
-/*/*.log
-/*/*.lck
-/*.log.*
-/*.lck.*
-/*/*.log.*
-/*/*.lck.*
+/_plugins
+*.log
+*.lck

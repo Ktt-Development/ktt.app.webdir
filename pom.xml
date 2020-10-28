@@ -14,6 +14,7 @@
     <modules>
         <module>webdir-client</module>
         <module>webdir-api</module>
+        <module>test-plugins</module>
     </modules>
 
     <url>https://github.com/Ktt-Development/webdir</url>

@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 public abstract class PluginService {
 
+    public abstract String getPluginName();
+
     public abstract Logger getLogger();
 
     public abstract File getPluginFolder();

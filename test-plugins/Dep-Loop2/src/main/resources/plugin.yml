@@ -1,0 +1,3 @@
+main: Main
+name: DepLoop2
+dependencies: DepLoop1

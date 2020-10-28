@@ -22,7 +22,7 @@ public class PluginLoaderTests {
     /**
      * https://github.com/Ktt-Development/webdir/tree/79e8dae/webdir-test-plugins
      * Invalid tests:
-     * - circular dependencies
+     * - not jar     * - circular dependencies
      * - constructor exception
      * - missing dep
      * - missing yml

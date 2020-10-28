@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
-public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,Map<YamlMapping,WebDirPlugin>> {
+public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,List<WebDirPlugin>> {
 
     private final LocaleService locale;
     private final Logger logger;
@@ -26,16 +26,16 @@ public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,M
     }
 
     @Override
-    public final Map<YamlMapping,WebDirPlugin> filter(final Map<File,YamlMapping> in){
-        final Map<YamlMapping,WebDirPlugin> loaded = new HashMap<>();
+    public final List<WebDirPlugin> filter(final Map<File,YamlMapping> in){
+        final List<WebDirPlugin> loaded = new ArrayList<>();
         final File pluginFolder = Main.getPluginLoader().getPluginsFolder();
         in.forEach((file, yml) -> {
             // check that all dependencies have been loaded
             {
                 final List<String> missingDependencies = DependencyFilter.getDependencies(yml);
                 missingDependencies.removeIf(name -> {
-                    for(final Map.Entry<YamlMapping,WebDirPlugin> entry : loaded.entrySet())
-                        if(entry.getKey().string(PluginLoader.NAME).equals(name))
+                    for(final WebDirPlugin entry : loaded)
+                        if(entry.getPluginName().equals(name))
                             return true;
                     return false;
                 });
@@ -82,7 +82,7 @@ public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,M
 
                     // run above future
                     try{
-                        loaded.put(yml, Objects.requireNonNull(future.get(30, TimeUnit.SECONDS)));
+                        loaded.add(Objects.requireNonNull(future.get(30, TimeUnit.SECONDS)));
                     }catch(final InterruptedException | TimeoutException | NullPointerException e){
                         logger.severe(locale.getString("plugin-loader.filter.enable.time", file.getName()) + LoggerService.getStackTraceAsString(e));
                     }catch(final Throwable e){

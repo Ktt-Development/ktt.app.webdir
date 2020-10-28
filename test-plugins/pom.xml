@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>webdir</artifactId>
+        <groupId>com.kttdevelopment</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.kttdevelopment.webdir</groupId>
+    <artifactId>test-plugins</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Test Plugins (do not distribute)</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Built-By>Ktt Development</Built-By>
+                        </manifestEntries>
+                    </archive>
+                    <skip>true</skip>
+                    <outputDirectory>../../_plugins</outputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>YML-Missing</module>
+        <module>YML-NoMain</module>
+        <module>YML-NoName</module>
+        <module>YML-InvalidDep</module>
+        <module>Dep-Missing</module>
+        <module>Dep-Loop1</module>
+        <module>Dep-Loop2</module>
+        <module>Init-DepExc</module>
+        <module>Init-MissingDep</module>
+        <module>Init-TimedOut</module>
+        <module>Init-NoExtends</module>
+        <module>Valid-Plugin</module>
+        <module>Valid-Dependent</module>
+        <module>Init-ConstExc</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.kttdevelopment</groupId>
+            <artifactId>webdir-api</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

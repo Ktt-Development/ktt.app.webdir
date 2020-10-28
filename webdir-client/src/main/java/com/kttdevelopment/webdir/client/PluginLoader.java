@@ -19,20 +19,20 @@ public final class PluginLoader {
         DEPENDENCIES = "dependencies";
 
     private final List<PluginRendererEntry> renderers = new ArrayList<>();
-    private final Map<String,WebDirPlugin> plugins = new HashMap<>();
+    private final List<WebDirPlugin> plugins = new ArrayList<>();
 
     public final List<PluginRendererEntry> getRenderers(){
         return Collections.unmodifiableList(renderers);
     }
 
     public final List<WebDirPlugin> getPlugins(){
-        return new ArrayList<>(plugins.values());
+        return plugins;
     }
 
     public final WebDirPlugin getPlugin(final String pluginName){
-        for(final Map.Entry<String, WebDirPlugin> entry : plugins.entrySet())
-            if(entry.getKey().equals(pluginName))
-                return entry.getValue();
+        for(final WebDirPlugin plugin : plugins)
+            if(plugin.getPluginName().equals(pluginName))
+                return plugin;
         return null;
     }
 
@@ -76,13 +76,13 @@ public final class PluginLoader {
 
         // enable +verify dependents
         logger.fine(locale.getString("plugin-loader.filter.enable.start"));
-        final Map<YamlMapping,WebDirPlugin> loaded = new PluginInitializer().filter(deps);
+        final List<WebDirPlugin> loaded = new PluginInitializer().filter(deps);
         logger.fine(locale.getString("plugin-loader.filter.jar.start", loaded.size(), init));
 
         // save renderers
-        loaded.forEach((yml, plugin) -> {
-            final String pluginName = yml.string(NAME);
-            plugins.put(pluginName, plugin);
+        loaded.forEach(plugin -> {
+            final String pluginName = plugin.getPluginName();
+            plugins.add(plugin);
             plugin.getRenderers().forEach((name, renderer) -> {
                 renderers.add(new PluginRendererEntry(pluginName, name, renderer));
                 logger.finer(locale.getString("plugin-loader.constructor.renderer", name, pluginName));

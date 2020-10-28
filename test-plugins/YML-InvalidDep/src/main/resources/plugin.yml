@@ -1,0 +1,5 @@
+main: Main
+name: Invalid-Dep
+dependencies:
+  invalidate: maps
+  not: allowed

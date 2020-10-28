@@ -14,16 +14,23 @@ public class PluginServiceImpl extends PluginService {
 
     private static final String badFileChars = "[\\\\/:*?\"<>|]";
 
+    private final String pluginName;
     private final Logger logger;
     private final File pluginFolder, sources, output, defaults, plugins;
 
     public PluginServiceImpl(final YamlMapping plugin, final File pluginFolder){
+        this.pluginName     = plugin.string(PluginLoader.NAME);
         this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll('[' + badFileChars + ']', "_"));
         this.logger         = Main.getLogger(plugin.string(PluginLoader.NAME));
         this.sources        = Main.getPageRenderingService().getSources();
         this.output         = Main.getPageRenderingService().getOutput();
         this.defaults       = Main.getPageRenderingService().getDefaults();
         this.plugins        = Main.getPluginLoader().getPluginsFolder();
+    }
+
+    @Override
+    public final String getPluginName(){
+        return pluginName;
     }
 
     @Override
