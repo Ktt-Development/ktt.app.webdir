@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlNode;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.plugin.filter.*;
@@ -20,26 +19,26 @@ public final class PluginLoader {
         DEPENDENCIES = "dependencies";
 
     private final List<PluginRendererEntry> renderers = new ArrayList<>();
-    private final List<WebDirPlugin> plugins = new ArrayList<>();
+    private final Map<String,WebDirPlugin> plugins = new HashMap<>();
 
     public final List<PluginRendererEntry> getRenderers(){
         return Collections.unmodifiableList(renderers);
     }
 
     public final List<WebDirPlugin> getPlugins(){
-        return Collections.unmodifiableList(plugins);
+        return new ArrayList<>(plugins.values());
     }
 
     public final WebDirPlugin getPlugin(final String pluginName){
-        for(final WebDirPlugin plugin : plugins){
-            // todo
-        }
+        for(final Map.Entry<String, WebDirPlugin> entry : plugins.entrySet())
+            if(entry.getKey().equals(pluginName))
+                return entry.getValue();
         return null;
     }
 
-    @SuppressWarnings("unused") // class param required for casting. It is NOT unused.
-    public final <T extends WebDirPlugin> WebDirPlugin getPlugin(final String pluginName, final Class<T> pluginClass){
-        return getPlugin(pluginName);
+    @SuppressWarnings({"unused", "unchecked"}) // class param required for casting. It is NOT unused.
+    public final <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass){
+        return (T) getPlugin(pluginName);
     }
 
     private final File pluginsFolder;
@@ -50,46 +49,47 @@ public final class PluginLoader {
         final YamlMapping config   = Main.getConfig();
         final Logger logger        = Main.getLogger(locale.getString("plugin-loader.name"));
 
-        // todo: log init
+        logger.info(locale.getString("plugin-loader.constructor.start"));
 
         this.pluginsFolder = Objects.requireNonNull(pluginsFolder);
 
-        if(!pluginsFolder.isDirectory())
-            ; // todo: log ERR
+        if(pluginsFolder.exists() && !pluginsFolder.isDirectory())
+            logger.severe(locale.getString("plugin-loader.constructor.dir", pluginsFolder.getPath()));
 
         if(safe = Boolean.parseBoolean(config.string(ConfigService.SAFE))){
-            // todo: log safe
+            logger.info(locale.getString("plugin-loader.constructor.safe"));
             return;
         }
 
         // jar filter
-        // todo: log
+        logger.fine(locale.getString("plugin-loader.filter.jar.start"));
         final Map<File,URL> jars = new JarFilter().filter(pluginsFolder);
         final int init = jars.size();
 
         // plugin.yml filter + validate
-        // todo: log
+        logger.fine(locale.getString("plugin-loader.filter.yml.start"));
         final Map<File,YamlMapping> ymls = new YmlFilter().filter(jars);
 
         // validate + sort dep
-        // todo: log
+        logger.fine(locale.getString("plugin-loader.filter.dep.start"));
         final Map<File,YamlMapping> deps = new DependencyFilter().filter(ymls);
 
         // enable +verify dependents
-        // todo: log
-        final Map<WebDirPlugin,YamlMapping> loaded = null;
-        // todo: log fin >> init - loaded.size()
+        logger.fine(locale.getString("plugin-loader.filter.enable.start"));
+        final Map<YamlMapping,WebDirPlugin> loaded = new PluginInitializer().filter(deps);
+        logger.fine(locale.getString("plugin-loader.filter.jar.start", loaded.size(), init));
 
         // save renderers
-        loaded.forEach((plugin, yml) -> {
+        loaded.forEach((yml, plugin) -> {
             final String pluginName = yml.string(NAME);
+            plugins.put(pluginName, plugin);
             plugin.getRenderers().forEach((name, renderer) -> {
                 renderers.add(new PluginRendererEntry(pluginName, name, renderer));
-                // todo: log add
+                logger.finer(locale.getString("plugin-loader.constructor.renderer", name, pluginName));
             });
         });
 
-        // todo: log finish
+        logger.info(locale.getString("plugin-loader.constructor.finish"));
     }
 
     public final File getPluginsFolder(){

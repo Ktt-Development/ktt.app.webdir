@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
 import com.amihaiemil.eoyaml.*;
-import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 
@@ -34,44 +33,41 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,YamlMapp
                         final YamlMapping map = Yaml.createYamlInput(stream).readYamlMapping();
 
                         // validate
-                        boolean fail = false;
                         try{
                             Objects.requireNonNull(map.string(PluginLoader.MAIN));
                         }catch(final NullPointerException ignored){
-                            fail = true;
-                            // todo: log err
+                            logger.severe(locale.getString("plugin-loader.filter.yml.main", file.getName()));
+                            return;
                         }
                         try{
                             Objects.requireNonNull(map.string(PluginLoader.NAME));
                         }catch(final NullPointerException ignored){
-                            fail = true;
-                            // todo: log err
+                            logger.severe(locale.getString("plugin-loader.filter.yml.name", file.getName()));
                         }
 
                         for(final YamlNode key : map.keys()){
                             // if contains dependency key then it must be type string or sequence
                             if(asString(key).equals(PluginLoader.DEPENDENCIES)){
                                 if(map.string(key) == null || map.yamlSequence(key) == null){
-                                    fail = true;
-                                    // todo: log err
+                                    logger.severe(locale.getString("plugin-loader.filter.yml.dep", file.getName()));
+                                    return;
+                                }else{
+                                    break;
                                 }
                             }
                         }
 
-                        if(!fail){
-                            ymls.put(file, map);
-                            // todo: log add
-                        }
+                        ymls.put(file, map);
                     }catch(final IOException e){
-                        // todo: log failed read
+                        logger.severe(locale.getString("plugin-loader.filter.yml.yml", file.getName()) + LoggerService.getStackTraceAsString(e));
                     }
                 }catch(final IOException e){
-                    // todo: log failed stream
+                    logger.severe(locale.getString("plugin-loader.filter.yml.url", file.getName()) + LoggerService.getStackTraceAsString(e));
                 }
-            }catch(final NullPointerException e){
-                // todo: log err
+            }catch(final NullPointerException ignored){
+                logger.severe(locale.getString("plugin-loader.filter.yml.null", file.getName()));
             }catch(final SecurityException | IOException e){
-                // todo: log err
+                logger.severe(locale.getString("plugin-loader.filter.yml.yml", file.getName()) + LoggerService.getStackTraceAsString(e));
             }
         });
 

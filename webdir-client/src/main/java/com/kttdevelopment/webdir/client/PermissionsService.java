@@ -67,7 +67,7 @@ public final class PermissionsService {
 
         // load permissions
         {
-            final String fileName = permissionsFile.getName();
+            final String fileName = permissionsFile.getPath();
             logger.info(locale.getString("permissions.constructor.permissions.start", fileName));
 
             YamlMapping yaml = null;

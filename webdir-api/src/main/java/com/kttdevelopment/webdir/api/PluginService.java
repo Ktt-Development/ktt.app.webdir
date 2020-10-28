@@ -5,22 +5,22 @@ import java.util.logging.Logger;
 
 public abstract class PluginService {
 
-    abstract Logger getLogger();
+    public abstract Logger getLogger();
 
-    abstract File getPluginFolder();
+    public abstract File getPluginFolder();
 
-    abstract WebDirPlugin getPlugin(final String pluginName);
+    public abstract WebDirPlugin getPlugin(final String pluginName);
 
-    abstract <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass);
+    public abstract <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass);
 
-    abstract LocaleBundle getLocaleBundle(final String resource);
+    public abstract LocaleBundle getLocaleBundle(final String resource, final ClassLoader classLoader);
 
-    abstract File getSourcesFolder();
+    public abstract File getSourcesFolder();
 
-    abstract File getOutputFolder();
+    public abstract File getOutputFolder();
 
-    abstract File getDefaultsFolder();
+    public abstract File getDefaultsFolder();
 
-    abstract File getPluginsFolder();
+    public abstract File getPluginsFolder();
 
 }

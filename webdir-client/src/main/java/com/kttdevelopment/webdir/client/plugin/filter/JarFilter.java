@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
-import com.kttdevelopment.webdir.client.LocaleService;
-import com.kttdevelopment.webdir.client.Main;
+import com.kttdevelopment.webdir.client.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -31,7 +30,7 @@ public final class JarFilter implements IOFilter<File,Map<File,URL>> {
             try{
                 map.put(jar, jar.toURI().toURL());
             }catch(final IllegalArgumentException | MalformedURLException | SecurityException e){
-                // todo: log err
+                logger.severe(locale.getString("plugin-loader.filter.jar.malformed", jar.getName()) + LoggerService.getStackTraceAsString(e));
             }
 
         return map;

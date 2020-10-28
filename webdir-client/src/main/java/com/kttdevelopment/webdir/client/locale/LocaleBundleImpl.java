@@ -3,8 +3,7 @@ package com.kttdevelopment.webdir.client.locale;
 import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.webdir.api.LocaleBundle;
 import com.kttdevelopment.webdir.client.*;
-import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
-import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
+import com.kttdevelopment.webdir.client.utility.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,16 +12,21 @@ import java.util.logging.Level;
 
 public final class LocaleBundleImpl implements LocaleBundle {
 
+    private final ClassLoader classLoader;
     private final String resource;
 
     private final Map<String,String> localized = new ConcurrentHashMap<>();
     private Locale locale;
 
     public LocaleBundleImpl(final String resource){
-        this(null, resource);
+        this(null, resource, LocaleBundleImpl.class.getClassLoader());
     }
 
     public LocaleBundleImpl(final LocaleService localeService, final String resource){
+        this(localeService, resource, LocaleBundleImpl.class.getClassLoader());
+    }
+
+    public LocaleBundleImpl(final LocaleService localeService, final String resource, final ClassLoader classLoader){
         Main.getLogger().addQueuedLoggerMessage(
             "locale.name", "locale.bundle.start",
             "Locale Service", "Creating bundle for service %s at %s.",
@@ -30,6 +34,7 @@ public final class LocaleBundleImpl implements LocaleBundle {
         );
 
         this.resource = resource;
+        this.classLoader = classLoader;
         this.locale = Locale.getDefault();
         if(localeService != null)
             localeService.addWatchedLocale(this);
@@ -53,7 +58,7 @@ public final class LocaleBundleImpl implements LocaleBundle {
 
         for(final String resource : resources){
             try{
-                localized.putAll(flattenYaml(Yaml.createYamlInput(getClass().getClassLoader().getResourceAsStream(resource + ".yml")).readYamlMapping()));
+                localized.putAll(flattenYaml(Yaml.createYamlInput(classLoader.getResourceAsStream(resource + ".yml")).readYamlMapping()));
             }catch(final NullPointerException e){ // ignore missing
             }catch(final IOException e){
                 Main.getLogger().addQueuedLoggerMessage(
@@ -85,7 +90,7 @@ public final class LocaleBundleImpl implements LocaleBundle {
         final Map<String,String> OUT = new HashMap<>();
 
         for(final YamlNode node : map.keys()){
-            final String key = asString(node);
+            final String key = YamlUtility.asString(node);
             final YamlMapping mapping = map.yamlMapping(node);
             final String next = head + (!head.isEmpty() ? '.' : "") + key;
             if(mapping != null)
@@ -94,10 +99,6 @@ public final class LocaleBundleImpl implements LocaleBundle {
                 OUT.put(next, map.string(node)); // if key then add to map
         }
         return OUT;
-    }
-
-    private String asString(final YamlNode e){
-        return ExceptionUtility.requireNonExceptionElse(() -> e.asScalar().value(), null);
     }
 
     //

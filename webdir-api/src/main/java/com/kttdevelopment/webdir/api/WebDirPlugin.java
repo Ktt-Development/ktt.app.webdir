@@ -29,7 +29,7 @@ public class WebDirPlugin {
     }
 
     public final LocaleBundle getLocaleBundle(final String resource){
-        return service.getLocaleBundle(resource);
+        return service.getLocaleBundle(resource, getClass().getClassLoader());
     }
 
     public final File getSourcesFolder(){

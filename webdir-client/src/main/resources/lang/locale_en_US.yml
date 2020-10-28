@@ -88,6 +88,41 @@ permissions:
 
 plugin-loader:
   name: Plugin Loader
+  constructor:
+    start: Started plugin service initialization.
+    dir: Failed to load plugins from %s (plugin folder was not a directory).
+    safe: Skipping plugin loading (application is in safe mode).
+    renderer: Added renderer %s from plugin %s.
+    finish: Finished plugin service initialization.
+  filter:
+    jar:
+      start: Filtering files for jars.
+      malformed: Failed to load plugin %s (I/O exception).
+    yml:
+      start: Filtering files for valid plugin.yml's.
+      main: Failed to load plugin %s (plugin.yml was missing 'main').
+      name: Failed to load plugin %s (plugin.yml was missing 'name').
+      dep: Failed to load plugin %s (plugin.yml had an incorrect type for 'dependencies'. Exepected string or map).
+      yml: Failed to load plugin.yml for plugin %s (I/O exception).
+      url: Failed to load plugin.yml for plugin %s (Failed to open stream).
+      null: Failed to load plugin.yml for plugin %s (file not found).
+    dep:
+      start: Verifying plugin dependencies.
+      circular: Failed to load plugin %s (plugin had a circular dependency).
+    enable:
+      start: Enabling plugins.
+      dep: 'Failed to load plugin %s (required dependencies failed to load: %s).'
+      class: Failed to load plugin %s (main class did not extend WebDirPlugin).
+      missing: Failed to load plugin %s (main class was not found).
+      constructor: Failed to load plugin %s (main class constructor was not found).
+      access: Failed to load plugin %s (access to main class was denied).
+      scope: Failed to load plugin %s (main class constuctor was not public).
+      abstract: Failed to load plugin %s (main class was not public).
+      internal: Failed to load plugin %s (main class constructor threw an exception).
+      enable: Enabling plugin %s.
+      time: Failed to load plugin %s (execution timed out).
+      jar: Failed to load plugin %s (failed to read jar).
+      finish: Enabled %s/%s plugins.
 
 page-render:
   name: Page Rendering Service

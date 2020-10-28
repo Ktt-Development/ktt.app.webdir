@@ -53,7 +53,7 @@ public final class ConfigService {
     ConfigService(final File configFile) throws IOException{
         final LoggerService loggerService = Main.getLogger();
         final String loggerName = "Configuration Service";
-        final String fileName = configFile.getName();
+        final String fileName = configFile.getPath();
 
         loggerService.addQueuedLoggerMessage(
             "config.name", "config.constructor.start",
