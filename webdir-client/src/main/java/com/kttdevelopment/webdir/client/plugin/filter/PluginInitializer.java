@@ -19,16 +19,17 @@ public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,L
 
     private final LocaleService locale;
     private final Logger logger;
+    private final File pluginFolder;
 
-    public PluginInitializer(){
+    public PluginInitializer(final File pluginFolder){
         locale = Main.getLocale();
         logger = Main.getLogger(locale.getString("plugin-loader.name"));
+        this.pluginFolder = pluginFolder;
     }
 
     @Override
     public final List<WebDirPlugin> filter(final Map<File,YamlMapping> in){
         final List<WebDirPlugin> loaded = new ArrayList<>();
-        final File pluginFolder = Main.getPluginLoader().getPluginsFolder();
         in.forEach((file, yml) -> {
             // check that all dependencies have been loaded
             {

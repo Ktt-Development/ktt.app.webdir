@@ -20,7 +20,11 @@ final class CircularDependencyChecker  {
 
     // TRUE if has a circular dependency
     public final boolean test(){
-        return test(plugin, new ArrayList<>());
+        final List<String> parent = List.of(pluginName);
+        for(final YamlMapping dependency : DependencyFilter.getDependencies(plugin, plugins))
+            if(test(dependency, new ArrayList<>(parent)))
+                return true;
+        return false;
     }
 
     private boolean test(final YamlMapping plugin, final List<String> checked){

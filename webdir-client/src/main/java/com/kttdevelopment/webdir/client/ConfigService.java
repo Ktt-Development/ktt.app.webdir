@@ -96,7 +96,7 @@ public final class ConfigService {
             }
 
             loggerService.addQueuedLoggerMessage(
-                "config.name", "config.constructor.default.finished",
+                "config.name", "config.constructor.default.finish",
                 loggerName, "Loaded default configuration.",
                 Level.FINE
             );
@@ -117,7 +117,7 @@ public final class ConfigService {
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.config." + (e instanceof FileNotFoundException ? "missing" : "malformed"),
                     loggerName, "Loading configuration from file %s.",
-                    Level.WARNING, fileName
+                    Level.WARNING, fileName, LoggerService.getStackTraceAsString(e)
                 );
                 // copy default if missing
                 if(!configFile.exists())

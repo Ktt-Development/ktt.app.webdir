@@ -47,7 +47,7 @@ locale:
     changed: Changed locale from %s to %s.
     watched: Added locale bundle %s.
     null: Failed to get localized string %s (not found).
-    args: Failed to format localized string %s (insufficient arguments).
+    args: Failed to format localized string %s (incorrect argument count).
   bundle:
     start: Creating bundle for service %s at %s.
     malformed: Failed to parse locale file %s (malformed yaml). %s
@@ -102,7 +102,7 @@ plugin-loader:
       start: Filtering files for valid plugin.yml's.
       main: Failed to load plugin %s (plugin.yml was missing 'main').
       name: Failed to load plugin %s (plugin.yml was missing 'name').
-      dep: Failed to load plugin %s (plugin.yml had an incorrect type for 'dependencies'. Exepected string or map).
+      dep: Failed to load plugin %s (plugin.yml had an incorrect type for 'dependencies'. Exepected string or list).
       yml: Failed to load plugin.yml for plugin %s (I/O exception).
       url: Failed to load plugin.yml for plugin %s (Failed to open stream).
       null: Failed to load plugin.yml for plugin %s (file not found).

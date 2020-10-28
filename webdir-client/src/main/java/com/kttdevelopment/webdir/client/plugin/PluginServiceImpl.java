@@ -2,8 +2,7 @@ package com.kttdevelopment.webdir.client.plugin;
 
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.api.*;
-import com.kttdevelopment.webdir.client.Main;
-import com.kttdevelopment.webdir.client.PluginLoader;
+import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.locale.LocaleBundleImpl;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
@@ -22,10 +21,10 @@ public class PluginServiceImpl extends PluginService {
         this.pluginName     = plugin.string(PluginLoader.NAME);
         this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll('[' + badFileChars + ']', "_"));
         this.logger         = Main.getLogger(plugin.string(PluginLoader.NAME));
-        this.sources        = Main.getPageRenderingService().getSources();
-        this.output         = Main.getPageRenderingService().getOutput();
-        this.defaults       = Main.getPageRenderingService().getDefaults();
-        this.plugins        = Main.getPluginLoader().getPluginsFolder();
+        this.sources        = new File(Main.getConfig().string(ConfigService.SOURCES));
+        this.output         = new File(Main.getConfig().string(ConfigService.OUTPUT));
+        this.defaults       = new File(Main.getConfig().string(ConfigService.DEFAULT));
+        this.plugins        = new File(Main.getConfig().string(ConfigService.PLUGINS));
     }
 
     @Override

@@ -76,8 +76,8 @@ public final class PluginLoader {
 
         // enable +verify dependents
         logger.fine(locale.getString("plugin-loader.filter.enable.start"));
-        final List<WebDirPlugin> loaded = new PluginInitializer().filter(deps);
-        logger.fine(locale.getString("plugin-loader.filter.jar.start", loaded.size(), init));
+        final List<WebDirPlugin> loaded = new PluginInitializer(pluginsFolder).filter(deps);
+        logger.fine(locale.getString("plugin-loader.filter.enable.finish", loaded.size(), init));
 
         // save renderers
         loaded.forEach(plugin -> {

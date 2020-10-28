@@ -42,7 +42,7 @@ public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
         {
             final List<YamlMapping> plugins = List.copyOf(deps.values());
             deps.forEach((file, yml) -> {
-                if(!(new CircularDependencyChecker(yml, plugins).test()))
+                if(new CircularDependencyChecker(yml, plugins).test()) // if has:
                     logger.severe(locale.getString("plugin-loader.filter.dep.circular", file.getName()));
                 else
                     safeDeps.put(file, yml);
@@ -85,7 +85,7 @@ public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
             if(YamlUtility.asString(key).equals(PluginLoader.DEPENDENCIES)){
                 final String dep = plugin.string(key);
                 if(dep != null)
-                    return Collections.singletonList(dep);
+                    return new ArrayList<>(List.of(dep));
                 else{
                     final List<String> deps = new ArrayList<>();
                     for(final YamlNode node : plugin.yamlSequence(key)){
@@ -97,7 +97,7 @@ public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
                 }
             }
         }
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     static List<YamlMapping> getDependencies(final YamlMapping plugin, final List<YamlMapping> plugins){

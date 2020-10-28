@@ -3,6 +3,8 @@ package com.kttdevelopment.webdir.client;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 public class PluginLoaderTests {
 
@@ -19,19 +21,19 @@ public class PluginLoaderTests {
         LoggerServiceTests.clearLogFiles();
     }
 
-    /**
-     * https://github.com/Ktt-Development/webdir/tree/79e8dae/webdir-test-plugins
-     * Invalid tests:
-     * - not jar     * - circular dependencies
-     * - constructor exception
-     * - missing dep
-     * - missing yml
-     * - missing main
-     * - no main extends
-     * - no plugin name
-     * - no yml file
-     * - constructor exception
-     * - timed out
-     */
+    @Test
+    public void test() throws IOException{
+        // filter tests
+        {
+            final File notjar = new File("../_plugins/notjar");
+            Assertions.assertTrue(notjar.exists() || notjar.createNewFile());
+            Assertions.assertEquals(15, Objects.requireNonNullElse(new File("../_plugins").listFiles(), new File[0]).length, "Test plugins are not yet loaded. Please run > mvn package");
+            final PluginLoader loader = new PluginLoader(new File("../_plugins"));
+            Assertions.assertEquals(2, loader.getPlugins().size(), "Some invalid plugins were loaded");
+        }
+        // render + plugin service tests (make sure to change above valid plugin count).
+
+        // run assertions here, not in plugin
+    }
 
 }
