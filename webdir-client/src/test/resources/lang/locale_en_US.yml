@@ -124,5 +124,32 @@ plugin-loader:
       jar: Failed to load plugin %s (failed to read jar).
       finish: Enabled %s/%s plugins.
 
-page-render:
+page-renderer:
   name: Page Rendering Service
+  constructor:
+    start: Started page rendering service initialization.
+    delete: Failed to delete %s.
+    dir: Failed to delete %s (folder was not empty).
+    clean: Failed to clean output directory %s.
+    output: Failed to render files (output directory %s could not be created).
+    walk: Failed to render files from sources %s (I/O exception).
+    finish: Fomosjed page rendering service initialization.
+  default:
+    scope: Default file %s was missing a scope.
+    missing: Failed to load default file %s (file not found).
+    read: Failed to read default file %s (malformed yaml).
+    index: Failed to read index (index was not a number) for content -> {%s}
+  front-matter:
+    fail: Failed to load imports from file %s (I/O exception).
+    missing: Failed to load renderer (expected a 'plugin' and 'renderer' field but got %s).
+  render:
+    start: Rendering file %s.
+    missing: Failed to render file %s (file not found).
+    null: Failed to render file %s (renderer returned no bytes).
+    finish: Rendered file %s.
+    parent: Failed to render file %s (parent directory %s could not be created).
+    write: Failed to write to file %s (I/O exception).
+  renderer:
+    read: Failed to read file %s.
+    exception: Failed to use renderer [%s] %s (renderer threw an exception).
+    time: Failed to use renderer [%s] %s (renderer timed out).

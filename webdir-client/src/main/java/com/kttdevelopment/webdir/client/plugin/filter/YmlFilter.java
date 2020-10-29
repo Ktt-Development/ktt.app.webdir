@@ -3,6 +3,7 @@ package com.kttdevelopment.webdir.client.plugin.filter;
 import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
+import com.kttdevelopment.webdir.client.utility.YamlUtility;
 
 import java.io.*;
 import java.net.URL;
@@ -33,28 +34,17 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,YamlMapp
                         final YamlMapping map = Yaml.createYamlInput(stream).readYamlMapping();
 
                         // validate
-                        try{
-                            Objects.requireNonNull(map.string(PluginLoader.MAIN));
-                        }catch(final NullPointerException ignored){
+                        if(!YamlUtility.containsKey(PluginLoader.MAIN, map)){
                             logger.severe(locale.getString("plugin-loader.filter.yml.main", file.getName()));
                             return;
-                        }
-                        try{
-                            Objects.requireNonNull(map.string(PluginLoader.NAME));
-                        }catch(final NullPointerException ignored){
+                        }else if(!YamlUtility.containsKey(PluginLoader.MAIN, map)){
                             logger.severe(locale.getString("plugin-loader.filter.yml.name", file.getName()));
                             return;
-                        }
-
-                        for(final YamlNode key : map.keys()){
-                            // if contains dependency key then it must be type string or sequence
-                            if(asString(key).equals(PluginLoader.DEPENDENCIES)){
-                                if(map.string(key) == null && map.yamlSequence(key) == null){
-                                    logger.severe(locale.getString("plugin-loader.filter.yml.dep", file.getName()));
-                                    return;
-                                }else{
-                                    break;
-                                }
+                        }else if(YamlUtility.containsKey(PluginLoader.DEPENDENCIES, map)){
+                            final Node type = map.value(PluginLoader.DEPENDENCIES).type();
+                            if(type != Node.SCALAR && type != Node.MAPPING){
+                                logger.severe(locale.getString("plugin-loader.filter.yml.dep", file.getName()));
+                                return;
                             }
                         }
 
@@ -73,10 +63,6 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,YamlMapp
         });
 
         return ymls;
-    }
-
-    private String asString(final YamlNode e){
-        return ExceptionUtility.requireNonExceptionElse(() -> e.asScalar().value(), null);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.YamlMapping;
+import com.kttdevelopment.webdir.client.renderer.DefaultFrontMatterLoader;
 import com.kttdevelopment.webdir.client.renderer.PageRenderer;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
@@ -16,25 +17,25 @@ import java.util.stream.Stream;
 
 public final class PageRenderingService {
 
+    private final LocaleService locale;
+    private final Logger logger;
+
     private final PageRenderer renderer;
     private final File defaults, sources, output;
 
     PageRenderingService(final File defaults, final File sources, final File output){
-        final LocaleService locale  = Main.getLocale();
-        final Logger logger         = Main.getLogger(locale.getString("page-render.name"));
+         locale = Main.getLocale();
+         logger = Main.getLogger(locale.getString("page-renderer.name"));
         final YamlMapping config    = Main.getConfig();
 
-        // todo: log init
+        logger.info(locale.getString("page-renderer.constructor.start"));
 
         this.defaults = Objects.requireNonNull(defaults);
         this.sources  = Objects.requireNonNull(sources);
         this.output   = Objects.requireNonNull(output);
 
-        this.renderer = null; // todo
-
         // clean if dir exists, is parent of project (safety check) and clean bool
         if(Boolean.parseBoolean(config.string(ConfigService.CLEAN)) && output.exists() && output.getAbsolutePath().startsWith(new File(".").getAbsolutePath())){
-            final AtomicBoolean failed = new AtomicBoolean(false);
             try(final Stream<Path> walk = Files.walk(output.toPath())){
                 walk.sorted(Comparator.reverseOrder()) // reverse because inner must be deleted first
                     .forEach(path -> {
@@ -42,14 +43,13 @@ public final class PageRenderingService {
                             Files.delete(path);
                         }catch(NoSuchFileException ignored){ // OK
                         }catch(final IOException | SecurityException e){
-                            failed.set(true);
-                            // todo: instanceof dirnotempty
+                            logger.severe(locale.getString("page-renderer.constructor." + (e instanceof DirectoryNotEmptyException ? "dir" : "delete"), path.toFile().getAbsolutePath()) + LoggerService.getStackTraceAsString(e));
                         }
                     });
-
             }catch(final IOException | SecurityException e){
-                // todo: log failed clean
+                logger.severe(locale.getString("page-renderer.constructor.clean", output.getPath()) + LoggerService.getStackTraceAsString(e));
             }
+            // fail message was already printed in foreach
         }
 
         // render
@@ -57,8 +57,10 @@ public final class PageRenderingService {
         final AtomicInteger total = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
 
+        renderer = new PageRenderer(sources, output, new DefaultFrontMatterLoader(defaults, sources));
+
         if(!output.exists() && !output.mkdirs()){
-            // todo: log failure
+            logger.severe(locale.getString("page-renderer.constructor.output", output.getPath()));
         }else{
             try{
                 Files.walk(sources.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> {
@@ -67,10 +69,10 @@ public final class PageRenderingService {
                         rendered.incrementAndGet();
                 });
             }catch(final IOException e){
-                // todo: log failure
+                logger.severe(locale.getString("page-renderer.constructor.walk", sources.getPath()) + LoggerService.getStackTraceAsString(e));
             }
         }
-        // todo: log fin
+        logger.info(locale.getString("page-renderer.constructor.finish"));
     }
 
     public final File getDefaults(){
@@ -87,11 +89,10 @@ public final class PageRenderingService {
 
     //
 
-    // todo: render method
     public final boolean render(final File IN){
-        // todo: log render
+        logger.finer(locale.getString("page-renderer.render.start", IN.getPath()));
         if(!IN.exists()){
-            // todo: log missing
+            logger.warning(locale.getString("page-renderer.render.missing", IN.getPath()));
             return false;
         }
 
@@ -99,22 +100,21 @@ public final class PageRenderingService {
         final Path rel       = sources.getAbsoluteFile().toPath().relativize(path);
         final Path rendered  = Paths.get(output.getAbsolutePath(), rel.toString());
 
-        // todo: render + create req dirs
         try{
             final File parent = rendered.toFile().getParentFile();
             if(parent.exists() || parent.mkdirs()){
-                final byte[] bytes = null; // todo: render method
+                final byte[] bytes = renderer.render(IN, rendered.toFile());
                 if(bytes != null)
                     Files.write(rendered, bytes);
                 else
-                    ; // todo: log null
-                // todo: log render
+                    logger.warning(locale.getString("page-renderer.render.null", IN.getPath()));
+                logger.finer(locale.getString("page-renderer.render.finish", IN.getPath()));
                 return true;
             }else{
-                // todo: log no parent + failed create
+                logger.warning(locale.getString("page-renderer.render.parent", IN.getPath(), parent.getPath()));
             }
         }catch(final IOException | SecurityException e){
-            // todo: log err
+            logger.warning(locale.getString("page-renderer.render.write", IN.getPath()) + LoggerService.getStackTraceAsString(e));
         }
         return false;
     }

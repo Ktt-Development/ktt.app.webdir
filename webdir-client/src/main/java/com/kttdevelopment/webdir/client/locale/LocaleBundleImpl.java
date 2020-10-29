@@ -90,12 +90,10 @@ public final class LocaleBundleImpl implements LocaleBundle {
         final Map<String,String> OUT = new HashMap<>();
 
         for(final YamlNode node : map.keys()){
-            final String key = YamlUtility.asString(node);
-            final YamlMapping mapping = map.yamlMapping(node);
-            final String next = head + (!head.isEmpty() ? '.' : "") + key;
-            if(mapping != null)
+            final String next = head + (!head.isEmpty() ? '.' : "") + YamlUtility.asString(node);
+            if(node.type() == Node.MAPPING)
                 OUT.putAll(flattenYaml(map.yamlMapping(node), next)); // if map dive further
-            else
+            else if(node.type() == Node.SCALAR)
                 OUT.put(next, map.string(node)); // if key then add to map
         }
         return OUT;

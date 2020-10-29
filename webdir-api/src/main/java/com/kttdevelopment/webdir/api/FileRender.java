@@ -4,6 +4,7 @@ import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 
 import java.io.File;
+import java.util.Map;
 
 public abstract class FileRender {
 
@@ -15,7 +16,7 @@ public abstract class FileRender {
 
     //
 
-    // public abstract ConfigurationSection getYamlFrontMatter(); // todo
+    public abstract Map<String,? super Object> getFrontMatter();
 
     public abstract boolean hasFrontMatter();
 

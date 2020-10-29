@@ -81,20 +81,18 @@ public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
     }
 
     static List<String> getDependencies(final YamlMapping plugin){
-        for(final YamlNode key : plugin.keys()){
-            if(YamlUtility.asString(key).equals(PluginLoader.DEPENDENCIES)){
-                final String dep = plugin.string(key);
-                if(dep != null)
-                    return new ArrayList<>(List.of(dep));
-                else{
-                    final List<String> deps = new ArrayList<>();
-                    for(final YamlNode node : plugin.yamlSequence(key)){
-                        final String dependencyName = YamlUtility.asString(node);
-                        if(dependencyName != null)
-                            deps.add(dependencyName);
-                    }
-                    return deps;
+        if(YamlUtility.containsKey(PluginLoader.DEPENDENCIES, plugin)){
+            final Node type = plugin.value(PluginLoader.DEPENDENCIES).type();
+            if(type == Node.SCALAR)
+                return new ArrayList<>(List.of(plugin.string(PluginLoader.DEPENDENCIES)));
+            else if(type == Node.SEQUENCE){
+                final List<String> deps = new ArrayList<>();
+                for(final YamlNode node : plugin.yamlSequence(PluginLoader.DEPENDENCIES)){
+                    final String dependencyName = YamlUtility.asString(node);
+                    if(dependencyName != null)
+                        deps.add(dependencyName);
                 }
+                return deps;
             }
         }
         return new ArrayList<>();
