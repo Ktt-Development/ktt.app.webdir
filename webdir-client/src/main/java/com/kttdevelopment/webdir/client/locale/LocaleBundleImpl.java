@@ -56,10 +56,11 @@ public final class LocaleBundleImpl implements LocaleBundle {
             resource + "_" + locale.getLanguage().substring(0, 2) + '_' + locale.getCountry().toUpperCase()
         };
 
+
         for(final String resource : resources){
             try{
                 localized.putAll(flattenYaml(Yaml.createYamlInput(classLoader.getResourceAsStream(resource + ".yml")).readYamlMapping()));
-            }catch(final NullPointerException e){ // ignore missing
+            }catch(final NullPointerException ignored){ // ignore missing
             }catch(final IOException e){
                 Main.getLogger().addQueuedLoggerMessage(
                     "locale.name", "locale.bundle.malformed",
@@ -68,6 +69,7 @@ public final class LocaleBundleImpl implements LocaleBundle {
                 );
             }
         }
+
         if(localized.isEmpty())
             Main.getLogger().addQueuedLoggerMessage(
                 "locale.name", "locale.bundle.missing",
@@ -91,10 +93,11 @@ public final class LocaleBundleImpl implements LocaleBundle {
 
         for(final YamlNode node : map.keys()){
             final String next = head + (!head.isEmpty() ? '.' : "") + YamlUtility.asString(node);
-            if(node.type() == Node.MAPPING)
-                OUT.putAll(flattenYaml(map.yamlMapping(node), next)); // if map dive further
-            else if(node.type() == Node.SCALAR)
-                OUT.put(next, map.string(node)); // if key then add to map
+            final YamlNode value = map.value(node);
+            if(value.type() == Node.MAPPING)
+                OUT.putAll(flattenYaml(value.asMapping(), next)); // if map dive further
+            else if(value.type() == Node.SCALAR)
+                OUT.put(next, YamlUtility.asString(value)); // if key then add to map
         }
         return OUT;
     }

@@ -13,7 +13,7 @@ public final class LocaleService {
     private final String resource;
 
     private final LocaleBundleImpl locale;
-    private Locale currentLocale;
+    private Locale currentLocale = Locale.getDefault();
 
     private final List<LocaleBundleImpl> watching = new ArrayList<>();
 
@@ -27,11 +27,12 @@ public final class LocaleService {
         );
 
         this.resource = Objects.requireNonNull(resource);
-        locale = new LocaleBundleImpl(resource);
-        final Locale configLocale = new Locale(Main.getConfig().string(ConfigService.LANG));
 
-        locale.setLocale(configLocale);
-        currentLocale = configLocale;
+        locale = new LocaleBundleImpl(resource);
+        addWatchedLocale(locale);
+
+        final Locale configLocale = new Locale(Main.getConfig().string(ConfigService.LANG));
+        setLocale(configLocale);
 
         final Logger logger = Main.getLogger(getString("locale.name"));
         logger.fine(getString("locale.constructor.set", currentLocale.getDisplayName()));

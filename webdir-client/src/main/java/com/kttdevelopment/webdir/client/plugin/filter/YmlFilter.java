@@ -37,7 +37,7 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,YamlMapp
                         if(!YamlUtility.containsKey(PluginLoader.MAIN, map)){
                             logger.severe(locale.getString("plugin-loader.filter.yml.main", file.getName()));
                             return;
-                        }else if(!YamlUtility.containsKey(PluginLoader.MAIN, map)){
+                        }else if(!YamlUtility.containsKey(PluginLoader.NAME, map)){
                             logger.severe(locale.getString("plugin-loader.filter.yml.name", file.getName()));
                             return;
                         }else if(YamlUtility.containsKey(PluginLoader.DEPENDENCIES, map)){

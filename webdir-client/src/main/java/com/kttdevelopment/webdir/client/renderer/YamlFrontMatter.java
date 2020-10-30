@@ -73,8 +73,6 @@ public final class YamlFrontMatter {
 
      @SuppressWarnings("unchecked")
      private static Map<String,? super Object> loadImports(final File source, final Map<String,? super Object> config, final List<Path> checked){
-          final String sourceABS = ExceptionUtility.requireNonExceptionElse(source::getAbsolutePath, "null");
-
           // reverse so top imports will override lower
           final List<String> imports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) config.get(PageRenderer.IMPORT), new ArrayList<>());
           Collections.reverse(imports);
@@ -112,7 +110,7 @@ public final class YamlFrontMatter {
 
      // renderer
 
-     public static List<PluginRendererEntry> getRenderers(final List<?> renderers){
+     public static List<PluginRendererEntry> getRenderers(final List<?> renderers, final String renderString){
           final List<PluginRendererEntry> installed = Main.getPluginLoader().getRenderers();
           final List<PluginRendererEntry> out = new ArrayList<>();
 
@@ -124,8 +122,8 @@ public final class YamlFrontMatter {
                     final Map<?,?> map = (Map<?,?>) obj;
                     try{
                          renderer = new PluginRendererEntry(
-                              Objects.requireNonNull(map.get("plugin")).toString(),
-                              Objects.requireNonNull(map.get("renderer")).toString(),
+                              Objects.requireNonNull(map.get(PageRenderer.PLUGIN)).toString(),
+                              Objects.requireNonNull(map.get(renderString)).toString(),
                               null
                          );
                     }catch(final NullPointerException e){

@@ -10,6 +10,7 @@ public class LoggerServiceTests {
 
     @Test
     public void testLogger(){
+        clearLogFiles();
         Assertions.assertEquals(0, Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log")), new File[0]).length, "The test directory has undeleted log files. Please remove them.");
 
         // logging files

@@ -10,5 +10,6 @@ target
 # WebDir
 
 /_plugins
+config.yml
 *.log
 *.lck

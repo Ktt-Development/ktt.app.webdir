@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.client.renderer;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
+import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.FileRender;
 import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.client.*;
@@ -21,6 +22,9 @@ public class PageRenderer {
 
     public static final String
         RENDERERS = "renderers",
+        EXCHANGE_RENDERERS = "exchange_renderers",
+        PLUGIN = "plugin",
+        RENDERER = "renderer",
         IMPORT  = "import",
         IMPORT_RELATIVE = "import_relative";
 
@@ -41,10 +45,10 @@ public class PageRenderer {
 
 
     public final byte[] render(final File IN, final File OUT){
-        return render(IN, OUT, null);
+        return render(IN, OUT, null, null);
     }
 
-    public final byte[] render(final File IN, final File OUT, final SimpleHttpExchange exchange){
+    public final byte[] render(final File IN, final File OUT, final SimpleHttpServer server, final SimpleHttpExchange exchange){
         final AtomicReference<byte[]> bytes = new AtomicReference<>();
         try{
             bytes.set(Files.readAllBytes(IN.toPath()));
@@ -66,14 +70,14 @@ public class PageRenderer {
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders
 
         // render
-        final FileRender render = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), /* TODO: server */null, exchange);
+        final FileRender render = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), server, exchange);
         {
             final List<?> renderersStr = ExceptionUtility.requireNonExceptionElse(() -> (List <?>) Objects.requireNonNull(frontMatter.getFrontMatter()).get(RENDERERS), new ArrayList<>());
 
             if(renderersStr.isEmpty())
                 return bytes.get();
 
-            final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
+            final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr, server == null || exchange == null ? RENDERERS : EXCHANGE_RENDERERS);
 
             for(final PluginRendererEntry entry : renderers){
                 final Renderer renderer = entry.getRenderer();
