@@ -38,7 +38,7 @@
                         </manifestEntries>
                     </archive>
                     <skip>true</skip>
-                    <outputDirectory>../../_plugins</outputDirectory>
+                    <outputDirectory>../../webdir-client/_plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

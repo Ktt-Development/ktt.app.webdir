@@ -70,7 +70,7 @@ public class PageRenderer {
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders
 
         // render
-        final FileRender render = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), server, exchange);
+        final AtomicReference<FileRender> render = new AtomicReference<>(new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), server, exchange));
         {
             final List<?> renderersStr = ExceptionUtility.requireNonExceptionElse(() -> (List <?>) Objects.requireNonNull(frontMatter.getFrontMatter()).get(RENDERERS), new ArrayList<>());
 
@@ -87,13 +87,13 @@ public class PageRenderer {
                 final String rendererName = entry.getRendererName();
 
                 final Future<byte[]> future = executor.submit(() -> {
-                   final AtomicReference<byte[]> buffer = new AtomicReference<>(bytes.get());
-                   try{
-                       buffer.set(renderer.render(render));
-                   }catch(final Throwable e){
-                       logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
-                   }
-                   return buffer.get();
+                    try{
+                        render.set(new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), server, exchange));
+                        return renderer.render(render.get());
+                    }catch(final Throwable e){
+                        logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
+                    }
+                    return bytes.get();
                 });
 
                  try{
@@ -108,7 +108,7 @@ public class PageRenderer {
                 }
             }
         }
-        return render.getOutputFile() == null ? null : bytes.get();
+        return render.get().getOutputFile() == null ? null : bytes.get();
     }
 
     @Override

@@ -60,6 +60,11 @@ public abstract class Main {
             locale = new LocaleService("lang/locale");
 
             pluginLoader = new PluginLoader(new File(getConfig().string(ConfigService.PLUGINS)));
+            pageRenderingService = new PageRenderingService(
+                new File(getConfig().string(ConfigService.DEFAULT)),
+                new File(getConfig().string(ConfigService.SOURCES)),
+                new File(getConfig().string(ConfigService.OUTPUT))
+            );
 
             // server only
             if(Boolean.parseBoolean(getConfig().string(ConfigService.SERVER))){

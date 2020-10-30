@@ -9,7 +9,7 @@ target
 
 # WebDir
 
-/_plugins
+/webdir-client/_*
 config.yml
 *.log
 *.lck
