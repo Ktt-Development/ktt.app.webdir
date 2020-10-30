@@ -43,15 +43,14 @@ public class PageRenderer {
         this.defaultFrontMatterLoader = defaultFrontMatterLoader;
     }
 
-
-    public final byte[] render(final File IN, final File OUT){
+    public final FileRender render(final File IN, final File OUT){
         return render(IN, OUT, null, null);
     }
 
-    public final byte[] render(final File IN, final File OUT, final SimpleHttpServer server, final SimpleHttpExchange exchange){
-        final AtomicReference<byte[]> bytes = new AtomicReference<>();
+    public final FileRender render(final File IN, final File OUT, final SimpleHttpServer server, final SimpleHttpExchange exchange){
+        byte[] bytes;
         try{
-            bytes.set(Files.readAllBytes(IN.toPath()));
+            bytes = Files.readAllBytes(IN.toPath());
         }catch(final OutOfMemoryError | SecurityException | IOException e){
             logger.severe(locale.getString("page-renderer.renderer.read", IN.getPath()) + LoggerService.getStackTraceAsString(e));
             return null;
@@ -59,8 +58,8 @@ public class PageRenderer {
 
         // front matter
         final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN);
-        final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes.get(), StandardCharsets.UTF_8));
-
+        final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));
+        bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);
         // merge
         final Map<String,? super Object> merged = new HashMap<>();
         if(defaultFrontMatter != null)
@@ -70,34 +69,33 @@ public class PageRenderer {
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders
 
         // render
-        final AtomicReference<FileRender> render = new AtomicReference<>(new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), server, exchange));
+        final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
         {
-            final List<?> renderersStr = ExceptionUtility.requireNonExceptionElse(() -> (List <?>) Objects.requireNonNull(frontMatter.getFrontMatter()).get(RENDERERS), new ArrayList<>());
+            final List<?> renderersStr = ExceptionUtility.requireNonExceptionElse(() -> (List <?>) Objects.requireNonNull(frontMatter.getFrontMatter()).get(server == null || exchange == null ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
 
             if(renderersStr.isEmpty())
-                return bytes.get();
+                return fileRender;
 
-            final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr, server == null || exchange == null ? RENDERERS : EXCHANGE_RENDERERS);
+            final List<PluginRendererEntry> renderers = YamlFrontMatter.getRenderers(renderersStr);
 
             for(final PluginRendererEntry entry : renderers){
                 final Renderer renderer = entry.getRenderer();
                 final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-                final String pluginName = entry.getPluginName();
+                final String pluginName   = entry.getPluginName();
                 final String rendererName = entry.getRendererName();
 
                 final Future<byte[]> future = executor.submit(() -> {
                     try{
-                        render.set(new FileRenderImpl(IN, OUT, finalFrontMatter, bytes.get(), server, exchange));
-                        return renderer.render(render.get());
+                        return renderer.render(fileRender);
                     }catch(final Throwable e){
                         logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
                     }
-                    return bytes.get();
+                    return fileRender.getContentAsBytes();
                 });
 
-                 try{
-                    bytes.set(future.get(30,TimeUnit.SECONDS));
+                try{
+                    fileRender.setBytes(future.get(30,TimeUnit.SECONDS));
                 }catch(final TimeoutException | InterruptedException e){
                     logger.severe(locale.getString("page-renderer.renderer.time", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
                 }catch(final Throwable e){
@@ -108,7 +106,7 @@ public class PageRenderer {
                 }
             }
         }
-        return render.get().getOutputFile() == null ? null : bytes.get();
+        return fileRender;
     }
 
     @Override

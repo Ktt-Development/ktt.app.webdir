@@ -15,8 +15,8 @@ public final class FileRenderImpl extends FileRender {
     private final File input;
     private File output;
     private final Map<String,? super Object> frontMatter;
-    private final String asString;
-    private final byte[] asBytes;
+    private String asString;
+    private byte[] asBytes;
 
     private SimpleHttpServer server = null;
     private SimpleHttpExchange exchange = null;
@@ -57,6 +57,11 @@ public final class FileRenderImpl extends FileRender {
     @Override
     public final boolean hasFrontMatter(){
         return frontMatter == null;
+    }
+
+    final void setBytes(final byte[] bytes){
+        this.asString = new String(bytes, StandardCharsets.UTF_8);
+        this.asBytes  = bytes;
     }
 
     @Override

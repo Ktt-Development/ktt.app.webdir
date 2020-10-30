@@ -16,21 +16,18 @@ import java.util.regex.Pattern;
 
 public final class YamlFrontMatter {
 
-     private static final Pattern pattern = Pattern.compile("^(---)$\\n?(.*)\\n^(---)$", Pattern.MULTILINE | Pattern.DOTALL);
+     private static final Pattern pattern = Pattern.compile("^(---)$\\n\\r?(.*)\\n\\r?^(---)\\n?\\r?(.*)", Pattern.MULTILINE | Pattern.DOTALL);
 
      private final Map<String,? super Object> frontMatter;
      private final String content;
 
      public YamlFrontMatter(final String raw){
           Map<String,? super Object> map = new HashMap<>();
-          final Matcher matcher = pattern.matcher(raw); // replace all '\r' ?
+          final Matcher matcher = pattern.matcher(raw);
           if(matcher.find()){
-               this.content = matcher.group(2);
-               final int len = matcher.group(0).length();
-               final String ct = raw.length() == len ? "" : raw.substring(len + 1);
-
+               this.content = matcher.group(4);
                try{
-                    map = YamlUtility.asMap(Yaml.createYamlInput(ct).readYamlMapping());
+                    map = YamlUtility.asMap(Yaml.createYamlInput(matcher.group(2)).readYamlMapping());
                }catch(final IOException ignored){ } // malformed
           }else
                this.content = raw;
@@ -74,9 +71,9 @@ public final class YamlFrontMatter {
      @SuppressWarnings("unchecked")
      private static Map<String,? super Object> loadImports(final File source, final Map<String,? super Object> config, final List<Path> checked){
           // reverse so top imports will override lower
-          final List<String> imports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) config.get(PageRenderer.IMPORT), new ArrayList<>());
+          final List<String> imports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) Objects.requireNonNull(config.get(PageRenderer.IMPORT)), new ArrayList<>());
           Collections.reverse(imports);
-          final List<String> relativeImports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) config.get(PageRenderer.IMPORT_RELATIVE), new ArrayList<>());
+          final List<String> relativeImports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) Objects.requireNonNull(config.get(PageRenderer.IMPORT_RELATIVE)), new ArrayList<>());
           Collections.reverse(relativeImports);
 
           if(imports.isEmpty() && relativeImports.isEmpty())
@@ -110,7 +107,7 @@ public final class YamlFrontMatter {
 
      // renderer
 
-     public static List<PluginRendererEntry> getRenderers(final List<?> renderers, final String renderString){
+     public static List<PluginRendererEntry> getRenderers(final List<?> renderers){
           final List<PluginRendererEntry> installed = Main.getPluginLoader().getRenderers();
           final List<PluginRendererEntry> out = new ArrayList<>();
 
@@ -123,7 +120,7 @@ public final class YamlFrontMatter {
                     try{
                          renderer = new PluginRendererEntry(
                               Objects.requireNonNull(map.get(PageRenderer.PLUGIN)).toString(),
-                              Objects.requireNonNull(map.get(renderString)).toString(),
+                              Objects.requireNonNull(map.get(PageRenderer.RENDERER)).toString(),
                               null
                          );
                     }catch(final NullPointerException e){

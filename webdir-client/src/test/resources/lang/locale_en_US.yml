@@ -133,7 +133,7 @@ page-renderer:
     clean: Failed to clean output directory %s.
     output: Failed to render files (output directory %s could not be created).
     walk: Failed to render files from sources %s (I/O exception).
-    finish: Fomosjed page rendering service initialization.
+    finish: Finished page rendering service initialization.
   default:
     scope: Default file %s was missing a scope.
     missing: Failed to load default file %s (file not found).

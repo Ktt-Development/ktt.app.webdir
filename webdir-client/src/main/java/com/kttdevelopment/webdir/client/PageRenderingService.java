@@ -1,8 +1,8 @@
 package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.YamlMapping;
-import com.kttdevelopment.webdir.client.renderer.DefaultFrontMatterLoader;
-import com.kttdevelopment.webdir.client.renderer.PageRenderer;
+import com.kttdevelopment.webdir.api.FileRender;
+import com.kttdevelopment.webdir.client.renderer.*;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.io.File;
@@ -103,9 +103,10 @@ public final class PageRenderingService {
         try{
             final File parent = rendered.toFile().getParentFile();
             if(parent.exists() || parent.mkdirs()){
-                final byte[] bytes = renderer.render(IN, rendered.toFile());
-                if(bytes != null)
-                    Files.write(rendered, bytes);
+                final FileRender output = renderer.render(IN, rendered.toFile());
+                final byte[] bytes = output.getContentAsBytes();
+                if(bytes != null && output.getOutputFile() != null)
+                    Files.write(output.getOutputFile().toPath(), bytes);
                 else
                     logger.warning(locale.getString("page-renderer.render.null", IN.getPath()));
                 logger.finer(locale.getString("page-renderer.render.finish", IN.getPath()));
