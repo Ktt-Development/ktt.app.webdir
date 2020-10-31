@@ -4,5 +4,6 @@ module webdir.client {
     requires com.amihaiemil.eoyaml;
     requires webdir.api;
     requires simplehttpserver;
+    requires jdk.httpserver;
 
 }

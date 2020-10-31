@@ -32,17 +32,17 @@ public final class PermissionsGroup {
 
         // inheritance
         {
-            final YamlSequence seq = value.yamlSequence(PermissionsService.inheritance);
+            final YamlSequence seq = value.yamlSequence(PermissionsService.INHERITANCE);
             String inherit;
             if(seq != null)
                 seq.forEach(e -> inheritance.add(asString(e)));
-            else if((inherit = value.string(PermissionsService.inheritance)) != null)
+            else if((inherit = value.string(PermissionsService.INHERITANCE)) != null)
                 inheritance.add(inherit);
         }
 
         // options
         {
-            final YamlMapping map = value.yamlMapping(PermissionsService.options);
+            final YamlMapping map = value.yamlMapping(PermissionsService.OPTIONS);
             if(map != null)
                 for(final YamlNode key : map.keys())
                     options.put(asString(key), map.string(key));
@@ -50,7 +50,7 @@ public final class PermissionsGroup {
 
         // permissions
         {
-            final YamlSequence seq = value.yamlSequence(PermissionsService.permissions);
+            final YamlSequence seq = value.yamlSequence(PermissionsService.PERMISSIONS);
             if(seq != null)
                 seq.forEach(e -> permissions.add(asString(e)));
         }

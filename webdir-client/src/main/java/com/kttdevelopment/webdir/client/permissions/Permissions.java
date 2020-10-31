@@ -35,7 +35,7 @@ public final class Permissions {
 
         // groups
         {
-            final YamlMapping map = value.yamlMapping(PermissionsService.groups);
+            final YamlMapping map = value.yamlMapping(PermissionsService.GROUPS);
             if(map != null)
                 for(final YamlNode key : map.keys())
                     groups.add(new PermissionsGroup(asString(key), map.yamlMapping(key)));
@@ -43,7 +43,7 @@ public final class Permissions {
 
         // users
         {
-            final YamlMapping map = value.yamlMapping(PermissionsService.users);
+            final YamlMapping map = value.yamlMapping(PermissionsService.USERS);
             if(map != null)
                 for(final YamlNode key : map.keys()){
                     final String k = asString(key);
@@ -108,7 +108,7 @@ public final class Permissions {
 
         // group
         // should not inherit option 'default' from groups, this value just tells permissions which ones are default groups.
-        if(option.equals(PermissionsService.def)) return null;
+        if(option.equals(PermissionsService.DEF)) return null;
 
         for(final PermissionsGroup group : getGroupsAndInherited(user.getGroups()))
             if(group.getOptions().get(option) != null)
@@ -176,7 +176,7 @@ public final class Permissions {
 
         for(final PermissionsGroup group : groups){
             // try catch not needed because invalid boolean resolves to false
-            if(group.getOptions().containsKey(PermissionsService.def) && Boolean.parseBoolean(group.getOptions().get(PermissionsService.def))){
+            if(group.getOptions().containsKey(PermissionsService.DEF) && Boolean.parseBoolean(group.getOptions().get(PermissionsService.DEF))){
                 defaultGroups.add(group);
                 defaultGroups.addAll(getInheritedGroups(group));
                 // if default group inherits another group the default option doesn't matter, sub inheritance as well

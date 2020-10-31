@@ -53,39 +53,6 @@ locale:
     malformed: Failed to parse locale file %s (malformed yaml). %s
     missing: No locale file found or locale file was blank for resource %s.
 
-permissions:
-  name: Permissions Service
-  constructor:
-    start: Started permissions service initialization.
-    default:
-      start: Loading default permissions.
-      fail: Failed to load default permissions.
-      finish: Loaded default configuration.
-    permissions:
-      start: Loading permissions from file %s.
-      missing: Failed to load permissions from file %s (file not found). Using default permissions.
-      malformed: Failed to load permissions from file %s (malformed yaml). Using defualt permissions.
-      default:
-        success: Created default permissions file at %s.
-        fail: Failed to create default permissions file at %s. %s
-      finish: Loaded permissions.
-    finish: Finished permissions service initialization.
-  permissions:
-    start: Creating permissions from %s.
-    null: Failed to create permissions (value was not a map or was missing).
-    unknownUser: Failed to create user %s (unknown address).
-    finish: Created permissions.
-  permissionsGroup:
-    null: Failed to create permissions group %s (value was not a map or was missing).
-    start: Creating permissions group %s from %s.
-    string: Failed to parse node %s in group %s (value was not a string).
-    finish: Created permissions group %s.
-  permissionsUser:
-    null: Failed to create permissions user %s (value was not a map or was missing).
-    start: Creating permissions user %s from %s.
-    string: Failed to parse node %s in user %s (value was not a string).
-    finish: Created permissions user %s.
-
 plugin-loader:
   name: Plugin Loader
   constructor:
@@ -153,3 +120,39 @@ page-renderer:
     read: Failed to read file %s.
     exception: Failed to use renderer [%s] %s (renderer threw an exception).
     time: Failed to use renderer [%s] %s (renderer timed out).
+
+permissions:
+  name: Permissions Service
+  constructor:
+    start: Started permissions service initialization.
+    default:
+      start: Loading default permissions.
+      fail: Failed to load default permissions.
+      finish: Loaded default configuration.
+    permissions:
+      start: Loading permissions from file %s.
+      missing: Failed to load permissions from file %s (file not found). Using default permissions.
+      malformed: Failed to load permissions from file %s (malformed yaml). Using defualt permissions.
+      default:
+        success: Created default permissions file at %s.
+        fail: Failed to create default permissions file at %s. %s
+      finish: Loaded permissions.
+    finish: Finished permissions service initialization.
+  permissions:
+    start: Creating permissions from %s.
+    null: Failed to create permissions (value was not a map or was missing).
+    unknownUser: Failed to create user %s (unknown address).
+    finish: Created permissions.
+  permissionsGroup:
+    null: Failed to create permissions group %s (value was not a map or was missing).
+    start: Creating permissions group %s from %s.
+    string: Failed to parse node %s in group %s (value was not a string).
+    finish: Created permissions group %s.
+  permissionsUser:
+    null: Failed to create permissions user %s (value was not a map or was missing).
+    start: Creating permissions user %s from %s.
+    string: Failed to parse node %s in user %s (value was not a string).
+    finish: Created permissions user %s.
+
+server:
+  name: File Server

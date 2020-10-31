@@ -14,12 +14,13 @@ import java.util.logging.Logger;
 public final class PermissionsService {
 
     public static final String
-        groups      = "groups",
-        def         = "default",
-        inheritance = "inheritance",
-        options     = "options",
-        permissions = "permissions",
-        users       = "users";
+        GROUPS      = "groups",
+        DEF         = "default",
+        INHERITANCE = "inheritance",
+        OPTIONS     = "options",
+        PERMISSIONS = "permissions",
+        USERS       = "users",
+        CONNECTIONS = "connection-limit";
 
     private static final String defaultYaml =
         "groups:\n" +
@@ -111,7 +112,7 @@ public final class PermissionsService {
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("permissionsFile", permissionsFile)
             .addObject("default", defaultYaml)
-            .addObject("permissions", permissions)
+            .addObject("permissions", PERMISSIONS)
             .toString();
     }
 
