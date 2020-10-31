@@ -15,17 +15,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 public class PageRenderer {
 
     public static final String
-        RENDERERS = "renderers",
+        RENDERERS       = "renderers",
         EXCHANGE_RENDERERS = "exchange_renderers",
-        PLUGIN = "plugin",
-        RENDERER = "renderer",
-        IMPORT  = "import",
+        PLUGIN          = "plugin",
+        RENDERER        = "renderer",
+        IMPORT          = "import",
         IMPORT_RELATIVE = "import_relative";
 
     private final LocaleService locale;
@@ -71,7 +70,8 @@ public class PageRenderer {
         // render
         final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
         {
-            final List<?> renderersStr = ExceptionUtility.requireNonExceptionElse(() -> (List <?>) Objects.requireNonNull(frontMatter.getFrontMatter()).get(server == null || exchange == null ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
+            final Object r = Objects.requireNonNullElse(merged.get(server == null || exchange == null ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
+            final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
 
             if(renderersStr.isEmpty())
                 return fileRender;

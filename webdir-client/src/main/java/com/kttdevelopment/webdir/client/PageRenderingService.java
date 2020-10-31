@@ -24,8 +24,8 @@ public final class PageRenderingService {
     private final File defaults, sources, output;
 
     PageRenderingService(final File defaults, final File sources, final File output){
-         locale = Main.getLocale();
-         logger = Main.getLogger(locale.getString("page-renderer.name"));
+        locale = Main.getLocale();
+        logger = Main.getLogger(locale.getString("page-renderer.name"));
         final YamlMapping config    = Main.getConfig();
 
         logger.info(locale.getString("page-renderer.constructor.start"));
@@ -54,7 +54,7 @@ public final class PageRenderingService {
 
         // render
 
-        final AtomicInteger total = new AtomicInteger(0);
+        final AtomicInteger total    = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
 
         renderer = new PageRenderer(sources, output, new DefaultFrontMatterLoader(defaults, sources));

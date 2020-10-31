@@ -13,3 +13,5 @@ target
 config.yml
 *.log
 *.lck
+*.log.*
+*.lck.*

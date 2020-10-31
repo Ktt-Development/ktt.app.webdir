@@ -31,13 +31,14 @@ public class DefaultFrontMatterLoader {
                 if(
                     YamlUtility.containsKey(SCOPE, map.yamlMapping(DEFAULT)) &&
                     map.yamlMapping(DEFAULT).value(SCOPE).type() == Node.SEQUENCE
-                )
+                ){
                     for(final YamlNode yamlNode : map.yamlMapping(DEFAULT).yamlSequence(SCOPE)){
                         final String s = YamlUtility.asString(yamlNode);
                         if(s != null)
                             scopes.add(s);
                     }
-                else
+                    defaultConfigurations.put(scopes, map);
+                }else
                     Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.scope", file.getPath()));
             }catch(final FileNotFoundException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.default.missing", file.getPath()) + LoggerService.getStackTraceAsString(e));

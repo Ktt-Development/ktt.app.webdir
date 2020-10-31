@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Objects;
 
 public class LoggerServiceTests {
@@ -33,10 +35,9 @@ public class LoggerServiceTests {
         Assertions.assertEquals(4, service.getLogger("logger").getHandlers().length);
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void clearLogFiles(){
         for(final File file : Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log") || name.endsWith(".lck")), new File[0]))
-            file.delete();
+            file.deleteOnExit();
     }
 
 }
