@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.client.server;
 
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.webdir.client.server.unmodifiable.SimpleHttpServerUnmodifiable;
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

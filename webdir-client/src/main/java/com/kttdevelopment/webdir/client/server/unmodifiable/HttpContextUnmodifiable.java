@@ -1,4 +1,4 @@
-package com.kttdevelopment.webdir.client.server;
+package com.kttdevelopment.webdir.client.server.unmodifiable;
 
 import com.sun.net.httpserver.*;
 
@@ -18,11 +18,6 @@ public final class HttpContextUnmodifiable extends HttpContext {
     }
 
     @Override
-    public final void setHandler(final HttpHandler h){
-        context.setHandler(h);
-    }
-
-    @Override
     public final String getPath(){
         return context.getPath();
     }
@@ -38,11 +33,6 @@ public final class HttpContextUnmodifiable extends HttpContext {
     }
 
     @Override
-    public final Authenticator setAuthenticator(final Authenticator auth){
-        return context.setAuthenticator(auth);
-    }
-
-    @Override
     public final Authenticator getAuthenticator(){
         return context.getAuthenticator();
     }
@@ -51,6 +41,16 @@ public final class HttpContextUnmodifiable extends HttpContext {
 
     @Override
     public final HttpServer getServer(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setHandler(final HttpHandler h){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final Authenticator setAuthenticator(final Authenticator auth){
         throw new UnsupportedOperationException();
     }
 

@@ -53,6 +53,12 @@ public abstract class Main {
             return pageRenderingService;
         }
 
+    static FileServer server = null;
+
+        public static FileServer getServer(){
+            return server;
+        }
+
     public static void main(String[] args){
         try{
             logger = new LoggerService();
@@ -69,6 +75,8 @@ public abstract class Main {
             // server only
             if(Boolean.parseBoolean(getConfig().string(ConfigService.SERVER))){
                 permissions = new PermissionsService(new File("permissions.yml"));
+                server = new FileServer(getConfig().string(ConfigService.PORT));
+
             }
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();

@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/Ktt-Development/webdir">
-        <img src="https://raw.githubusercontent.com/Ktt-Development/webdir/main/branding/Logo.png" alt="Logo" width="100" height="100">
+        <img src="https://raw.githubusercontent.com/Ktt-Development/webdir/main/icon.png" alt="Logo" width="100" height="100">
     </a>
     <h3 align="center">WebDir</h3>
     <p align="center">
