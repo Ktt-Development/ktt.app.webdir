@@ -20,12 +20,12 @@ import java.util.logging.Logger;
 public class PageRenderer {
 
     public static final String
-        RENDERERS       = "renderers",
-        EXCHANGE_RENDERERS = "exchange_renderers",
-        PLUGIN          = "plugin",
-        RENDERER        = "renderer",
-        IMPORT          = "import",
-        IMPORT_RELATIVE = "import_relative";
+        RENDERERS           = "renderers",
+        EXCHANGE_RENDERERS  = "exchange_renderers",
+        PLUGIN              = "plugin",
+        RENDERER            = "renderer",
+        IMPORT              = "import",
+        IMPORT_RELATIVE     = "import_relative";
 
     private final LocaleService locale;
     private final Logger logger;
@@ -66,11 +66,13 @@ public class PageRenderer {
         if(frontMatter.getFrontMatter() != null)
             merged.putAll(frontMatter.getFrontMatter());
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders
+        logger.finest(locale.getString("page-renderer.front-matter.finished", IN.getPath(), finalFrontMatter));
 
         // render
         final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
         {
-            final Object r = Objects.requireNonNullElse(merged.get(server == null || exchange == null ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
+            final boolean online = server == null || exchange == null;
+            final Object r = Objects.requireNonNullElse(merged.get(online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
             final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
 
             if(renderersStr.isEmpty())
@@ -85,11 +87,17 @@ public class PageRenderer {
                 final String pluginName   = entry.getPluginName();
                 final String rendererName = entry.getRendererName();
 
+                // do not use renderer if has no permission
+                if(online && !Main.getPermissions().hasPermission(renderer.getPermission()))
+                    continue;
+
+                logger.finest(locale.getString("page-renderer.renderer.apply", pluginName, rendererName, IN.getPath(), out(OUT)));
+
                 final Future<byte[]> future = executor.submit(() -> {
                     try{
                         return renderer.render(fileRender);
                     }catch(final Throwable e){
-                        logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
+                        logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName, IN.getPath(), out(OUT)) + LoggerService.getStackTraceAsString(e));
                     }
                     return fileRender.getContentAsBytes();
                 });
@@ -97,9 +105,9 @@ public class PageRenderer {
                 try{
                     fileRender.setBytes(future.get(30,TimeUnit.SECONDS));
                 }catch(final TimeoutException | InterruptedException e){
-                    logger.severe(locale.getString("page-renderer.renderer.time", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("page-renderer.renderer.time", pluginName, rendererName, IN.getPath(), out(OUT)) + LoggerService.getStackTraceAsString(e));
                 }catch(final Throwable e){
-                    logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName) + LoggerService.getStackTraceAsString(e));
+                    logger.severe(locale.getString("page-renderer.renderer.exception", pluginName, rendererName, IN.getPath(), out(OUT)) + LoggerService.getStackTraceAsString(e));
                 }finally{
                     future.cancel(true);
                     executor.shutdownNow();
@@ -107,6 +115,10 @@ public class PageRenderer {
             }
         }
         return fileRender;
+    }
+
+    private String out(final File out){
+        return out == null ? "null" : out.getPath();
     }
 
     @Override

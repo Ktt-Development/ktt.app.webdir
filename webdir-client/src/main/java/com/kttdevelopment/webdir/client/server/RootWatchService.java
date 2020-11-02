@@ -1,11 +1,14 @@
 package com.kttdevelopment.webdir.client.server;
 
 import com.kttdevelopment.simplehttpserver.handler.FileHandler;
+import com.kttdevelopment.webdir.client.LocaleService;
+import com.kttdevelopment.webdir.client.Main;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.*;
+import java.util.logging.Logger;
 
 public final class RootWatchService {
 
@@ -14,7 +17,13 @@ public final class RootWatchService {
 
     private final String context;
 
+    private final LocaleService locale;
+    private final Logger logger;
+
     public RootWatchService(final FileHandler handler, final String context){
+        this.locale = Main.getLocale();
+        this.logger = Main.getLogger(locale.getString("page-renderer.name"));
+
         this.handler = handler;
         this.context = context;
         check();
@@ -45,11 +54,13 @@ public final class RootWatchService {
 
     public synchronized final void onAddedEvent(final File file){
         handler.addDirectory(context, file);
+        logger.fine(locale.getString("server.roots.added", file.getName()));
     }
 
     public synchronized final void onRemovedEvent(final File file){
-        // TBA
+        // 4.1.0 // TODO
         // handler.removeDirectory(file);
+        logger.fine(locale.getString("server.roots.removed", file.getName()));
     }
 
     @Override

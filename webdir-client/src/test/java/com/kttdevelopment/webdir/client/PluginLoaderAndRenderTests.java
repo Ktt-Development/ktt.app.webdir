@@ -5,8 +5,12 @@ import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.*;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class PluginLoaderAndRenderTests {
 
@@ -22,6 +26,8 @@ public class PluginLoaderAndRenderTests {
     public static void cleanup() throws IOException{
         LoggerServiceTests.clearLogFiles();
 
+        for(final File file : Objects.requireNonNull(new File("_site/defaultsTests").listFiles()))
+            Files.delete(file.toPath());
         for(final File file : Objects.requireNonNull(new File("_site/defaultsTests").listFiles()))
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNull(new File("_site").listFiles()))
@@ -107,7 +113,7 @@ public class PluginLoaderAndRenderTests {
             nl.deleteOnExit();
             Files.write(nl.toPath(), "---\nrenderers:\n  - 'null'\n---".getBytes());
 
-            // config dependencies
+            // default dependencies
             final File defaults = new File("_default");
             Assertions.assertTrue(defaults.mkdirs());
             defaults.deleteOnExit();
@@ -162,6 +168,12 @@ public class PluginLoaderAndRenderTests {
             ).forEach(file -> {
                 Assertions.assertDoesNotThrow(() -> Assertions.assertTrue(file.createNewFile()));
             });
+
+            // config dependencies (port must not be 80).
+
+            // permissions dependencies
+
+            // server render dependencies
         }
 
         Main.pageRenderingService = new PageRenderingService(
@@ -217,13 +229,57 @@ public class PluginLoaderAndRenderTests {
     
             // test negative scope
             Assertions.assertEquals("", Files.readString(new File(defaultOutput, "negative.html").toPath()), "Default with negation ! scope should not render file");
-            for(final File file : Objects.requireNonNull(defaultOutput.listFiles()))
-                Files.delete(file.toPath());
         }
+
+        if(true) return; // TODO ↓
 
         // server tests
         {
+            final String head = "http://localhost:" + 8080;
+            // above config and render tests but with http
 
+            Assertions.assertNotEquals("2", getResponseContent(head + "/render"));
+            Assertions.assertEquals("1", getResponseContent(head + "/v1"));
+            Assertions.assertEquals("2", getResponseContent(head + "/v2"));
+            Assertions.assertEquals("3", getResponseContent(head + "/ro3"));
+            Assertions.assertEquals("2", getResponseContent(head + "/ro2"));
+            Assertions.assertEquals("3", getResponseContent(head + "/cp"));
+            Assertions.assertNull(getResponseContent(head + "/ex"));
+            Assertions.assertNull(getResponseContent(head + "/to"));
+            Assertions.assertEquals("1", getResponseContent(head + "/cfg"));
+            Assertions.assertNotNull(getResponseContent(head + "/output"));
+            Assertions.assertNull(getResponseContent(head + "/null"));
+
+            // exchange render tests
+
+            // render permissions tests
+
+                // test required
+                // test not required
+                // test negative
+
+            // conn limit tests
+
+                // test unset
+                // test set
+                // test -1
+        }
+    }
+
+    private String getResponseContent(final String url){
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .timeout(Duration.ofSeconds(10))
+            .build();
+
+        try{
+            return HttpClient
+                .newHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .get();
+        }catch(final InterruptedException | ExecutionException ignored){
+            return null;
         }
     }
 

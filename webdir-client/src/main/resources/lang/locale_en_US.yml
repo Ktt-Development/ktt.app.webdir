@@ -109,6 +109,7 @@ page-renderer:
   front-matter:
     fail: Failed to load imports from file %s (I/O exception).
     missing: Failed to load renderer (expected a 'plugin' and 'renderer' field but got %s).
+    finished: Loaded front matter for file %s -> {%s}
   render:
     start: Rendering file %s.
     missing: Failed to render file %s (file not found).
@@ -118,8 +119,9 @@ page-renderer:
     write: Failed to write to file %s (I/O exception).
   renderer:
     read: Failed to read file %s.
-    exception: Failed to use renderer [%s] %s (renderer threw an exception).
-    time: Failed to use renderer [%s] %s (renderer timed out).
+    apply: Applying renderer [%s] %s on %s to %s.
+    exception: Failed to use renderer [%s] %s (renderer threw an exception) on %s to %s.
+    time: Failed to use renderer [%s] %s (renderer timed out) on %s to %s.
 
 permissions:
   name: Permissions Service
@@ -156,3 +158,10 @@ permissions:
 
 server:
   name: File Server
+  constructor:
+    start: Started file server initialization.
+    port: Failed to create file server (invalid port).
+    finish: Started file server.
+  roots:
+    added: Added drive %s.
+    removed: Removed drive %s.

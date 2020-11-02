@@ -121,8 +121,10 @@ public final class Permissions {
         return hasPermission((InetAddress) null, permission);
     }
 
-    // switch to case equals instead of boolean
     public final boolean hasPermission(final InetAddress address, final String permission){
+        if(permission == null) // treat null as no required permission (true)
+            return true;
+
         final PermissionsUser user = getUser(address);
 
         // default
