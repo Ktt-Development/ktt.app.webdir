@@ -37,7 +37,7 @@ public abstract class Main {
 
     static PermissionsService permissions = null;
 
-        public static Permissions getPermissions(){
+    public static Permissions getPermissions(){
         return permissions.getPermissions();
     }
 

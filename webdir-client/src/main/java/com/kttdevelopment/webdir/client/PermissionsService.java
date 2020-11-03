@@ -75,7 +75,7 @@ public final class PermissionsService {
             try{
                 yaml = Yaml.createYamlInput(permissionsFile).readYamlMapping();
             }catch(final IOException e){
-                logger.warning(locale.getString("permissions.constructor.permissions." + (e instanceof FileNotFoundException ? "missing" : "malformed")) + LoggerService.getStackTraceAsString(e));
+                logger.warning(locale.getString("permissions.constructor.permissions." + (e instanceof FileNotFoundException ? "missing" : "malformed"), fileName) + LoggerService.getStackTraceAsString(e));
 
                 if(!permissionsFile.exists())
                     try{
@@ -88,7 +88,7 @@ public final class PermissionsService {
 
             permissionsSchema = new Permissions(yaml == null ? defaultPermissions : yaml);
 
-            logger.info(locale.getString("permissions.constructor.permissions.finish", fileName));
+            logger.info(locale.getString("permissions.constructor.permissions.finish"));
         }
         logger.info(locale.getString("permissions.constructor.finish"));
     }

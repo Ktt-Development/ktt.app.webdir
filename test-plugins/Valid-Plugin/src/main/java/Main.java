@@ -33,6 +33,12 @@ public class Main extends WebDirPlugin {
                 return asBytes("2");
             }
         });
+        addRenderer("copy", new Renderer(){
+            @Override
+            public byte[] render(final FileRender render){
+                return render.getContentAsBytes();
+            }
+        });
         addRenderer("set", new Renderer(){
             @Override
             public byte[] render(final FileRender render){

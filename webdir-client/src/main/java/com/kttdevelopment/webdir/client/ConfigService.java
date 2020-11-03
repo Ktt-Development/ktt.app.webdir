@@ -116,8 +116,8 @@ public final class ConfigService {
             }catch(final IOException e){
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.config." + (e instanceof FileNotFoundException ? "missing" : "malformed"),
-                    loggerName, "Loading configuration from file %s.",
-                    Level.WARNING, fileName, LoggerService.getStackTraceAsString(e)
+                    loggerName, e instanceof FileNotFoundException ? "Failed to load configuration from file %s (file not found). Using default configuration. %s" : "Failed to load configuration from file %s (malformed yaml). Using default configuration. %s",
+                    Level.INFO, fileName, LoggerService.getStackTraceAsString(e)
                 );
                 // copy default if missing
                 if(!configFile.exists())

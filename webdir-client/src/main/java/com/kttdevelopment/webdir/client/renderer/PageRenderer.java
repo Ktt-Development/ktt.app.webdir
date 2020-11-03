@@ -47,7 +47,7 @@ public class PageRenderer {
     }
 
     public final FileRender render(final File IN, final File OUT, final SimpleHttpServer server, final SimpleHttpExchange exchange){
-        final boolean online = server == null || exchange == null;
+        final boolean online = server != null && exchange != null;
         final boolean isDirectory = online && IN.isDirectory();
 
         byte[] bytes = null;
@@ -62,7 +62,7 @@ public class PageRenderer {
         // front matter
         final Map<String,? super Object> merged = new HashMap<>();
         {
-             final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN);
+             final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN, online);
              if(defaultFrontMatter != null)
                 merged.putAll(defaultFrontMatter);
         }
@@ -79,7 +79,7 @@ public class PageRenderer {
         // render
         final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
         {
-            final Object r = Objects.requireNonNullElse(merged.get(online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
+            final Object r = Objects.requireNonNullElse(merged.get(!online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
             final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
 
             if(renderersStr.isEmpty())
@@ -90,7 +90,7 @@ public class PageRenderer {
             for(final PluginRendererEntry entry : renderers){
                 final Renderer renderer = entry.getRenderer();
 
-                if(!renderer.test(IN))
+                if(ExceptionUtility.requireNonExceptionElse(() -> !renderer.test(IN), false))
                     continue;
 
                 final ExecutorService executor = Executors.newSingleThreadExecutor();

@@ -59,7 +59,7 @@ public final class PageRenderingService {
         final AtomicInteger total    = new AtomicInteger(0);
         final AtomicInteger rendered = new AtomicInteger(0);
 
-        renderer = new PageRenderer(sources, output, new DefaultFrontMatterLoader(defaults, sources));
+        renderer = new PageRenderer(sources, output, new DefaultFrontMatterLoader(defaults, sources, output));
 
         if(!output.exists() && !output.mkdirs()){
             logger.severe(locale.getString("page-renderer.constructor.output", output.getPath()));
@@ -113,16 +113,18 @@ public final class PageRenderingService {
             return null;
         }
 
+        final boolean online = server != null && exchange != null;
+
         final Path path      = IN.getAbsoluteFile().toPath();
-        final Path rel       = sources.getAbsoluteFile().toPath().relativize(path);
+        final Path rel       = (!online ? sources : output).getAbsoluteFile().toPath().relativize(path);
         final Path rendered  = Paths.get(output.getAbsolutePath(), rel.toString());
 
         final File parent = rendered.toFile().getParentFile();
         if(parent.exists() || parent.mkdirs())
             return
-                server == null || exchange == null
+                !online
                 ? renderer.render(IN, rendered.toFile())
-                : renderer.render(IN, rendered.toFile(), server, exchange);
+                : renderer.render(rendered.toFile(), null, server, exchange);
         else
             logger.warning(locale.getString("page-renderer.render.parent", IN.getPath(), parent.getPath()));
         return null;

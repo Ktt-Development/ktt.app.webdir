@@ -17,37 +17,127 @@ public class PluginLoaderAndRenderTests {
     @BeforeAll
     public static void before(){
         new File("config.yml").deleteOnExit();
-        Assertions.assertDoesNotThrow(() -> Main.logger = new LoggerService(), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
-        Assertions.assertDoesNotThrow(() -> Main.config = new ConfigService(new File("config.yml")), PermissionsServiceTests.class.getSimpleName() + " depends on ConfigService for tests.");
-        Assertions.assertDoesNotThrow(() -> Main.locale = new LocaleService("lang/locale"), PermissionsServiceTests.class.getSimpleName() + " depends on LoggerService for tests.");
+        new File("permissions.yml").deleteOnExit();
+
+        Assertions.assertTrue(_defaults.exists() || _defaults.mkdirs());
+        _defaults.deleteOnExit();
+
+        Assertions.assertTrue(_root.exists() || _root.mkdirs());
+        _root.deleteOnExit();
+        Assertions.assertTrue(defaultsInput.exists() || defaultsInput.mkdirs());
+        defaultsInput.deleteOnExit();
+
+        _site.deleteOnExit();
+        defaultsOutput.deleteOnExit();
     }
 
     @AfterAll
     public static void cleanup() throws IOException{
         LoggerServiceTests.clearLogFiles();
 
-        for(final File file : Objects.requireNonNull(new File("_site/defaultsTests").listFiles()))
+        for(final File file : Objects.requireNonNullElse(defaultsOutput.listFiles(), new File[0]))
             Files.delete(file.toPath());
-        for(final File file : Objects.requireNonNull(new File("_site").listFiles()))
+        for(final File file : Objects.requireNonNullElse(_site.listFiles(), new File[0]))
             Files.delete(file.toPath());
-        for(final File file : Objects.requireNonNull(new File("_root/defaultsTests").listFiles()))
+        for(final File file : Objects.requireNonNullElse(defaultsInput.listFiles(), new File[0]))
             Files.delete(file.toPath());
-        for(final File file : Objects.requireNonNull(new File("_root").listFiles()))
+        for(final File file : Objects.requireNonNullElse(_root.listFiles(), new File[0]))
             Files.delete(file.toPath());
-        for(final File file : Objects.requireNonNull(new File("_default").listFiles()))
+        for(final File file : Objects.requireNonNull(_defaults.listFiles()))
             Files.delete(file.toPath());
     }
 
+    private static final File _defaults      = new File("_default");
+    private static final File _site          = new File("_site");
+    private static final File _root          = new File("_root");
+    private static final File defaultsInput  = new File(_root, "defaultsTests");
+    private static final File defaultsOutput = new File(_site, defaultsInput.getName());
+
     @Test
     public void test() throws IOException{
-        // filter tests
+        // plugin deps
         {
             final File notjar = new File("_plugins/notjar");
             Assertions.assertTrue(notjar.exists() || notjar.createNewFile());
+        }
+        // render deps
+        {
+            writeInput("render", "---\nrenderers:\n  - 1\nexchange_renderers:\n  - 2\n---");
+            writeInput("v1"    , "---\nrenderers:\n  - plugin: ValidPlugin\n    renderer: 1\n---");
+            writeInput("v2"    , "---\nrenderers:\n  - plugin: ValidDependent\n    renderer: 1\n---");
+            writeInput("ro3"   , "---\nrenderers:\n  - 2\n  -3\n---");
+            writeInput("ro2"   , "---\nrenderers:\n  - 3\n  -2\n---");
+            writeInput("cp"    , "---\nrenderers:\n  - 3\n  - copy\n---");
+            writeInput("ex"    , "---\nrenderers:\n  - ex\n---");
+            writeInput("to"    , "---\nrenderers:\n  - times\n---");
+            writeInput("cfg"   , "---\nrenderers:\n  - set\n  - get\n---");
+            writeInput("out"   , "---\nrenderers:\n  - out\n---");
+            writeInput("null"  , "---\nrenderers:\n  - 'null'\n---");
+            writeInput("false"  , "---\nrenderers:\n  - false\n---\nF");
+            writeInput("exchange"  , "---\nrenderers:\n  - 1\nexchange_renderers:\n  - exchange\n---\nF");
+
+            // default dependencies
+            Map.of(
+                new File(_defaults, "index.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    - /defaultsTests/index.html\n" +
+                "renderers: 2",
+                new File(_defaults, "index1.yml"),
+                "default:\n" +
+                "  index: 1\n" +
+                "  scope:\n" +
+                "    - /defaultsTests/index1.html\n" +
+                "renderers: 2",
+                new File(_defaults, "index-1.yml"),
+                "default:\n" +
+                "  index: -1\n" +
+                "  scope:\n" +
+                "    - /defaultsTests/index.html\n" +
+                "    - /defaultsTests/index1.html\n" +
+                "renderers: second",
+                new File(_defaults, "negative.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    - /defaultsTests/negative.html\n" +
+                "    - \"!/defaultsTests/negative.html\"\n" +
+                "renderers: 2",
+                new File(_defaults, "scope.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    - /defaultsTests/exact.txt\n" +
+                "    - /defaultsTests/*.cfg\n" +
+                "    - /defaultsTests/file.*\n" +
+                "    - \"*.log\"\n" +
+                "renderers: 2"
+            ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
+
+            List.of(
+                new File(defaultsInput, "exact.txt"),
+                new File(defaultsInput, "file.txt"),
+                new File(defaultsInput, "index.html"),
+                new File(defaultsInput, "index1.html"),
+                new File(defaultsInput, "negative.html"),
+                new File(defaultsInput, "test.cfg"),
+                new File(defaultsInput, "test.log")
+            ).forEach(file -> Assertions.assertDoesNotThrow(() -> Assertions.assertTrue(file.createNewFile())));
+
+            // config dependencies (port must not be 80).
+            Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
+
+            // permissions dependencies
+
+            // server render dependencies
+        }
+
+        Main.main(null);
+
+        // plugin tests
+        {
             Assertions.assertEquals(15, Objects.requireNonNullElse(new File("_plugins").listFiles(File::isFile), new File[0]).length, "Test plugins are not yet loaded. Please run > mvn package");
-            Main.pluginLoader = new PluginLoader(new File("_plugins"));
             Assertions.assertEquals(2, Main.getPluginLoader().getPlugins().size(), "Some invalid plugins were loaded");
         }
+
         // plugin service tests
         {
             final WebDirPlugin plugin = Objects.requireNonNull(Main.getPluginLoader().getPlugin("ValidPlugin"));
@@ -60,176 +150,56 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.SOURCES)), plugin.getSourcesFolder());
             Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.OUTPUT)), plugin.getOutputFolder());
         }
-        // render tests
-        final File src = new File("_root");
-            Assertions.assertTrue(src.mkdirs());
-            src.deleteOnExit();
-        final File output = new File("_site");
-            output.deleteOnExit();
-        { // page renderer dependencies (src + def)
-            final File render = new File(src, "render.html");
-            render.deleteOnExit();
-            Files.write(render.toPath(), "---\nrenderers:\n  - 1\nexchange_renderers:\n  - 2\n---".getBytes());
-
-            final File v1 = new File(src, "v1.html");
-            v1.deleteOnExit();
-            Files.write(v1.toPath(), "---\nrenderers:\n  - plugin: ValidPlugin\n    renderer: 1\n---".getBytes());
-
-            final File v2 = new File(src, "v2.html");
-            v2.deleteOnExit();
-            Files.write(v2.toPath(), "---\nrenderers:\n  - plugin: ValidDependent\n    renderer: 1\n---".getBytes());
-
-            final File ro3 = new File(src, "ro3.html");
-            ro3.deleteOnExit();
-            Files.write(ro3.toPath(), "---\nrenderers:\n  - 2\n  -3\n---".getBytes());
-
-            final File ro2 = new File(src, "ro2.html");
-            ro2.deleteOnExit();
-            Files.write(ro2.toPath(), "---\nrenderers:\n  - 3\n  -2\n---".getBytes());
-
-            final File cp = new File(src, "cp.html");
-            cp.deleteOnExit();
-            Files.write(cp.toPath(), "---\nrenderers:\n  - 3\n  - copy\n---".getBytes());
-
-            final File ex = new File(src, "ex.html");
-            ex.deleteOnExit();
-            Files.write(ex.toPath(), "---\nrenderers:\n  - ex\n---".getBytes());
-
-            final File to = new File(src, "to.html");
-            to.deleteOnExit();
-            Files.write(to.toPath(), "---\nrenderers:\n  - times\n---".getBytes());
-
-            final File cfg = new File(src, "cfg.html");
-            cfg.deleteOnExit();
-            Files.write(cfg.toPath(), "---\nrenderers:\n  - set\n  - get\n---".getBytes());
-
-            final File out = new File(src, "out.html");
-            out.deleteOnExit();
-            Files.write(out.toPath(), "---\nrenderers:\n  - out\n---".getBytes());
-
-            final File nl = new File(src, "null.html");
-            nl.deleteOnExit();
-            Files.write(nl.toPath(), "---\nrenderers:\n  - 'null'\n---".getBytes());
-
-            // default dependencies
-            final File defaults = new File("_default");
-            Assertions.assertTrue(defaults.mkdirs());
-            defaults.deleteOnExit();
-
-            Map.of(
-                new File(defaults, "index.yml"),
-                "default:\n" +
-                "  scope:\n" +
-                "    - /defaultsTests/index.html\n" +
-                "renderers: 2",
-                new File(defaults, "index1.yml"),
-                "default:\n" +
-                "  index: 1\n" +
-                "  scope:\n" +
-                "    - /defaultsTests/index1.html\n" +
-                "renderers: 2",
-                new File(defaults, "index-1.yml"),
-                "default:\n" +
-                "  index: -1\n" +
-                "  scope:\n" +
-                "    - /defaultsTests/index.html\n" +
-                "    - /defaultsTests/index1.html\n" +
-                "renderers: second",
-                new File(defaults, "negative.yml"),
-                "default:\n" +
-                "  scope:\n" +
-                "    - /defaultsTests/negative.html\n" +
-                "    - \"!/defaultsTests/negative.html\"\n" +
-                "renderers: 2",
-                new File(defaults, "scope.yml"),
-                "default:\n" +
-                "  scope:\n" +
-                "    - /defaultsTests/exact.txt\n" +
-                "    - /defaultsTests/*.cfg\n" +
-                "    - /defaultsTests/file.*\n" +
-                "    - \"*.log\"\n" +
-                "renderers: 2"
-            ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
-
-            final File defaultsInput = new File(src, "defaultsTests");
-            Assertions.assertTrue(defaultsInput.mkdirs());
-            defaultsInput.deleteOnExit();
-
-            List.of(
-                new File(defaultsInput, "exact.txt"),
-                new File(defaultsInput, "file.txt"),
-                new File(defaultsInput, "index.html"),
-                new File(defaultsInput, "index1.html"),
-                new File(defaultsInput, "negative.html"),
-                new File(defaultsInput, "test.cfg"),
-                new File(defaultsInput, "test.log")
-            ).forEach(file -> {
-                Assertions.assertDoesNotThrow(() -> Assertions.assertTrue(file.createNewFile()));
-            });
-
-            // config dependencies (port must not be 80).
-
-            // permissions dependencies
-
-            // server render dependencies
-        }
-
-        Main.pageRenderingService = new PageRenderingService(
-            new File(Main.getConfig().string(ConfigService.DEFAULT)),
-            new File(Main.getConfig().string(ConfigService.SOURCES)),
-            new File(Main.getConfig().string(ConfigService.OUTPUT))
-        );
 
         // test render
         {
             // test render
-            Assertions.assertNotEquals(0, new File(output, "render.html").length());
+            Assertions.assertNotEquals(0, new File(_site, "render.html").length());
             // test exchange render ignored
-            Assertions.assertNotEquals("2", Files.readString(new File(output, "render.html").toPath()));
+            Assertions.assertNotEquals("2", Files.readString(new File(_site, "render.html").toPath()));
             // test specific render
-            Assertions.assertEquals("1", Files.readString(new File(output, "v1.html").toPath()));
-            Assertions.assertEquals("2", Files.readString(new File(output, "v2.html").toPath()));
+            Assertions.assertEquals("1", Files.readString(new File(_site, "v1.html").toPath()));
+            Assertions.assertEquals("2", Files.readString(new File(_site, "v2.html").toPath()));
             // test render order
-            Assertions.assertEquals("3", Files.readString(new File(output, "ro3.html").toPath()));
-            Assertions.assertEquals("2", Files.readString(new File(output, "ro2.html").toPath()));
+            Assertions.assertEquals("3", Files.readString(new File(_site, "ro3.html").toPath()));
+            Assertions.assertEquals("2", Files.readString(new File(_site, "ro2.html").toPath()));
             // test render I/O
-            Assertions.assertEquals("3", Files.readString(new File(output, "cp.html").toPath()));
+            Assertions.assertEquals("3", Files.readString(new File(_site, "cp.html").toPath()));
             // test exception render
-            Assertions.assertEquals("", Files.readString(new File(output, "ex.html").toPath()));
+            Assertions.assertEquals("", Files.readString(new File(_site, "ex.html").toPath()));
             // test timed out render
-            Assertions.assertEquals("", Files.readString(new File(output, "to.html").toPath()));
+            Assertions.assertEquals("", Files.readString(new File(_site, "to.html").toPath()));
 
             // test file render config transfer
-            Assertions.assertEquals("1", Files.readString(new File(output, "cfg.html").toPath()));
+            Assertions.assertEquals("1", Files.readString(new File(_site, "cfg.html").toPath()));
 
             // test output change
-            Assertions.assertTrue(new File(output, "output.html").exists());
+            Assertions.assertTrue(new File(_site, "output.html").exists());
 
             // null ignore
-            Assertions.assertFalse(new File(output, "null.html").exists());
+            Assertions.assertFalse(new File(_site, "null.html").exists());
+
+            // filter
+            Assertions.assertEquals("F", Files.readString(new File(_site, "false.html").toPath()));
+
+            Assertions.assertEquals("1", Files.readString(new File(_site, "exchange.html").toPath()));
         }
 
         // config tests
         {
-            // test files
-            final File defaultOutput = new File(output, "defaultsTests");
-            defaultOutput.deleteOnExit();
-    
             // test index and no index
-            Assertions.assertEquals("2", Files.readString(new File(defaultOutput, "index1.html").toPath()), "Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)");
-            Assertions.assertEquals("2", Files.readString(new File(defaultOutput, "index.html").toPath()), "Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)");
+            Assertions.assertEquals("2", Files.readString(new File(defaultsOutput, "index1.html").toPath()), "Using default files with same scope should go by priority (expected default with index 1 to be used but default with index -1 was used)");
+            Assertions.assertEquals("2", Files.readString(new File(defaultsOutput, "index.html").toPath()), "Using default files with same scope should go by priority (expected default with no index (0) to be used but default with index -1 was used)");
     
             // test scope
-            Assertions.assertEquals("2", Files.readString(new File(defaultOutput, "exact.txt").toPath()), "Default with exact scope should render file");
-            Assertions.assertEquals("2", Files.readString(new File(defaultOutput, "test.cfg").toPath()), "Default with *.cfg scope should render file");
-            Assertions.assertEquals("2", Files.readString(new File(defaultOutput, "test.cfg").toPath()), "Default with file.* scope should render file");
-            Assertions.assertEquals("2", Files.readString(new File(defaultOutput, "test.log").toPath()), "Default with *.log scope should render file");
+            Assertions.assertEquals("2", Files.readString(new File(defaultsOutput, "exact.txt").toPath()), "Default with exact scope should render file");
+            Assertions.assertEquals("2", Files.readString(new File(defaultsOutput, "test.cfg").toPath()), "Default with *.cfg scope should render file");
+            Assertions.assertEquals("2", Files.readString(new File(defaultsOutput, "test.cfg").toPath()), "Default with file.* scope should render file");
+            Assertions.assertEquals("2", Files.readString(new File(defaultsOutput, "test.log").toPath()), "Default with *.log scope should render file");
     
             // test negative scope
-            Assertions.assertEquals("", Files.readString(new File(defaultOutput, "negative.html").toPath()), "Default with negation ! scope should not render file");
+            Assertions.assertEquals("", Files.readString(new File(defaultsOutput, "negative.html").toPath()), "Default with negation ! scope should not render file");
         }
-
-        if(true) return; // TODO ↓
 
         // server tests
         {
@@ -242,26 +212,39 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("3", getResponseContent(head + "/ro3"));
             Assertions.assertEquals("2", getResponseContent(head + "/ro2"));
             Assertions.assertEquals("3", getResponseContent(head + "/cp"));
-            Assertions.assertNull(getResponseContent(head + "/ex"));
-            Assertions.assertNull(getResponseContent(head + "/to"));
+            Assertions.assertEquals("", getResponseContent(head + "/ex"));
+            Assertions.assertEquals("", getResponseContent(head + "/to"));
             Assertions.assertEquals("1", getResponseContent(head + "/cfg"));
             Assertions.assertNotNull(getResponseContent(head + "/output"));
             Assertions.assertNull(getResponseContent(head + "/null"));
+            Assertions.assertEquals("F", getResponseContent(head + "/false"));
 
             // exchange render tests
 
+            Assertions.assertEquals("exchange", getResponseContent(head + "/exchange"));
+
             // render permissions tests
 
-                // test required
-                // test not required
-                // test negative
+                // test w/perm
+                // test w/o perm
+                // test default (no perm)
 
             // conn limit tests
 
                 // test unset
                 // test set
                 // test -1
+
+            // test drives
+            if(false){
+
+            }
         }
+    }
+
+    private void writeInput(final String fileName, final String content){
+        final File render = new File(_root, fileName + ".html");
+        Assertions.assertDoesNotThrow(() -> Files.write(render.toPath(), content.getBytes()));
     }
 
     private String getResponseContent(final String url){

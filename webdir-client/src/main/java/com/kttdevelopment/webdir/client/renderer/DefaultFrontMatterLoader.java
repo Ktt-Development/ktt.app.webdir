@@ -18,11 +18,12 @@ public class DefaultFrontMatterLoader {
 
     private final Map<List<String>,YamlMapping> defaultConfigurations = new HashMap<>();
 
-    private final File defaults, sources;
+    private final File defaults, sources, output;
 
-    public DefaultFrontMatterLoader(final File defaults, final File sources){
+    public DefaultFrontMatterLoader(final File defaults, final File sources, final File output){
         this.defaults = defaults;
         this.sources = sources;
+        this.output = output;
 
         for(final File file : Objects.requireNonNullElse(defaults.listFiles(File::isFile), new File[0])){
             try{
@@ -49,10 +50,11 @@ public class DefaultFrontMatterLoader {
 
     }
 
-    public final Map<String,? super Object> getDefaultFrontMatter(final File file){
+    // if online then fromOutput is true
+    public final Map<String,? super Object> getDefaultFrontMatter(final File file, final boolean fromOutput){
         Objects.requireNonNull(file);
         return getDefaultFrontMatter(
-            ContextUtil.getContext(sources.getAbsoluteFile().toPath().relativize(
+            ContextUtil.getContext((!fromOutput ? sources : output).getAbsoluteFile().toPath().relativize(
                 file.getAbsoluteFile().toPath()).toString(), true, false
             )
         );
@@ -104,6 +106,7 @@ public class DefaultFrontMatterLoader {
             .addObject("defaultConfigurations", defaultConfigurations)
             .addObject("defaults", defaults)
             .addObject("sources", sources)
+            .addObject("output", output)
             .toString();
     }
 

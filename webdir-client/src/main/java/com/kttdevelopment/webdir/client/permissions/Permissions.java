@@ -55,7 +55,7 @@ public final class Permissions {
                 }
         }
 
-        logger.finer(locale.getString("permissions.permissions.finish", value));
+        logger.finer(locale.getString("permissions.permissions.finish"));
     }
 
     private String asString(final YamlNode e){

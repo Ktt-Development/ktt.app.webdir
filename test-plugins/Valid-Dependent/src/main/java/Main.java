@@ -1,5 +1,7 @@
 import com.kttdevelopment.webdir.api.*;
 
+import java.io.File;
+
 public class Main extends WebDirPlugin {
 
     public Main(final PluginService service){
@@ -26,10 +28,33 @@ public class Main extends WebDirPlugin {
                 return asBytes("3");
             }
         });
-        addRenderer("copy", new Renderer(){
+        addRenderer("exchange", new Renderer(){
             @Override
             public byte[] render(final FileRender render){
-                return render.getContentAsBytes();
+                return asBytes("exchange");
+            }
+        });
+        addRenderer("perm", new Renderer("perm"){
+            @Override
+            public byte[] render(final FileRender render){
+                return asBytes("perm");
+            }
+        });
+        addRenderer("perm2", new Renderer("perm2"){
+            @Override
+            public byte[] render(final FileRender render){
+                return asBytes("perm2");
+            }
+        });
+        addRenderer("false", new Renderer(){
+            @Override
+            public boolean test(final File file){
+                return false;
+            }
+
+            @Override
+            public byte[] render(final FileRender render){
+                return asBytes("true");
             }
         });
     }

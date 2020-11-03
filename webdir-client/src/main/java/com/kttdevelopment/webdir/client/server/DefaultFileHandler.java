@@ -35,7 +35,6 @@ public final class DefaultFileHandler extends FileHandler {
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("renderers", renderer)
             .addObject("rootWatchService", rootWatchService)
-            .addObject("server", server)
             .toString();
     }
 
