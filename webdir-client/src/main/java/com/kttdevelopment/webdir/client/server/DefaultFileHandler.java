@@ -7,6 +7,8 @@ import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 public final class DefaultFileHandler extends FileHandler {
 
@@ -22,9 +24,10 @@ public final class DefaultFileHandler extends FileHandler {
     }
 
     @Override
-    public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes){
-        renderer.render(source, server, exchange);
+    public final void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
+        exchange.send(Objects.requireNonNull(renderer.render(source, server, exchange)).getContentAsBytes());
         rootWatchService.check();
+        exchange.close();
     }
 
     @Override

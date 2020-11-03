@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.api;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -45,6 +46,20 @@ public class Renderer {
      */
     public final String getPermission(){
         return permission;
+    }
+
+    /**
+     * Returns whether the renderer can be used with the type of file.
+     *
+     * @param file file to test
+     *
+     * @return if the renderer can be used
+     *
+     * @since 1.0.0
+     * @author Ktt Development
+     */
+    public boolean test(final File file){
+        return true;
     }
 
     //

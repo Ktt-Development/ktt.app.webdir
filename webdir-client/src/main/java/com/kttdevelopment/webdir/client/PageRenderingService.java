@@ -67,8 +67,19 @@ public final class PageRenderingService {
             try{
                 Files.walk(sources.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> {
                     total.incrementAndGet();
-                    if(render(path.toFile()))
-                        rendered.incrementAndGet();
+                    final File file = path.toFile();
+                    final FileRender render = render(file);
+                    logger.finer(locale.getString("page-renderer.render.finish", file.getPath()));
+                    final byte[] bytes;
+                    if(render != null && (bytes = render.getContentAsBytes()) != null && render.getOutputFile() != null)
+                        try{
+                            Files.write(render.getOutputFile().toPath(), bytes);
+                            rendered.incrementAndGet();
+                        }catch(final IOException e){
+                            logger.warning(locale.getString("page-renderer.render.write", file.getPath()) + LoggerService.getStackTraceAsString(e));
+                        }
+                    else
+                        logger.warning(locale.getString("page-renderer.render.null", file.getPath()));
                 });
             }catch(final IOException e){
                 logger.severe(locale.getString("page-renderer.constructor.walk", sources.getPath()) + LoggerService.getStackTraceAsString(e));
@@ -91,41 +102,30 @@ public final class PageRenderingService {
 
     //
 
-    public final boolean render(final File IN){
+    public final FileRender render(final File IN){
         return render(IN, null, null);
     }
 
-    public final boolean render(final File IN, final SimpleHttpServer server, final SimpleHttpExchange exchange){
+    public final FileRender render(final File IN, final SimpleHttpServer server, final SimpleHttpExchange exchange){
         logger.finer(locale.getString("page-renderer.render.start", IN.getPath()));
         if(!IN.exists()){
             logger.warning(locale.getString("page-renderer.render.missing", IN.getPath()));
-            return false;
+            return null;
         }
 
         final Path path      = IN.getAbsoluteFile().toPath();
         final Path rel       = sources.getAbsoluteFile().toPath().relativize(path);
         final Path rendered  = Paths.get(output.getAbsolutePath(), rel.toString());
 
-        try{
-            final File parent = rendered.toFile().getParentFile();
-            if(parent.exists() || parent.mkdirs()){
-                final FileRender output =
-                    server == null || exchange == null
-                    ? renderer.render(IN, rendered.toFile())
-                    : renderer.render(IN, rendered.toFile(), server, exchange);
-                if(output != null && output.getContentAsBytes() != null && output.getOutputFile() != null)
-                    Files.write(output.getOutputFile().toPath(), output.getContentAsBytes());
-                else
-                    logger.warning(locale.getString("page-renderer.render.null", IN.getPath()));
-                logger.finer(locale.getString("page-renderer.render.finish", IN.getPath()));
-                return true;
-            }else{
-                logger.warning(locale.getString("page-renderer.render.parent", IN.getPath(), parent.getPath()));
-            }
-        }catch(final IOException | SecurityException e){
-            logger.warning(locale.getString("page-renderer.render.write", IN.getPath()) + LoggerService.getStackTraceAsString(e));
-        }
-        return false;
+        final File parent = rendered.toFile().getParentFile();
+        if(parent.exists() || parent.mkdirs())
+            return
+                server == null || exchange == null
+                ? renderer.render(IN, rendered.toFile())
+                : renderer.render(IN, rendered.toFile(), server, exchange);
+        else
+            logger.warning(locale.getString("page-renderer.render.parent", IN.getPath(), parent.getPath()));
+        return null;
     }
 
     //

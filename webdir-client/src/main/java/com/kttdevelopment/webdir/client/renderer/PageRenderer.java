@@ -47,31 +47,38 @@ public class PageRenderer {
     }
 
     public final FileRender render(final File IN, final File OUT, final SimpleHttpServer server, final SimpleHttpExchange exchange){
-        byte[] bytes;
-        try{
-            bytes = Files.readAllBytes(IN.toPath());
-        }catch(final OutOfMemoryError | SecurityException | IOException e){
-            logger.severe(locale.getString("page-renderer.renderer.read", IN.getPath()) + LoggerService.getStackTraceAsString(e));
-            return null;
-        }
+        final boolean online = server == null || exchange == null;
+        final boolean isDirectory = online && IN.isDirectory();
+
+        byte[] bytes = null;
+        if(!isDirectory)
+            try{
+                bytes = Files.readAllBytes(IN.toPath());
+            }catch(final OutOfMemoryError | SecurityException | IOException e){
+                logger.severe(locale.getString("page-renderer.renderer.read", IN.getPath()) + LoggerService.getStackTraceAsString(e));
+                return null;
+            }
 
         // front matter
-        final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN);
-        final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));
-        bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);
-        // merge
         final Map<String,? super Object> merged = new HashMap<>();
-        if(defaultFrontMatter != null)
-            merged.putAll(defaultFrontMatter);
-        if(frontMatter.getFrontMatter() != null)
-            merged.putAll(frontMatter.getFrontMatter());
+        {
+             final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN);
+             if(defaultFrontMatter != null)
+                merged.putAll(defaultFrontMatter);
+        }
+        if(!isDirectory){
+            final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));
+            bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);
+            if(frontMatter.getFrontMatter() != null)
+                merged.putAll(frontMatter.getFrontMatter());
+        }
+
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders
         logger.finest(locale.getString("page-renderer.front-matter.finished", IN.getPath(), finalFrontMatter));
 
         // render
         final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
         {
-            final boolean online = server == null || exchange == null;
             final Object r = Objects.requireNonNullElse(merged.get(online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
             final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
 
@@ -82,6 +89,10 @@ public class PageRenderer {
 
             for(final PluginRendererEntry entry : renderers){
                 final Renderer renderer = entry.getRenderer();
+
+                if(!renderer.test(IN))
+                    continue;
+
                 final ExecutorService executor = Executors.newSingleThreadExecutor();
 
                 final String pluginName   = entry.getPluginName();

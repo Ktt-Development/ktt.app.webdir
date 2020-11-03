@@ -28,8 +28,6 @@ public class PluginLoaderAndRenderTests {
 
         for(final File file : Objects.requireNonNull(new File("_site/defaultsTests").listFiles()))
             Files.delete(file.toPath());
-        for(final File file : Objects.requireNonNull(new File("_site/defaultsTests").listFiles()))
-            Files.delete(file.toPath());
         for(final File file : Objects.requireNonNull(new File("_site").listFiles()))
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNull(new File("_root/defaultsTests").listFiles()))
