@@ -74,7 +74,7 @@ public class PluginLoaderAndRenderTests {
             writeInput("out"   , "---\nrenderers:\n  - out\n---");
             writeInput("null"  , "---\nrenderers:\n  - 'null'\n---");
             writeInput("false"  , "---\nrenderers:\n  - false\n---\nF");
-            writeInput("exchange"  , "---\nrenderers:\n  - 1\nexchange_renderers:\n  - exchange\n---\nF");
+            writeInput("exchange"  , "---\nrenderers:\n  - 1\n---\nF");
 
             // default dependencies
             Map.of(
@@ -109,7 +109,12 @@ public class PluginLoaderAndRenderTests {
                 "    - /defaultsTests/*.cfg\n" +
                 "    - /defaultsTests/file.*\n" +
                 "    - \"*.log\"\n" +
-                "renderers: 2"
+                "renderers: 2",
+                new File(_defaults, "exchange.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    - /exchange.html\n" +
+                "exchange_renderers: exchange"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
 
             List.of(

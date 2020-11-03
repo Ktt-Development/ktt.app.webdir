@@ -66,7 +66,7 @@ public class PageRenderer {
              if(defaultFrontMatter != null)
                 merged.putAll(defaultFrontMatter);
         }
-        if(!isDirectory){
+        if(!online || !isDirectory){ // already rendered files will not have any front matter
             final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));
             bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);
             if(frontMatter.getFrontMatter() != null)

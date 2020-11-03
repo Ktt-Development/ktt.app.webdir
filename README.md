@@ -15,7 +15,7 @@
 </p>
 
 ![Java CI](https://github.com/Ktt-Development/webdir/workflows/Java%20CI/badge.svg)
-[![version](https://img.shields.io/github/v/release/ktt-development/webdir?include_prereleases)](https://github.com/ktt-development/webdir/releases)
+[![version](https://img.shields.io/github/v/release/ktt-development/webdir)](https://github.com/ktt-development/webdir/releases)
 [![license](https://img.shields.io/github/license/ktt-development/webdir)](https://github.com/Ktt-Development/webdir/blob/main/LICENSE)
 ---
 

@@ -2,6 +2,7 @@ name: Deploy
 on:
   release:
     types: [published]
+    
 jobs:
   release:
     name: Deploy to Maven
@@ -30,62 +31,62 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
 
   build:
-      name: Build
-      runs-on: windows-2019
-      steps:
-        - name: 📦 Prepate Git Repo
-          uses: actions/checkout@v2
+    name: Build
+    runs-on: windows-2019
+    steps:
+      - name: 📦 Prepate Git Repo
+        uses: actions/checkout@v2
 
-        - name: ☕ Install OpenJDK
-          uses: AdoptOpenJDK/install-jdk@v1
-          with:
-            version: '11'
-            architecture: x64
-
-        - name: 📚 Install jpackage
-          uses: AdoptOpenJDK/install-jdk@v1
-          with:
-            version: '15'
-            architecture: x64
-
-        - name: 📦 Build with Maven
-          run: mvn -B package --file pom.xml
-
-        - name: 📦 Compile to exe
-          run: sh ./build.sh
-
-        - name: 📦 Upload artifact
-          uses: actions/upload-artifact@v2
-          with:
-            name: webdir
-            path: webdir
-
-        - name: 🚀 Deploy to Releases
-          uses: AButler/upload-release-assets@v2.0
-          with:
-            files: 'webdir-api/target/*.jar'
-            repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-    deploy:
-      name: Deploy
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - name: 📦 Download Artifact
-          uses: actions/download-artifact@v2
-          with:
-            name: webdir
-            path: webdir
-
-        - name: 📦 Zip file
-          uses: papeloto/action-zip@v1
-          with:
-            files: webdir
-            dest: webdir.zip
-
-        - name: 💾 Save to Releases
-        uses: JasonEtco/upload-to-release@master
+      - name: ☕ Install OpenJDK
+        uses: AdoptOpenJDK/install-jdk@v1
         with:
-          args: webdir.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          version: '11'
+          architecture: x64
+
+      - name: 📚 Install jpackage
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '15'
+          architecture: x64
+
+      - name: 📦 Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: 📦 Compile to exe
+        run: sh ./build.sh
+
+      - name: 📦 Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: webdir
+          path: webdir
+
+      - name: 🚀 Deploy to Releases
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'webdir-api/target/*.jar'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: webdir
+          path: webdir
+
+      - name: 📦 Zip file
+        uses: papeloto/action-zip@v1
+        with:
+          files: webdir
+          dest: webdir.zip
+
+      - name: 💾 Save to Releases
+      uses: JasonEtco/upload-to-release@master
+      with:
+        args: webdir.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
