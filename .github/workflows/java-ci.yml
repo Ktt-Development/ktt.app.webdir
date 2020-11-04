@@ -19,7 +19,7 @@ jobs:
           architecture: x64
 
       - name: 🔌 Create Test Plugins
-        run: mvn package -Dmaven.test.skip=true
+        run: mvn package `-Dmaven.test.skip=true
 
       - name: ✔ Test with Maven
         run: mvn clean test -fae
