@@ -75,6 +75,7 @@ public class PluginLoaderAndRenderTests {
             writeInput("null"  , "---\nrenderers:\n  - 'null'\n---");
             writeInput("false"  , "---\nrenderers:\n  - false\n---\nF");
             writeInput("exchange"  , "---\nrenderers:\n  - 1\n---\nF");
+            writeInput("perm"  , "---\nrenderers:\n  - 1\n---\nF");
 
             // default dependencies
             Map.of(
@@ -114,7 +115,14 @@ public class PluginLoaderAndRenderTests {
                 "default:\n" +
                 "  scope:\n" +
                 "    - /exchange.html\n" +
-                "exchange_renderers: exchange"
+                "exchange_renderers: exchange",
+                new File(_defaults, "perm.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    - /perm.html\n" +
+                "exchange_renderers:\n" +
+                "  - perm\n" +
+                "  - perm2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
 
             List.of(
@@ -131,8 +139,7 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
 
             // permissions dependencies
-
-            // server render dependencies
+            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - !perm2\n    options:\n      connection-limit: 1".getBytes());
         }
 
         Main.main(null);
@@ -230,20 +237,12 @@ public class PluginLoaderAndRenderTests {
 
             // render permissions tests
 
-                // test w/perm
-                // test w/o perm
-                // test default (no perm)
-
-            // conn limit tests
-
-                // test unset
-                // test set
-                // test -1
+            Assertions.assertEquals("perm", getResponseContent(head + "/perm"));
 
             // test drives
-            if(false){
-
-            }
+            final String ignore = Files.readString(new File("../.gitignore").toPath());
+            final String path = head + "/files/" + new File("../.gitignore").getCanonicalPath().replace('\\', '/');
+            Assertions.assertEquals(ignore, getResponseContent(path), String.format("Failed to read %s (make sure tests are run with Windows OS)", path));
         }
     }
 

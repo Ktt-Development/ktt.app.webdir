@@ -53,7 +53,7 @@ public final class RootWatchService {
     }
 
     public synchronized final void onAddedEvent(final File file){
-        handler.addDirectory(context, file);
+        handler.addDirectory(context, file, true);
         logger.fine(locale.getString("server.roots.added", file.getName()));
     }
 

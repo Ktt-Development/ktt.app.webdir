@@ -98,6 +98,7 @@ page-renderer:
     delete: Failed to delete %s.
     dir: Failed to delete %s (folder was not empty).
     clean: Failed to clean output directory %s.
+    path: Failed to clean output directory %s (failed to resolve path).
     output: Failed to render files (output directory %s could not be created).
     walk: Failed to render files from sources %s (I/O exception).
     finish: Finished page rendering service initialization.

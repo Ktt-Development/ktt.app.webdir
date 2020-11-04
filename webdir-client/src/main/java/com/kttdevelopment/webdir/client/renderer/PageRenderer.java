@@ -99,7 +99,7 @@ public class PageRenderer {
                 final String rendererName = entry.getRendererName();
 
                 // do not use renderer if has no permission
-                if(online && !Main.getPermissions().hasPermission(renderer.getPermission()))
+                if(online && !Main.getPermissions().hasPermission(exchange.getPublicAddress().getAddress(), renderer.getPermission()))
                     continue;
 
                 logger.finest(locale.getString("page-renderer.renderer.apply", pluginName, rendererName, IN.getPath(), out(OUT)));

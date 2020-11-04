@@ -37,21 +37,25 @@ public final class PageRenderingService {
         this.output   = Objects.requireNonNull(output);
 
         // clean if dir exists, is parent of project (safety check) and clean bool
-        if(Boolean.parseBoolean(config.string(ConfigService.CLEAN)) && output.exists() && output.getAbsolutePath().startsWith(new File(".").getAbsolutePath())){
-            try(final Stream<Path> walk = Files.walk(output.toPath())){
-                walk.sorted(Comparator.reverseOrder()) // reverse because inner must be deleted first
-                    .forEach(path -> {
-                        try{
-                            Files.delete(path);
-                        }catch(NoSuchFileException ignored){ // OK
-                        }catch(final IOException | SecurityException e){
-                            logger.severe(locale.getString("page-renderer.constructor." + (e instanceof DirectoryNotEmptyException ? "dir" : "delete"), path.toFile().getAbsolutePath()) + LoggerService.getStackTraceAsString(e));
-                        }
-                    });
-            }catch(final IOException | SecurityException e){
-                logger.severe(locale.getString("page-renderer.constructor.clean", output.getPath()) + LoggerService.getStackTraceAsString(e));
+        try{
+            if(Boolean.parseBoolean(config.string(ConfigService.CLEAN)) && output.exists() && output.getCanonicalPath().startsWith(new File(".").getAbsolutePath())){
+                try(final Stream<Path> walk = Files.walk(output.toPath())){
+                    walk.sorted(Comparator.reverseOrder()) // reverse because inner must be deleted first
+                        .forEach(path -> {
+                            try{
+                                Files.delete(path);
+                            }catch(NoSuchFileException ignored){ // OK
+                            }catch(final IOException | SecurityException e){
+                                logger.severe(locale.getString("page-renderer.constructor." + (e instanceof DirectoryNotEmptyException ? "dir" : "delete"), path.toFile().getAbsolutePath()) + LoggerService.getStackTraceAsString(e));
+                            }
+                        });
+                }catch(final IOException | SecurityException e){
+                    logger.severe(locale.getString("page-renderer.constructor.clean", output.getPath()) + LoggerService.getStackTraceAsString(e));
+                }
+                // fail message was already printed in foreach
             }
-            // fail message was already printed in foreach
+        }catch(final IOException e){
+            logger.severe(locale.getString("page-renderer.constructor.path", output.getPath()) + LoggerService.getStackTraceAsString(e));
         }
 
         // render

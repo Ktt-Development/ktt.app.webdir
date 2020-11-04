@@ -12,7 +12,7 @@ public final class HTMLNameAdapter implements FileHandlerAdapter {
     public final String getName(final File file){
         final String name = file.getName();
         final String rhtml = name.endsWith(".html") ? name.substring(0, name.length()-len) : name;
-        return rhtml.isBlank() || rhtml.equals(".html") ? name : rhtml;
+        return file.isDirectory() || rhtml.isBlank() || rhtml.equals(".html") ? name : rhtml;
     }
 
 }
