@@ -2,8 +2,7 @@ package com.kttdevelopment.webdir.client.renderer;
 
 import com.amihaiemil.eoyaml.Yaml;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
-import com.kttdevelopment.webdir.client.LoggerService;
-import com.kttdevelopment.webdir.client.Main;
+import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.utility.*;
 
@@ -71,10 +70,26 @@ public final class YamlFrontMatter {
      @SuppressWarnings("unchecked")
      private static Map<String,? super Object> loadImports(final File source, final Map<String,? super Object> config, final List<Path> checked){
           // reverse so top imports will override lower
-          final List<String> imports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) Objects.requireNonNull(config.get(PageRenderer.IMPORT)), new ArrayList<>());
-          Collections.reverse(imports);
-          final List<String> relativeImports = ExceptionUtility.requireNonExceptionElse(() -> (List<String>) Objects.requireNonNull(config.get(PageRenderer.IMPORT_RELATIVE)), new ArrayList<>());
-          Collections.reverse(relativeImports);
+          final List<String> imports = new ArrayList<>();
+          {
+               final Object obj = config.get(PageRenderer.IMPORT);
+               if(obj instanceof List)
+                    ExceptionUtility.runIgnoreException(() -> imports.addAll(((List<String>) obj)));
+               else if(obj instanceof String)
+                    imports.add((String) obj);
+               Collections.reverse(imports);
+          }
+
+          final List<String> relativeImports = new ArrayList<>();
+
+          {
+               final Object obj = config.get(PageRenderer.IMPORT_RELATIVE);
+               if(obj instanceof List)
+                    ExceptionUtility.runIgnoreException(() -> relativeImports.addAll(((List<String>) obj)));
+               else if(obj instanceof String)
+                    relativeImports.add((String) obj);
+               Collections.reverse(relativeImports);
+          }
 
           if(imports.isEmpty() && relativeImports.isEmpty())
                return config;
@@ -97,10 +112,10 @@ public final class YamlFrontMatter {
                if(!contains) // only apply if not already added
                     checked.add(IN);
                     final Map<String,? super Object> imported = loadImports(IN.toFile(), checked);
-                    imported.remove(PageRenderer.IMPORT);
-                    imported.remove(PageRenderer.IMPORT_RELATIVE);
                     out.putAll(imported);
           }));
+          out.remove(PageRenderer.IMPORT);
+          out.remove(PageRenderer.IMPORT_RELATIVE);
           out.putAll(config);
           return out;
      }

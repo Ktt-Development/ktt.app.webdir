@@ -18,6 +18,8 @@ public class PluginLoaderAndRenderTests {
     public static void before(){
         new File("config.yml").deleteOnExit();
         new File("permissions.yml").deleteOnExit();
+        new File("1.yml").deleteOnExit();
+        new File("2.yml").deleteOnExit();
 
         Assertions.assertTrue(_defaults.exists() || _defaults.mkdirs());
         _defaults.deleteOnExit();
@@ -140,6 +142,17 @@ public class PluginLoaderAndRenderTests {
                 new File(defaultsInput, "test.log")
             ).forEach(file -> Assertions.assertDoesNotThrow(() -> Assertions.assertTrue(file.createNewFile())));
 
+            // imports
+
+            Files.write(new File("1.yml").toPath(), "renderers:\n  - plugin: ValidPlugin\n    renderer: 1".getBytes());
+            Files.write(new File("2.yml").toPath(), "import: 1\nrenderers: 2".getBytes());
+            Files.write(new File("_root/3.yml").toPath(), "renderers: 3".getBytes());
+            Files.write(new File("r.yml").toPath(), "import_relative: 3.yml".getBytes());
+            writeInput("import1"  , "---\nimport: 1\n---");
+            writeInput("importO"  , "---\nimport: 2\n---");
+            writeInput("importR"  , "---\nimport_relative: 3\n---");
+            writeInput("importR2"  , "---\nimport: r.yml\n---");
+
             // config dependencies (port must not be 80).
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
 
@@ -216,6 +229,14 @@ public class PluginLoaderAndRenderTests {
     
             // test negative scope
             Assertions.assertEquals("", Files.readString(new File(defaultsOutput, "negative.html").toPath()), "Default with negation ! scope should not render file");
+        }
+
+        // import tests
+        {
+            Assertions.assertEquals("1", Files.readString(new File(_site, "import1.html").toPath()));
+            Assertions.assertEquals("2", Files.readString(new File(_site, "importO.html").toPath()));
+            Assertions.assertEquals("3", Files.readString(new File(_site, "importR.html").toPath()));
+            Assertions.assertEquals("3", Files.readString(new File(_site, "importR2.html").toPath()));
         }
 
         // server tests

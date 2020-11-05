@@ -9,6 +9,7 @@ target
 # WebDir
 
 /webdir-client/_*
+/webdir-client/*.yml
 permissions.yml
 config.yml
 *.log
