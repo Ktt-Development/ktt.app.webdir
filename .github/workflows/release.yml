@@ -85,8 +85,8 @@ jobs:
           dest: webdir.zip
 
       - name: 💾 Save to Releases
-      uses: JasonEtco/upload-to-release@master
-      with:
-        args: webdir.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: webdir.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

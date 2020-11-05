@@ -122,7 +122,12 @@ public class PluginLoaderAndRenderTests {
                 "    - /perm.html\n" +
                 "exchange_renderers:\n" +
                 "  - perm\n" +
-                "  - perm2"
+                "  - perm2",
+                new File(_defaults, "readme.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    - '*/README.md'\n" +
+                "exchange_renderers: 2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
 
             List.of(
@@ -243,6 +248,10 @@ public class PluginLoaderAndRenderTests {
             final String ignore = Files.readString(new File("../.gitignore").toPath());
             final String path = head + "/files/" + new File("../.gitignore").getCanonicalPath().replace('\\', '/');
             Assertions.assertEquals(ignore, getResponseContent(path), String.format("Failed to read %s (make sure tests are run with Windows OS)", path));
+
+            // test drive default
+            final String readme = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
+            Assertions.assertEquals("2", getResponseContent(readme), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readme));
         }
     }
 

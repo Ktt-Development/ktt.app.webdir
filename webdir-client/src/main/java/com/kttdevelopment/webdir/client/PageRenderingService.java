@@ -67,7 +67,7 @@ public final class PageRenderingService {
 
         if(!output.exists() && !output.mkdirs()){
             logger.severe(locale.getString("page-renderer.constructor.output", output.getPath()));
-        }else{
+        }else if(sources.exists()){
             try{
                 Files.walk(sources.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> {
                     total.incrementAndGet();

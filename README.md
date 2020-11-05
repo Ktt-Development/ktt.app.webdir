@@ -17,15 +17,15 @@
 [![Deploy](https://github.com/Ktt-Development/webdir/workflows/Deploy/badge.svg)](https://github.com/Ktt-Development/webdir/actions?query=workflow%3ADeploy)
 ![Java CI](https://github.com/Ktt-Development/webdir/workflows/Java%20CI/badge.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.kttdevelopment.webdir/webdir-api)](https://mvnrepository.com/artifact/com.kttdevelopment.webdir/webdir-api)
-[![version](https://img.shields.io/github/v/release/ktt-development/webdir)](https://github.com/ktt-development/webdir/releases)
-[![license](https://img.shields.io/github/license/ktt-development/webdir)](https://github.com/Ktt-Development/webdir/blob/main/LICENSE)
+[![version](https://img.shields.io/github/v/release/Ktt-Development/webdir)](https://github.com/Ktt-Development/webdir/releases)
+[![license](https://img.shields.io/github/license/Ktt-Development/webdir)](https://github.com/Ktt-Development/webdir/blob/main/LICENSE)
 ---
 
 # Setup
 
-For people using WebDir executables are available in releases. [![version](https://img.shields.io/github/v/release/ktt-development/webdir)](https://github.com/ktt-development/webdir/releases)
+For people using WebDir executables are available in releases. [![version](https://img.shields.io/github/v/release/Ktt-Development/webdir)](https://github.com/Ktt-Development/webdir/releases)
 
-For plugin developers compiled binaries can be found on Maven and in releases. [![Maven Central](https://img.shields.io/maven-central/v/com.kttdevelopment.webdir/webdir-api)](https://mvnrepository.com/artifact/com.kttdevelopment.webdir/webdir-api) [![version](https://img.shields.io/github/v/release/ktt-development/webdir)](https://github.com/ktt-development/webdir/releases)
+For plugin developers compiled binaries can be found on Maven and in releases. [![Maven Central](https://img.shields.io/maven-central/v/com.kttdevelopment.webdir/webdir-api)](https://mvnrepository.com/artifact/com.kttdevelopment.webdir/webdir-api) [![version](https://img.shields.io/github/v/release/Ktt-Development/webdir)](https://github.com/Ktt-Development/webdir/releases)
 
 
 # Features

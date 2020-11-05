@@ -1,17 +1,22 @@
 # IntelliJ ignore
-.idea
+/.idea/
 out
 *.iml
 
 # Maven
 target
 
-
 # WebDir
 
 /webdir-client/_*
+permissions.yml
 config.yml
 *.log
 *.lck
 *.log.*
 *.lck.*
+
+# Deploy
+
+/package
+/WebDir
