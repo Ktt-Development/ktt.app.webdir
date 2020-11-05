@@ -37,7 +37,7 @@ public final class ConfigService {
         new Setting(CLEAN, String.valueOf(true), "Whether to clear the output directory before rendering files."),
         new Setting(SERVER, String.valueOf(false), "Whether to run a server or not."),
         new Setting(PORT, String.valueOf(80), "The port to run the server at."),
-        new Setting(CONTEXT, "files", "The context to view files at.\\nEx: setting this to 'files' would put files from C://* at http://localhost/files/C:/*"),
+        new Setting(CONTEXT, "files", "The context to view files at.\nEx: setting this to 'files' would put files from C://* at http://localhost/files/C:/*"),
         new Setting(PERMISSIONS, "permissions.yml", "The file to load permissions from (server only).")
     };
 
