@@ -100,7 +100,7 @@ public final class YamlFrontMatter {
           both.forEach(list -> list.forEach(s -> {
                // if no extension assume yml
                final String fileName = ContextUtil.getContext(s + (hasExtension.matcher(s).matches() ? "" : ".yml"), true, false);
-               final Path IN = Paths.get((list == relativeImports ? source.getParentFile() : new File("")).getAbsolutePath(), fileName);
+               final Path IN = new File(list == relativeImports ? source.getAbsoluteFile().getParentFile() : new File(".").getAbsoluteFile().getParentFile(), fileName).toPath();
 
                boolean contains = false;
                for(final Path path : checked) // check if this file has already been read
@@ -114,8 +114,6 @@ public final class YamlFrontMatter {
                     final Map<String,? super Object> imported = loadImports(IN.toFile(), checked);
                     out.putAll(imported);
           }));
-          out.remove(PageRenderer.IMPORT);
-          out.remove(PageRenderer.IMPORT_RELATIVE);
           out.putAll(config);
           return out;
      }

@@ -20,6 +20,7 @@ public class PluginLoaderAndRenderTests {
         new File("permissions.yml").deleteOnExit();
         new File("1.yml").deleteOnExit();
         new File("2.yml").deleteOnExit();
+        new File("r.yml").deleteOnExit();
 
         Assertions.assertTrue(_defaults.exists() || _defaults.mkdirs());
         _defaults.deleteOnExit();
@@ -147,11 +148,11 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("1.yml").toPath(), "renderers:\n  - plugin: ValidPlugin\n    renderer: 1".getBytes());
             Files.write(new File("2.yml").toPath(), "import: 1\nrenderers: 2".getBytes());
             Files.write(new File("_root/3.yml").toPath(), "renderers: 3".getBytes());
-            Files.write(new File("r.yml").toPath(), "import_relative: 3.yml".getBytes());
-            writeInput("import1"  , "---\nimport: 1\n---");
-            writeInput("importO"  , "---\nimport: 2\n---");
-            writeInput("importR"  , "---\nimport_relative: 3\n---");
-            writeInput("importR2"  , "---\nimport: r.yml\n---");
+            Files.write(new File("r.yml").toPath(), "import_relative: _root/3.yml".getBytes());
+            writeInput("import1", "---\nimport: 1\n---");
+            writeInput("importO", "---\nimport: 2\n---");
+            writeInput("importR", "---\nimport_relative: 3\n---");
+            writeInput("importR2", "---\nimport: r.yml\n---");
 
             // config dependencies (port must not be 80).
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
