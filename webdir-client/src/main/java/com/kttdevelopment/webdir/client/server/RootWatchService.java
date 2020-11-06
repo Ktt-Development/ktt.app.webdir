@@ -58,8 +58,7 @@ public final class RootWatchService {
     }
 
     public synchronized final void onRemovedEvent(final File file){
-        // 4.1.0 // TODO
-        // handler.removeDirectory(file);
+        handler.removeDirectory(file);
         logger.fine(locale.getString("server.roots.removed", file.getName()));
     }
 
