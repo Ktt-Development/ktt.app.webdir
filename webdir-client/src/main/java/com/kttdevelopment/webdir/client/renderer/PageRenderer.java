@@ -79,11 +79,14 @@ public class PageRenderer {
         logger.finest(locale.getString("page-renderer.front-matter.finished", IN.getPath(), finalFrontMatter));
 
         // render
+        final Object r = Objects.requireNonNullElse(finalFrontMatter.get(!online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
+        final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
+
+        finalFrontMatter.remove(PageRenderer.RENDERERS);
+        finalFrontMatter.remove(PageRenderer.EXCHANGE_RENDERERS);
+
         final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
         {
-            final Object r = Objects.requireNonNullElse(finalFrontMatter.get(!online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
-            final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
-
             if(renderersStr.isEmpty())
                 return fileRender;
 
