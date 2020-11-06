@@ -152,8 +152,8 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("2.yml").toPath(), "import: 1\nrenderers: 2".getBytes());
             Files.write(new File("_root/3.yml").toPath(), "renderers: 3".getBytes());
             Files.write(new File("r.yml").toPath(), "import_relative: _root/3.yml".getBytes());
-            Files.write(new File("c1.yml").toPath(), "import: c2.yml".getBytes());
-            Files.write(new File("c2.yml").toPath(), "import: c1.yml".getBytes());
+            Files.write(new File("c1.yml").toPath(), "import: c2.yml\nrenderers: 2".getBytes());
+            Files.write(new File("c2.yml").toPath(), "import: c1.yml\nrenderers: 1".getBytes());
             writeInput("import1", "---\nimport: 1\n---");
             writeInput("importO", "---\nimport: 2\n---");
             writeInput("importR", "---\nimport_relative: 3\n---");
@@ -244,7 +244,7 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("2", Files.readString(new File(_site, "importO.html").toPath()));
             Assertions.assertEquals("3", Files.readString(new File(_site, "importR.html").toPath()));
             Assertions.assertEquals("3", Files.readString(new File(_site, "importR2.html").toPath()));
-            Assertions.assertDoesNotThrow(() -> Files.readString(new File(_site, "importC").toPath()));
+            Assertions.assertNotEquals("", Files.readString(new File(_site, "importC.html").toPath()));
         }
 
         // server tests

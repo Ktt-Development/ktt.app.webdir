@@ -109,10 +109,11 @@ public final class YamlFrontMatter {
                          break;
                     }
 
-               if(!contains) // only apply if not already added
+               if(!contains){ // only apply if not already added
                     checked.add(IN);
-                    final Map<String,? super Object> imported = loadImports(IN.toFile(), checked);
+                    final Map<String, ? super Object> imported = loadImports(IN.toFile(), checked);
                     out.putAll(imported);
+               }
           }));
           out.putAll(config);
           return out;
