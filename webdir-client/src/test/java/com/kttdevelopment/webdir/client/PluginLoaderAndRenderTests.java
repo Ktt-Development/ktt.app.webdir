@@ -21,6 +21,9 @@ public class PluginLoaderAndRenderTests {
         new File("1.yml").deleteOnExit();
         new File("2.yml").deleteOnExit();
         new File("r.yml").deleteOnExit();
+        new File("c1.yml").deleteOnExit();
+        new File("c2.yml").deleteOnExit();
+        new File("_plugins/ValidPlugin").deleteOnExit();
 
         Assertions.assertTrue(_defaults.exists() || _defaults.mkdirs());
         _defaults.deleteOnExit();
@@ -149,10 +152,13 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("2.yml").toPath(), "import: 1\nrenderers: 2".getBytes());
             Files.write(new File("_root/3.yml").toPath(), "renderers: 3".getBytes());
             Files.write(new File("r.yml").toPath(), "import_relative: _root/3.yml".getBytes());
+            Files.write(new File("c1.yml").toPath(), "import: c2.yml".getBytes());
+            Files.write(new File("c2.yml").toPath(), "import: c1.yml".getBytes());
             writeInput("import1", "---\nimport: 1\n---");
             writeInput("importO", "---\nimport: 2\n---");
             writeInput("importR", "---\nimport_relative: 3\n---");
             writeInput("importR2", "---\nimport: r.yml\n---");
+            writeInput("importC", "---\nimport: c1.yml\n---");
 
             // config dependencies (port must not be 80).
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
@@ -238,6 +244,7 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("2", Files.readString(new File(_site, "importO.html").toPath()));
             Assertions.assertEquals("3", Files.readString(new File(_site, "importR.html").toPath()));
             Assertions.assertEquals("3", Files.readString(new File(_site, "importR2.html").toPath()));
+            Assertions.assertDoesNotThrow(() -> Files.readString(new File(_site, "importC").toPath()));
         }
 
         // server tests
