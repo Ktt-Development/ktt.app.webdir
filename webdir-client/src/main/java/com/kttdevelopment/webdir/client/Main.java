@@ -35,12 +35,6 @@ public abstract class Main {
         return locale;
     }
 
-    static PermissionsService permissions = null;
-
-    public static Permissions getPermissions(){
-        return permissions.getPermissions();
-    }
-
     static PluginLoader pluginLoader = null;
 
         public static PluginLoader getPluginLoader(){
@@ -51,6 +45,12 @@ public abstract class Main {
 
         public static PageRenderingService getPageRenderingService(){
             return pageRenderingService;
+        }
+
+    static PermissionsService permissions = null;
+
+        public static Permissions getPermissions(){
+            return permissions.getPermissions();
         }
 
     static FileServer server = null;
@@ -83,9 +83,13 @@ public abstract class Main {
             final String response = "---- WebDir Crash Log ----\n" +
                                     "Time: " + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSSaa zzz").format(time) + '\n' +
                                     "OS: " + System.getProperty("os.name").toLowerCase() + '\n' +
-                                    "Java Version: " + System.getProperty("java.version") + '\n' +
-                                    "Logger: " + logger + '\n' +
-                                    "Config: " + config + '\n' +
+                                    "Logger: "      + logger + '\n' +
+                                    "Config: "      + config + '\n' +
+                                    "Locale: "      + locale + '\n' +
+                                    "Plugins: "     + pluginLoader + '\n' +
+                                    "Renderer: "    + pageRenderingService + '\n' +
+                                    "Permissions: " + permissions + '\n' +
+                                    "Server: "      + server + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
                                     ExceptionUtility.getStackTraceAsString(e);
             try{

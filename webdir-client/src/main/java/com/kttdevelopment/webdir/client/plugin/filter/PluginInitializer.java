@@ -92,7 +92,7 @@ public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,L
                         future.cancel(true);
                         executor.shutdownNow();
                     }
-                }catch(SecurityException | IOException | ClassNotFoundException e){
+                }catch(Throwable e){
                     logger.severe(locale.getString("plugin-loader.filter.enable.jar", file.getName()) + LoggerService.getStackTraceAsString(e));
                 }
             }

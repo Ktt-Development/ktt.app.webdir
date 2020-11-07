@@ -28,7 +28,7 @@ public final class JarClassLoader {
         while(entries.hasMoreElements()){ // load all .class files from jar
             final JarEntry entry = entries.nextElement();
             final String name = entry.getName();
-            if(!entry.isDirectory() && name.endsWith(".class"))
+            if(!entry.isDirectory() && name.endsWith(".class") && !name.equalsIgnoreCase("module-info.class"))
                 loader.loadClass(name.substring(0,name.length()-len).replace('/','.'));
         }
         return loader;

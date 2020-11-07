@@ -170,7 +170,6 @@ public final class ConfigService {
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("configFile", configFile)
-            .addObject("default", settings)
             .addObject("configuration", configuration)
             .toString();
     }
