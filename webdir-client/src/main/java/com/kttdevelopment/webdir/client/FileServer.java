@@ -32,7 +32,7 @@ public final class FileServer {
         final DefaultFileHandler handler = new DefaultFileHandler(Main.getPageRenderingService(), server);
 
         server.createContext("", new ThrottledHandler(handler, throttler));
-        handler.addDirectory(new File(config.string(ConfigService.OUTPUT)), "");
+        handler.addDirectory(new File(config.string(ConfigService.OUTPUT)), "", true);
 
         server.start();
         logger.info(locale.getString("server.constructor.finish"));
