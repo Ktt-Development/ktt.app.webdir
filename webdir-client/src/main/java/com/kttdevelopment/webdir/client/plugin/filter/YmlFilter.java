@@ -2,7 +2,6 @@ package com.kttdevelopment.webdir.client.plugin.filter;
 
 import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.webdir.client.*;
-import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 import com.kttdevelopment.webdir.client.utility.YamlUtility;
 
 import java.io.*;

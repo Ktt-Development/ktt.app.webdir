@@ -8,6 +8,7 @@ public final class Setting {
 
     private final String key, def, desc, yaml;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final Pattern pattern = Pattern.compile("^(.*)$", Pattern.MULTILINE); // line
 
     public Setting(final String key, final String defaultValue, final String desc){

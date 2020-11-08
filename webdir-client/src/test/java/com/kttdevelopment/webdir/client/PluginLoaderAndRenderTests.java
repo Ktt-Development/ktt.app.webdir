@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -132,7 +133,7 @@ public class PluginLoaderAndRenderTests {
                 "default:\n" +
                 "  scope:\n" +
                 "    - 'C:/*'\n" +
-                "    - '!*.gitignore\n" +
+                "    - '!*.gitignore'\n" +
                 "exchange_renderers: 2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
 
@@ -294,7 +295,7 @@ public class PluginLoaderAndRenderTests {
     private String getResponseContent(final String url){
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
-            //.timeout(Duration.ofSeconds(10))
+            .timeout(Duration.ofSeconds(10))
             .build();
 
         try{

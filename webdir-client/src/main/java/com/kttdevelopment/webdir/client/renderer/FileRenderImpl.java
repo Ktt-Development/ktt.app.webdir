@@ -25,7 +25,7 @@ public final class FileRenderImpl extends FileRender {
         this.input       = input;
         this.output      = output;
         this.frontMatter = frontMatter;
-        this.asString    = new String(bytes, StandardCharsets.UTF_8);
+        this.asString    = bytes != null ? new String(bytes, StandardCharsets.UTF_8) : null;
         this.asBytes     = bytes;
     }
 

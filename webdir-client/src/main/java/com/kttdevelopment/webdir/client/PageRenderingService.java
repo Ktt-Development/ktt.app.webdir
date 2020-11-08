@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Stream;

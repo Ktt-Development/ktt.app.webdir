@@ -19,7 +19,7 @@ public class PluginServiceImpl extends PluginService {
 
     public PluginServiceImpl(final YamlMapping plugin, final File pluginFolder){
         this.pluginName     = plugin.string(PluginLoader.NAME);
-        this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll('[' + badFileChars + ']', "_"));
+        this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll(badFileChars, "_"));
         this.logger         = Main.getLogger(plugin.string(PluginLoader.NAME));
         this.sources        = new File(Main.getConfig().string(ConfigService.SOURCES));
         this.output         = new File(Main.getConfig().string(ConfigService.OUTPUT));

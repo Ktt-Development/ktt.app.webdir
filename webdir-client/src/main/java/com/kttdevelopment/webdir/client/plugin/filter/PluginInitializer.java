@@ -8,7 +8,6 @@ import com.kttdevelopment.webdir.client.plugin.JarClassLoader;
 import com.kttdevelopment.webdir.client.plugin.PluginServiceImpl;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLClassLoader;
 import java.util.*;

@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class YamlUtilityTests {
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void testString() throws IOException{
         Assertions.assertEquals("input", YamlUtility.asString(Yaml.createYamlInput("input: value").readYamlMapping().keys().stream().findFirst().get()));

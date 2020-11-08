@@ -44,7 +44,7 @@ public class DefaultFrontMatterLoader {
                     for(final YamlNode yamlNode : map.yamlMapping(DEFAULT).yamlSequence(SCOPE)){
                         final String s = YamlUtility.asString(yamlNode);
                         if(s != null)
-                            scopes.add(ContextUtil.getContext(s, true, false));
+                            scopes.add((s.startsWith("!") ?  "!" : "") + ContextUtil.getContext(s.startsWith("!") ? s.substring(1) : s, true, false));
                     }
                     defaultConfigurations.put(scopes, map);
                 }else
