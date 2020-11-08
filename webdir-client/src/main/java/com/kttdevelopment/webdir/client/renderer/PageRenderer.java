@@ -62,7 +62,7 @@ public class PageRenderer {
         // front matter
         final Map<String,? super Object> merged = new HashMap<>();
         {
-             final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN, online);
+             final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN);
              if(defaultFrontMatter != null)
                 merged.putAll(defaultFrontMatter);
         }

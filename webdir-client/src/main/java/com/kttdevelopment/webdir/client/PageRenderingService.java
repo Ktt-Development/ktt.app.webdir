@@ -119,16 +119,22 @@ public final class PageRenderingService {
 
         final boolean online = server != null && exchange != null;
 
-        final Path path      = IN.getAbsoluteFile().toPath();
-        final Path rel       = (!online ? sources : output).getAbsoluteFile().toPath().relativize(path);
-        final Path rendered  = Paths.get(output.getAbsolutePath(), rel.toString());
+        final File rendered;
+        try{
+            final Path path = IN.getAbsoluteFile().toPath();
+            final Path rel  = (!online ? sources : output).getCanonicalFile().toPath().relativize(path);
+            rendered        = new File(output, rel.toString()).getCanonicalFile();
+        }catch(final IOException e){
+            logger.warning(locale.getString("page-renderer.render.missing", IN.getPath()));
+            return null;
+        }
 
-        final File parent = rendered.toFile().getParentFile();
+        final File parent = rendered.getParentFile();
         if(parent.exists() || parent.mkdirs())
             return
                 !online
-                ? renderer.render(IN, rendered.toFile())
-                : renderer.render(rendered.toFile(), null, server, exchange);
+                ? renderer.render(IN, rendered)
+                : renderer.render(rendered, null, server, exchange);
         else
             logger.warning(locale.getString("page-renderer.render.parent", IN.getPath(), parent.getPath()));
         return null;

@@ -54,12 +54,12 @@ public final class RootWatchService {
 
     public synchronized final void onAddedEvent(final File file){
         handler.addDirectory(context, file, true);
-        logger.fine(locale.getString("server.roots.added", file.getName()));
+        logger.fine(locale.getString("server.roots.added", file.getPath()));
     }
 
     public synchronized final void onRemovedEvent(final File file){
         handler.removeDirectory(context, file);
-        logger.fine(locale.getString("server.roots.removed", file.getName()));
+        logger.fine(locale.getString("server.roots.removed", file.getPath()));
     }
 
     @Override

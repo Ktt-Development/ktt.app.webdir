@@ -7,6 +7,7 @@ import com.kttdevelopment.webdir.client.Main;
 import com.kttdevelopment.webdir.client.utility.*;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 public class DefaultFrontMatterLoader {
@@ -19,11 +20,18 @@ public class DefaultFrontMatterLoader {
     private final Map<List<String>,YamlMapping> defaultConfigurations = new HashMap<>();
 
     private final File defaults, sources, output;
+    private final String sabs, oabs;
+    private final Path sath, oath;
 
     public DefaultFrontMatterLoader(final File defaults, final File sources, final File output){
         this.defaults = defaults;
-        this.sources = sources;
-        this.output = output;
+        this.sources  = sources;
+        this.output   = output;
+
+        this.sabs     = ExceptionUtility.requireNonExceptionElse(sources::getCanonicalPath, sources.getAbsoluteFile().getAbsolutePath());
+        this.oabs     = ExceptionUtility.requireNonExceptionElse(output::getCanonicalPath, output.getAbsoluteFile().getAbsolutePath());
+        this.sath = ExceptionUtility.requireNonExceptionElse(() -> sources.getCanonicalFile().toPath(), sources.getAbsoluteFile().toPath());
+        this.oath = ExceptionUtility.requireNonExceptionElse(() -> output.getCanonicalFile().toPath(), output.getAbsoluteFile().toPath());
 
         for(final File file : Objects.requireNonNullElse(defaults.listFiles(File::isFile), new File[0])){
             try{
@@ -36,7 +44,7 @@ public class DefaultFrontMatterLoader {
                     for(final YamlNode yamlNode : map.yamlMapping(DEFAULT).yamlSequence(SCOPE)){
                         final String s = YamlUtility.asString(yamlNode);
                         if(s != null)
-                            scopes.add(s);
+                            scopes.add(ContextUtil.getContext(s, true, false));
                     }
                     defaultConfigurations.put(scopes, map);
                 }else
@@ -51,11 +59,16 @@ public class DefaultFrontMatterLoader {
     }
 
     // if online then fromOutput is true
-    public final Map<String,? super Object> getDefaultFrontMatter(final File file, final boolean fromOutput){
+    public final Map<String,? super Object> getDefaultFrontMatter(final File file){
         Objects.requireNonNull(file);
+        final String path = ExceptionUtility.requireNonExceptionElse(file::getCanonicalPath, file.getAbsoluteFile().getAbsolutePath());
         return getDefaultFrontMatter(
-            ContextUtil.getContext((!fromOutput ? sources : output).getAbsoluteFile().toPath().relativize(
-                file.getAbsoluteFile().toPath()).toString(), true, false
+            ContextUtil.getContext(
+                path.startsWith(sabs) || path.startsWith(oabs)
+                ? (path.startsWith(sabs) ? sath : oath).relativize(ExceptionUtility.requireNonExceptionElse(() -> file.getCanonicalFile().toPath(), file.getAbsoluteFile().toPath())).toString()
+                : path,
+                true,
+                false
             )
         );
     }

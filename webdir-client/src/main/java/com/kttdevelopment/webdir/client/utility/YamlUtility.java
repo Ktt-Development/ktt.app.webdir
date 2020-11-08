@@ -7,7 +7,7 @@ import java.util.*;
 public abstract class YamlUtility {
 
     public static String asString(final YamlNode e){
-        return ExceptionUtility.requireNonExceptionElse(() -> e.asScalar().value(), null);
+        return ExceptionUtility.requireNonExceptionElse(() -> e.asScalar().value(), e.toString());
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
