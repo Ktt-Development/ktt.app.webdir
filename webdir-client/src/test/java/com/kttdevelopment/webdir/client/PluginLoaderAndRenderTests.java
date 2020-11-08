@@ -132,7 +132,7 @@ public class PluginLoaderAndRenderTests {
                 new File(_defaults, "readme.yml"),
                 "default:\n" +
                 "  scope:\n" +
-                "    - 'C:/*'\n" +
+                "    - '*:/*'\n" +
                 "    - '!*.gitignore'\n" +
                 "exchange_renderers: 2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
