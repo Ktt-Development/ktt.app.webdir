@@ -60,7 +60,7 @@ public final class FileRenderImpl extends FileRender {
     }
 
     final void setBytes(final byte[] bytes){
-        this.asString = new String(bytes, StandardCharsets.UTF_8);
+        this.asString = bytes != null ? new String(bytes, StandardCharsets.UTF_8) : null;
         this.asBytes  = bytes;
     }
 

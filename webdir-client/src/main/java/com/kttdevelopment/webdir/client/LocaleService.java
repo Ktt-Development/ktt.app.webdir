@@ -64,7 +64,7 @@ public final class LocaleService {
     public synchronized final void addWatchedLocale(final LocaleBundleImpl locale){
         watching.add(locale);
         locale.setLocale(currentLocale);
-        Main.getLogger(getString("locale.name")).info(getString("locale.locale.watched", locale));
+        Main.getLogger(getString("locale.name")).fine(getString("locale.locale.watched", locale));
     }
 
     public final String getString(final String key){

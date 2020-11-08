@@ -29,8 +29,8 @@ public final class LocaleBundleImpl implements LocaleBundle {
     public LocaleBundleImpl(final LocaleService localeService, final String resource, final ClassLoader classLoader){
         Main.getLogger().addQueuedLoggerMessage(
             "locale.name", "locale.bundle.start",
-            "Locale Service", "Creating bundle for service %s at %s.",
-            Level.FINER, localeService, resource
+            "Locale Service", "Creating locale bundle from %s.",
+            Level.FINER, resource
         );
 
         this.resource = resource;

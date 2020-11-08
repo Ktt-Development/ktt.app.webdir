@@ -49,7 +49,7 @@ locale:
     null: Failed to get localized string %s (not found).
     args: Failed to format localized string %s (incorrect argument count).
   bundle:
-    start: Creating bundle for service %s at %s.
+    start: Creating locale bundle from %s.
     malformed: Failed to parse locale file %s (malformed yaml). %s
     missing: No locale file found or locale file was blank for resource %s.
 
