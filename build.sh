@@ -4,7 +4,9 @@ Vendor="Ktt Development"
 Workspace="package"
 Dest="WebDir"
 
-cp icon.ico $Workspace/icon.ico
+mkdir -p $Workspace
+
+cp modules/webdir-client-$Version.jar $Workspace/webdir-client-$Version.jar
 
 jpackage \
 --name "WebDir" \
@@ -12,7 +14,7 @@ jpackage \
 --input $Workspace \
 --dest . \
 --type app-image \
---module-path $Workspace \
+--module-path "modules" \
 --module webdir.client \
 --app-version $Version \
 --vendor "$Vendor" \

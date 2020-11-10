@@ -19,5 +19,6 @@ config.yml
 
 # Deploy
 
+/modules
 /package
 /WebDir

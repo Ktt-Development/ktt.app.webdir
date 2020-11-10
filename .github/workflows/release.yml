@@ -5,7 +5,7 @@ on:
     
 jobs:
   release:
-    name: Deploy to Maven
+    name: Deploy to API Maven
     runs-on: ubuntu-latest
     steps:
       - name: 📦 Prepate Git Repo
@@ -30,8 +30,14 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
 
+      - name: 🚀 Deploy to Releases
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'webdir-api/target/*.jar'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
   build:
-    name: Build
+    name: Build exe
     runs-on: windows-2019
     steps:
       - name: 📦 Prepate Git Repo
@@ -61,14 +67,8 @@ jobs:
           name: webdir
           path: webdir
 
-      - name: 🚀 Deploy to Releases
-        uses: AButler/upload-release-assets@v2.0
-        with:
-          files: 'webdir-api/target/*.jar'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
   deploy:
-    name: Deploy
+    name: Deploy exe to GitHub
     needs: build
     runs-on: ubuntu-latest
     steps:
