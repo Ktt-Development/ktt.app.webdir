@@ -17,7 +17,7 @@ public final class FileServer {
     FileServer(final String port) throws IOException{
         final LocaleService locale = Main.getLocale();
         final YamlMapping config   = Main.getConfig();
-        final Logger logger        = Main.getLogger(locale.getString("plugin-loader.name"));
+        final Logger logger        = Main.getLogger(locale.getString("server.name"));
 
         logger.info(locale.getString("server.constructor.start"));
 
