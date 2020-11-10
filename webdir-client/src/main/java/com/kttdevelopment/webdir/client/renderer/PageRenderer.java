@@ -68,9 +68,10 @@ public class PageRenderer {
         }
         if(!online || !isDirectory){ // already rendered files will not have any front matter
             final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));
-            bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);
-            if(frontMatter.getFrontMatter() != null)
-                merged.putAll(frontMatter.getFrontMatter());
+            if(frontMatter.getFrontMatter() != null){
+                 bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);
+                 merged.putAll(frontMatter.getFrontMatter());
+            }
         }
 
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders

@@ -121,7 +121,6 @@ public final class LocaleBundleImpl implements LocaleBundle {
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("resource", resource)
-            .addObject("localized", localized)
             .addObject("locale", locale)
             .toString();
     }
