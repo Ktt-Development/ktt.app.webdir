@@ -21,16 +21,16 @@ public final class YamlFrontMatter {
      private final String content;
 
      public YamlFrontMatter(final String raw){
-          Map<String,? super Object> map = new HashMap<>();
+          Map<String,? super Object> map = null;
           final Matcher matcher = pattern.matcher(raw);
           if(matcher.find()){
                this.content = matcher.group(4);
                try{
                     map = YamlUtility.asMap(Yaml.createYamlInput(matcher.group(2)).readYamlMapping());
-               }catch(final IOException ignored){ } // malformed
+               }catch(final IOException ignored){} // malformed
           }else
                this.content = raw;
-          frontMatter = map.isEmpty() ? null : map;
+          frontMatter = map;
      }
 
      public final Map<String,? super Object> getFrontMatter(){
