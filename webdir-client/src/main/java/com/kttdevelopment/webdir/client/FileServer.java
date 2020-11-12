@@ -8,6 +8,7 @@ import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public final class FileServer {
@@ -34,6 +35,7 @@ public final class FileServer {
         server.createContext("", new ThrottledHandler(handler, throttler));
         handler.addDirectory(new File(config.string(ConfigService.OUTPUT)), "", true);
 
+        server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         logger.info(locale.getString("server.constructor.finish"));
     }
