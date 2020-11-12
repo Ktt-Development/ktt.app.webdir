@@ -48,13 +48,12 @@ public class PageRenderer {
 
     public final FileRender render(final File IN, final File OUT, final SimpleHttpServer server, final SimpleHttpExchange exchange){
         final boolean online = server != null && exchange != null;
-        final boolean isDirectory = online && IN.isDirectory();
 
         byte[] bytes = null;
-        if(!isDirectory)
+        if(!IN.isDirectory() && IN.exists()) // only try to load bytes if file and exists
             try{
                 bytes = Files.readAllBytes(IN.toPath());
-            }catch(final OutOfMemoryError | SecurityException | IOException e){
+            }catch(final OutOfMemoryError | SecurityException | IOException e){ // if failed read then renders can not be expected to work
                 logger.severe(locale.getString("page-renderer.renderer.read", IN.getPath()) + LoggerService.getStackTraceAsString(e));
                 return null;
             }
@@ -66,7 +65,7 @@ public class PageRenderer {
              if(defaultFrontMatter != null)
                 merged.putAll(defaultFrontMatter);
         }
-        if(!online || !isDirectory){ // already rendered files will not have any front matter
+        if(!online && bytes != null){ // online & null bytes will not have front matter
             final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));
             if(frontMatter.getFrontMatter() != null){
                  bytes = frontMatter.getContent().getBytes(StandardCharsets.UTF_8);

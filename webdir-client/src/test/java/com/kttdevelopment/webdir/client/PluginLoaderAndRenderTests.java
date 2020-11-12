@@ -82,6 +82,8 @@ public class PluginLoaderAndRenderTests {
             writeInput("false"  , "---\nrenderers:\n  - false\n---\nF");
             writeInput("exchange"  , "---\nrenderers:\n  - 1\n---\nF");
             writeInput("perm"  , "---\nrenderers:\n  - 1\n---\nF");
+            writeInput("tf"  , "");
+            writeInput("ff"  , "");
 
             // default dependencies
             Map.of(
@@ -134,7 +136,21 @@ public class PluginLoaderAndRenderTests {
                 "  scope:\n" +
                 "    - '*:/*'\n" +
                 "    - '!*.gitignore'\n" +
-                "exchange_renderers: 2"
+                "exchange_renderers: 2",
+                new File(_defaults, "tf.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    -\n" +
+                "      file: true\n" +
+                "    - 'tf.html'\n" +
+                "renderers: 2",
+                new File(_defaults, "ff.yml"),
+                "default:\n" +
+                "  scope:\n" +
+                "    -\n" +
+                "      file: false\n" +
+                "    - 'ff.html'\n" +
+                "renderers: 2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
 
             List.of(
@@ -221,6 +237,10 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("F", Files.readString(new File(_site, "false.html").toPath()));
 
             Assertions.assertEquals("1", Files.readString(new File(_site, "exchange.html").toPath()));
+
+            // file: true/false (#72)
+            Assertions.assertEquals("2", Files.readString(new File(_site, "tf.html").toPath()));
+            Assertions.assertNotEquals("2", Files.readString(new File(_site, "ff.html").toPath()));
         }
 
         // config tests

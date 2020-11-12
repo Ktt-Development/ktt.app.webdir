@@ -87,11 +87,8 @@ public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
                 return new ArrayList<>(List.of(plugin.string(PluginLoader.DEPENDENCIES)));
             else if(type == Node.SEQUENCE){
                 final List<String> deps = new ArrayList<>();
-                for(final YamlNode node : plugin.yamlSequence(PluginLoader.DEPENDENCIES)){
-                    final String dependencyName = YamlUtility.asString(node);
-                    if(dependencyName != null)
-                        deps.add(dependencyName);
-                }
+                for(final YamlNode node : plugin.yamlSequence(PluginLoader.DEPENDENCIES))
+                    deps.add(YamlUtility.asString(node));
                 return deps;
             }
         }

@@ -15,9 +15,11 @@ public class DefaultFrontMatterLoader {
     private static final String
         DEFAULT = "default",
         INDEX   = "index",
-        SCOPE   = "scope";
+        SCOPE   = "scope",
+        FILE    = "file";
 
-    private final Map<List<String>,YamlMapping> defaultConfigurations = new HashMap<>();
+    // List<String?boolean>
+    private final Map<List<? super Object>,YamlMapping> defaultConfigurations = new HashMap<>();
 
     private final File defaults, sources, output;
     private final String sabs, oabs;
@@ -28,23 +30,26 @@ public class DefaultFrontMatterLoader {
         this.sources  = sources;
         this.output   = output;
 
-        this.sabs     = ExceptionUtility.requireNonExceptionElse(sources::getCanonicalPath, sources.getAbsoluteFile().getAbsolutePath());
-        this.oabs     = ExceptionUtility.requireNonExceptionElse(output::getCanonicalPath, output.getAbsoluteFile().getAbsolutePath());
+        this.sabs = ExceptionUtility.requireNonExceptionElse(sources::getCanonicalPath, sources.getAbsoluteFile().getAbsolutePath());
+        this.oabs = ExceptionUtility.requireNonExceptionElse(output::getCanonicalPath, output.getAbsoluteFile().getAbsolutePath());
         this.sath = ExceptionUtility.requireNonExceptionElse(() -> sources.getCanonicalFile().toPath(), sources.getAbsoluteFile().toPath());
         this.oath = ExceptionUtility.requireNonExceptionElse(() -> output.getCanonicalFile().toPath(), output.getAbsoluteFile().toPath());
 
         for(final File file : Objects.requireNonNullElse(defaults.listFiles(File::isFile), new File[0])){
             try{
                 final YamlMapping map = Yaml.createYamlInput(file).readYamlMapping();
-                final List<String> scopes = new ArrayList<>();
+                final List<? super Object> scopes = new ArrayList<>();
                 if(
                     YamlUtility.containsKey(SCOPE, map.yamlMapping(DEFAULT)) &&
                     map.yamlMapping(DEFAULT).value(SCOPE).type() == Node.SEQUENCE
                 ){
                     for(final YamlNode yamlNode : map.yamlMapping(DEFAULT).yamlSequence(SCOPE)){
-                        final String s = YamlUtility.asString(yamlNode);
-                        if(s != null)
+                        if(yamlNode.type() == Node.MAPPING && YamlUtility.containsKey(FILE, yamlNode.asMapping())){
+                            scopes.add(Boolean.parseBoolean(yamlNode.asMapping().string(FILE)));
+                        }else{
+                            final String s = YamlUtility.asString(yamlNode);
                             scopes.add((s.startsWith("!") ?  "!" : "") + ContextUtil.getContext(s.startsWith("!") ? s.substring(1) : s, true, false));
+                        }
                     }
                     defaultConfigurations.put(scopes, map);
                 }else
@@ -69,26 +74,37 @@ public class DefaultFrontMatterLoader {
                 : path,
                 true,
                 false
-            )
+            ),
+            file
         );
     }
 
     public final Map<String,? super Object> getDefaultFrontMatter(final String context){
+        return getDefaultFrontMatter(context, null);
+    }
+
+    public final Map<String,? super Object> getDefaultFrontMatter(final String context, final File file){
         final String path = ContextUtil.getContext(context, true, false);
 
         // find scope matched configs
         final List<YamlMapping> configs = new ArrayList<>();
         defaultConfigurations.forEach((scopes, config) -> {
             boolean canUse = false;
-            for(final String scope : scopes)
-                switch(SymbolicStringMatcher.matches(scope, path)){
-                    case MATCH:
-                        canUse = true;
-                        continue;
-                    case NEGATIVE_MATCH:
-                        canUse = false;
-                        break;
+            for(final Object scope : scopes)
+                if(scope instanceof String)
+                    switch(SymbolicStringMatcher.matches((String) scope, path)){
+                        case MATCH:
+                            canUse = true;
+                            continue;
+                        case NEGATIVE_MATCH:
+                            canUse = false;
+                            break;
+                    }
+                else if(file != null && (boolean) scope != file.isFile()){ // if scope file does not match file state
+                    canUse = false;
+                    break;
                 }
+
             if(canUse)
                 configs.add(config);
         });
