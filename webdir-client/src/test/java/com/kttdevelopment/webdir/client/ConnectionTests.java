@@ -31,6 +31,11 @@ public class ConnectionTests {
         LoggerServiceTests.clearLogFiles();
     }
 
+    @AfterEach
+    public void after(){
+        Main.getServer().getServer().stop();
+    }
+
     @Test
     public void testBlocked() throws IOException{
         {
@@ -44,8 +49,6 @@ public class ConnectionTests {
 
         Assertions.assertNull(getResponseContent(path));
     }
-
-
 
     @Test
     public void testUnblocked() throws IOException{

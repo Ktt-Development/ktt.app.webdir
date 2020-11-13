@@ -31,6 +31,7 @@ public final class LoggerService {
 
     LoggerService(){
         final String loggerName = "Logger Service";
+        Logger.getGlobal().setUseParentHandlers(false);
 
         addQueuedLoggerMessageSafe(
             "logger.name", "logger.constructor.start",
@@ -99,7 +100,7 @@ public final class LoggerService {
             try{
                 handlers.add(new FileHandler(log) {{
                     setLevel(Level.ALL);
-                    setFormatter(new LoggerFormatter(true, false));
+                    setFormatter(new LoggerFormatter(true, true));
                 }});
                 addQueuedLoggerMessageSafe(
                     "logger.name", "logger.constructor.log.success",

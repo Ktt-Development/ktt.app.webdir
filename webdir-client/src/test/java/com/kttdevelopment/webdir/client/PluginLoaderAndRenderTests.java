@@ -51,6 +51,8 @@ public class PluginLoaderAndRenderTests {
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNull(_defaults.listFiles()))
             Files.delete(file.toPath());
+
+        Main.getServer().getServer().stop();
     }
 
     private static final File _defaults      = new File("_default");
@@ -181,7 +183,7 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
 
             // permissions dependencies
-            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - !perm2\n    options:\n      connection-limit: 1".getBytes());
+            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - !perm2\n    options:\n      connection-limit: -1".getBytes());
         }
 
         Main.main(null);
@@ -272,7 +274,6 @@ public class PluginLoaderAndRenderTests {
         {
             final String head = "http://localhost:" + 8080;
             // above config and render tests but with http
-
             Assertions.assertNotEquals("2", getResponseContent(head + "/render"));
             Assertions.assertEquals("1", getResponseContent(head + "/v1"));
             Assertions.assertEquals("2", getResponseContent(head + "/v2"));
@@ -315,7 +316,7 @@ public class PluginLoaderAndRenderTests {
     private String getResponseContent(final String url){
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
-            .timeout(Duration.ofSeconds(10))
+            .timeout(Duration.ofSeconds(1000))
             .build();
 
         try{
@@ -324,7 +325,7 @@ public class PluginLoaderAndRenderTests {
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
                 .get();
-        }catch(final InterruptedException | ExecutionException ignored){
+        }catch(final InterruptedException | ExecutionException e){
             return null;
         }
     }

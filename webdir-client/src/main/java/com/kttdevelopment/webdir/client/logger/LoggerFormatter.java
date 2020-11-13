@@ -28,7 +28,7 @@ public final class LoggerFormatter extends Formatter {
             (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
             '[' + level + ']' + ' ' +
             (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") +
-            String.format(name,record.getLoggerName()) + ' ' +
+            String.format(name, record.getLoggerName()) + ' ' +
             record.getMessage() + '\n';
     }
 

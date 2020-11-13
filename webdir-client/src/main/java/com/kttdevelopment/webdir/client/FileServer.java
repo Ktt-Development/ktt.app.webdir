@@ -40,6 +40,10 @@ public final class FileServer {
         logger.info(locale.getString("server.constructor.finish"));
     }
 
+    public final SimpleHttpServer getServer(){
+        return server;
+    }
+
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
