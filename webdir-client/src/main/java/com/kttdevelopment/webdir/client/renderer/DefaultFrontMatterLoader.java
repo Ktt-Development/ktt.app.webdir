@@ -48,7 +48,8 @@ public class DefaultFrontMatterLoader {
                             scopes.add(Boolean.parseBoolean(yamlNode.asMapping().string(FILE)));
                         }else{
                             final String s = YamlUtility.asString(yamlNode);
-                            scopes.add((s.startsWith("!") ?  "!" : "") + ContextUtil.getContext(s.startsWith("!") ? s.substring(1) : s, true, false));
+                            if(s != null)
+                                scopes.add((s.startsWith("!") ?  "!" : "") + ContextUtil.getContext(s.startsWith("!") ? s.substring(1) : s, true, false));
                         }
                     }
                     defaultConfigurations.put(scopes, map);
