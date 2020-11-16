@@ -21,6 +21,8 @@ public abstract class PluginService {
 
     public abstract Map<String,? super Object> getPluginYml();
 
+    public abstract Map<String,? super Object> getConfigYml();
+
     public abstract WebDirPlugin getPlugin(final String pluginName);
 
     public abstract <T extends WebDirPlugin> T getPlugin(final String pluginName, final Class<T> pluginClass);

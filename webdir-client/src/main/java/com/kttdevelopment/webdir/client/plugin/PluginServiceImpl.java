@@ -17,7 +17,7 @@ public class PluginServiceImpl extends PluginService {
 
     private final String pluginName;
     private final Logger logger;
-    private final Map<String,? super Object> yml;
+    private final Map<String,? super Object> yml, cfg;
     private final File pluginFolder, sources, output, defaults, plugins;
 
     public PluginServiceImpl(final YamlMapping plugin, final File pluginFolder){
@@ -25,6 +25,7 @@ public class PluginServiceImpl extends PluginService {
         this.logger         = Main.getLogger(plugin.string(PluginLoader.NAME));
         this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll(badFileChars, "_"));
         this.yml            = YamlUtility.asMap(plugin);
+        this.cfg            = YamlUtility.asMap(Main.getConfig());
         this.sources        = new File(Main.getConfig().string(ConfigService.SOURCES));
         this.output         = new File(Main.getConfig().string(ConfigService.OUTPUT));
         this.defaults       = new File(Main.getConfig().string(ConfigService.DEFAULT));
@@ -51,6 +52,11 @@ public class PluginServiceImpl extends PluginService {
     @Override
     public final Map<String,? super Object> getPluginYml(){
         return yml;
+    }
+
+    @Override
+    public final Map<String,? super Object> getConfigYml(){
+        return cfg;
     }
 
     @Override

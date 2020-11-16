@@ -201,6 +201,7 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals(plugin, plugin.getPlugin("ValidPlugin"));
             Assertions.assertEquals(new File(Main.getPluginLoader().getPluginsFolder(), "ValidPlugin").getAbsoluteFile(), plugin.getPluginFolder().getAbsoluteFile());
             Assertions.assertEquals("ValidPlugin", plugin.getPluginYml().get(PluginLoader.NAME));
+            Assertions.assertEquals(Main.getConfig().string(ConfigService.DEFAULT), plugin.getConfigYml().get(ConfigService.DEFAULT));
 
             Assertions.assertEquals("ValidPlugin", plugin.getLogger().getName());
             Assertions.assertEquals(Main.getPluginLoader().getPluginsFolder().getAbsoluteFile(), plugin.getPluginsFolder().getAbsoluteFile());

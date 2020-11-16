@@ -66,6 +66,30 @@ public class WebDirPlugin {
     }
 
     /**
+     * Returns the plugin.yml file as a map.
+     *
+     * @return plugin.yml
+     *
+     * @since 1.1.0
+     * @author Ktt Development
+     */
+    public final Map<String,? super Object> getPluginYml(){
+        return new HashMap<>(service.getPluginYml());
+    }
+
+    /**
+     * Returns the config.yml from webdir as a map.
+     *
+     * @return config.yml
+     *
+     * @since 1.1.0
+     * @author Ktt Development
+     */
+    public final Map<String,? super Object> getConfigYml(){
+        return new HashMap<>(service.getConfigYml());
+    }
+
+    /**
      * Returns a plugin from the server or null if it is not found. This method can be used to access the features of another plugin.
      *
      * @param pluginName name of the plugin
@@ -77,18 +101,6 @@ public class WebDirPlugin {
      */
     public final WebDirPlugin getPlugin(final String pluginName){
         return service.getPlugin(pluginName);
-    }
-
-    /**
-     * Returns the plugin.yml file as a map.
-     *
-     * @return plugin.yml
-     *
-     * @since 1.1.0
-     * @author Ktt Development
-     */
-    public final Map<String,? super Object> getPluginYml(){
-        return new HashMap<>(service.getPluginYml());
     }
 
     /**
