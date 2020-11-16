@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
+import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.webdir.client.config.Setting;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
@@ -24,6 +23,7 @@ public final class ConfigService {
         CLEAN       = "clean",
         SERVER      = "server",
         PORT        = "port",
+        RAW         = "raw",
         CONTEXT     = "context",
         PERMISSIONS = "permissions";
 
@@ -37,6 +37,7 @@ public final class ConfigService {
         new Setting(CLEAN, String.valueOf(true), "Whether to clear the output directory before rendering files."),
         new Setting(SERVER, String.valueOf(false), "Whether to run a server or not."),
         new Setting(PORT, String.valueOf(80), "The port to run the server at."),
+        new Setting(RAW, "raw", "The context to view raw files at.\nEx: setting this to 'raw' would put files from C://* at http://localhost/raw/C:/*"),
         new Setting(CONTEXT, "files", "The context to view files at.\nEx: setting this to 'files' would put files from C://* at http://localhost/files/C:/*"),
         new Setting(PERMISSIONS, "permissions.yml", "The file to load permissions from (server only).")
     };
@@ -138,19 +139,16 @@ public final class ConfigService {
             }
 
             // populate with defaults
-            configuration = yaml == null ? defaultConfig : Yaml.createYamlMappingBuilder()
-                .add(SAFE       , Objects.requireNonNullElse(yaml.string(SAFE)          , defaultConfig.string(SAFE)))
-                .add(LANG       , Objects.requireNonNullElse(yaml.string(LANG)          , defaultConfig.string(LANG)))
-                .add(PLUGINS    , Objects.requireNonNullElse(yaml.string(PLUGINS)       , defaultConfig.string(PLUGINS)))
-                .add(SOURCES    , Objects.requireNonNullElse(yaml.string(SOURCES)       , defaultConfig.string(SOURCES)))
-                .add(DEFAULT    , Objects.requireNonNullElse(yaml.string(DEFAULT)       , defaultConfig.string(DEFAULT)))
-                .add(OUTPUT     , Objects.requireNonNullElse(yaml.string(OUTPUT)        , defaultConfig.string(OUTPUT)))
-                .add(CLEAN      , Objects.requireNonNullElse(yaml.string(CLEAN)         , defaultConfig.string(CLEAN)))
-                .add(SERVER     , Objects.requireNonNullElse(yaml.string(SERVER)        , defaultConfig.string(SERVER)))
-                .add(PORT       , Objects.requireNonNullElse(yaml.string(PORT)          , defaultConfig.string(PORT)))
-                .add(CONTEXT    , Objects.requireNonNullElse(yaml.string(CONTEXT)       , defaultConfig.string(CONTEXT)))
-                .add(PERMISSIONS, Objects.requireNonNullElse(yaml.string(PERMISSIONS)   , defaultConfig.string(PERMISSIONS)))
-                .build();
+            if(yaml == null)
+                configuration = defaultConfig;
+            else{
+                YamlMappingBuilder map = Yaml.createYamlMappingBuilder();
+                for(final Setting setting : settings){
+                    final String key = setting.getKey();
+                    map = map.add(key, Objects.requireNonNullElse(yaml.string(key), defaultConfig.string(key)));
+                }
+                configuration = map.build();
+            }
 
             loggerService.addQueuedLoggerMessage(
                 "config.name", "config.constructor.config.finish",

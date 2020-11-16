@@ -2,6 +2,7 @@ package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
+import com.kttdevelopment.simplehttpserver.handler.FileHandler;
 import com.kttdevelopment.simplehttpserver.handler.ThrottledHandler;
 import com.kttdevelopment.webdir.client.server.*;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
@@ -30,10 +31,16 @@ public final class FileServer {
         }
 
         final DefaultThrottler throttler = new DefaultThrottler();
-        final DefaultFileHandler handler = new DefaultFileHandler(Main.getPageRenderingService(), server);
 
-        server.createContext("", new ThrottledHandler(handler, throttler));
-        handler.addDirectory(new File(config.string(ConfigService.OUTPUT)), "", true);
+        final DefaultSiteHandler _siteHandler = new DefaultSiteHandler(Main.getPageRenderingService(), server);
+        _siteHandler.addDirectory(new File(Main.getConfig().string(ConfigService.OUTPUT)), "", true);
+        final DefaultFileHandler filesHandler = new DefaultFileHandler(Main.getPageRenderingService(), server);
+        final FileHandler rawHandler          = new RawFileHandler();
+
+        // todo: add 404 here ↓
+        server.createContext("", new ThrottledHandler(_siteHandler, throttler));
+        server.createContext(Main.getConfig().string(ConfigService.CONTEXT), new ThrottledHandler(filesHandler, throttler));
+        server.createContext(Main.getConfig().string(ConfigService.RAW), new ThrottledHandler(rawHandler, throttler));
 
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();

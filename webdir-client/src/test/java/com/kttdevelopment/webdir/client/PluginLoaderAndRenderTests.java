@@ -302,12 +302,17 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals(ignore, getResponseContent(path), String.format("Failed to read %s (make sure tests are run with Windows OS)", path));
 
             // test drive default
-            final String readme = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
-            Assertions.assertEquals("2", getResponseContent(readme), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readme));
+            final String readmePath = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
+            Assertions.assertEquals("2", getResponseContent(readmePath), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readmePath));
+
+            // test raw
+            final String readme = Files.readString(new File("../README.md").toPath());
+            final String raw = head + "/raw/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
+            Assertions.assertEquals(readme, getResponseContent(raw), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", raw));
 
             // test folder default
             final String folder = head + "/files/" + new File("../").getCanonicalPath().replace('\\', '/');
-            Assertions.assertEquals("2", getResponseContent(folder), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readme));
+            Assertions.assertEquals("2", getResponseContent(folder), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readmePath));
         }
     }
 
