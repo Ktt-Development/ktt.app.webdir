@@ -5,8 +5,10 @@ import com.kttdevelopment.webdir.api.*;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.locale.LocaleBundleImpl;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
+import com.kttdevelopment.webdir.client.utility.YamlUtility;
 
 import java.io.File;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class PluginServiceImpl extends PluginService {
@@ -15,12 +17,14 @@ public class PluginServiceImpl extends PluginService {
 
     private final String pluginName;
     private final Logger logger;
+    private final Map<String,? super Object> yml;
     private final File pluginFolder, sources, output, defaults, plugins;
 
     public PluginServiceImpl(final YamlMapping plugin, final File pluginFolder){
         this.pluginName     = plugin.string(PluginLoader.NAME);
-        this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll(badFileChars, "_"));
         this.logger         = Main.getLogger(plugin.string(PluginLoader.NAME));
+        this.pluginFolder   = new File(pluginFolder,plugin.string(PluginLoader.NAME).replaceAll(badFileChars, "_"));
+        this.yml            = YamlUtility.asMap(plugin);
         this.sources        = new File(Main.getConfig().string(ConfigService.SOURCES));
         this.output         = new File(Main.getConfig().string(ConfigService.OUTPUT));
         this.defaults       = new File(Main.getConfig().string(ConfigService.DEFAULT));
@@ -39,13 +43,18 @@ public class PluginServiceImpl extends PluginService {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public File getPluginFolder(){
+    public final File getPluginFolder(){
         if(!pluginFolder.exists()) pluginFolder.mkdirs();
         return pluginFolder;
     }
 
     @Override
-    public WebDirPlugin getPlugin(final String pluginName){
+    public final Map<String,? super Object> getPluginYml(){
+        return yml;
+    }
+
+    @Override
+    public final WebDirPlugin getPlugin(final String pluginName){
         return Main.getPluginLoader().getPlugin(pluginName);
     }
 
