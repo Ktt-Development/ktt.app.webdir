@@ -16,7 +16,7 @@ public class DefaultSiteHandler extends FileHandler {
     final SimpleHttpServer server;
 
     public DefaultSiteHandler(final PageRenderingService renderer, final SimpleHttpServer server){
-        super(new HTMLNameAdapter());
+        super(new HTMLIndexNameAdapter());
         this.renderer = renderer;
         this.server   = server;
     }

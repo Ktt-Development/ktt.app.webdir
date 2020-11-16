@@ -292,6 +292,9 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertNull(getResponseContent(head + "/null"));
             Assertions.assertEquals("F", getResponseContent(head + "/false"));
 
+            // test index.html -> / (#65)
+            Assertions.assertEquals("2", getResponseContent(head + '/' + defaultsInput.getName()));
+
             // exchange render tests
             Assertions.assertEquals("exchange", getResponseContent(head + "/exchange"));
 
@@ -307,7 +310,7 @@ public class PluginLoaderAndRenderTests {
             final String readmePath = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
             Assertions.assertEquals("2", getResponseContent(readmePath), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readmePath));
 
-            // test raw
+            // test raw (#75)
             final String readme = Files.readString(new File("../README.md").toPath());
             final String raw = head + "/raw/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
             Assertions.assertEquals(readme, getResponseContent(raw), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", raw));
@@ -325,7 +328,7 @@ public class PluginLoaderAndRenderTests {
 
     private String getResponseContent(final String url){
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
+            .uri(URI.create(url.replace('\\', '/')))
             .timeout(Duration.ofSeconds(1000))
             .build();
 
