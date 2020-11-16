@@ -81,6 +81,7 @@ public class PluginLoaderAndRenderTests {
             writeInput("cfg"   , "---\nrenderers:\n  - set\n  - get\n---");
             writeInput("out"   , "---\nrenderers:\n  - out\n---");
             writeInput("null"  , "---\nrenderers:\n  - 'null'\n---");
+            writeInput("nullCfg"  , "---\nignore: true\n---");
             writeInput("false"  , "---\nrenderers:\n  - false\n---\nF");
             writeInput("exchange"  , "---\nrenderers:\n  - 1\n---\nF");
             writeInput("perm"  , "---\nrenderers:\n  - 1\n---\nF");
@@ -237,6 +238,7 @@ public class PluginLoaderAndRenderTests {
 
             // null ignore
             Assertions.assertFalse(new File(_site, "null.html").exists());
+            Assertions.assertFalse(new File(_site, "nullCfg.html").exists());
 
             // filter
             Assertions.assertEquals("F", Files.readString(new File(_site, "false.html").toPath()));

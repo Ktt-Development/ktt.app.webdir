@@ -19,7 +19,7 @@ public class DefaultFrontMatterLoader {
         FILE    = "file";
 
     // List<String?boolean>
-    private final Map<List<? super Object>,YamlMapping> defaultConfigurations = new HashMap<>();
+    private final Map<List<? super Object>,Map<String,? super Object>> defaultConfigurations = new HashMap<>();
 
     private final File defaults, sources, output;
     private final String sabs, oabs;
@@ -37,19 +37,16 @@ public class DefaultFrontMatterLoader {
 
         for(final File file : Objects.requireNonNullElse(defaults.listFiles(File::isFile), new File[0])){
             try{
-                final YamlMapping map = Yaml.createYamlInput(file).readYamlMapping();
+                final Map<String,? super Object> map = YamlUtility.asMap(Yaml.createYamlInput(file).readYamlMapping());
                 final List<? super Object> scopes = new ArrayList<>();
-                if(
-                    YamlUtility.containsKey(SCOPE, map.yamlMapping(DEFAULT)) &&
-                    map.yamlMapping(DEFAULT).value(SCOPE).type() == Node.SEQUENCE
-                ){
-                    for(final YamlNode yamlNode : map.yamlMapping(DEFAULT).yamlSequence(SCOPE)){
-                        if(yamlNode.type() == Node.MAPPING && YamlUtility.containsKey(FILE, yamlNode.asMapping())){
-                            scopes.add(Boolean.parseBoolean(yamlNode.asMapping().string(FILE)));
+                if(map.containsKey(DEFAULT) && ((Map<?,?>) map.get(DEFAULT)).containsKey(SCOPE) && ((Map<?,?>) map.get(DEFAULT)).get(SCOPE) instanceof List){
+                    final List<?> list = (List<?>) ((Map<?,?>) map.get(DEFAULT)).get(SCOPE);
+                    for(final Object iterator : list){
+                        if(iterator instanceof Map && ((Map<?, ?>) iterator).containsKey(FILE)){
+                            scopes.add(Boolean.parseBoolean(((Map<?, ?>) iterator).get(FILE).toString()));
                         }else{
-                            final String s = YamlUtility.asString(yamlNode);
-                            if(s != null)
-                                scopes.add((s.startsWith("!") ?  "!" : "") + ContextUtil.getContext(s.startsWith("!") ? s.substring(1) : s, true, false));
+                            final String s = iterator.toString();
+                            scopes.add((s.startsWith("!") ?  "!" : "") + ContextUtil.getContext(s.startsWith("!") ? s.substring(1) : s, true, false));
                         }
                     }
                     defaultConfigurations.put(scopes, map);
@@ -88,7 +85,7 @@ public class DefaultFrontMatterLoader {
         final String path = ContextUtil.getContext(context, true, false);
 
         // find scope matched configs
-        final List<YamlMapping> configs = new ArrayList<>();
+        final List<Map<String,? super Object>> configs = new ArrayList<>();
         defaultConfigurations.forEach((scopes, config) -> {
             boolean canUse = false;
             for(final Object scope : scopes)
@@ -113,8 +110,8 @@ public class DefaultFrontMatterLoader {
         // sort so lower indexes are at the top (see next)
         configs.sort(Comparator.comparingInt(map -> {
             try{
-                return map.yamlMapping(DEFAULT).integer(INDEX);
-            }catch(final NullPointerException ignored){ // field not required, def -1
+                return Integer.parseInt(((Map) map.get(DEFAULT)).get(INDEX).toString());
+            }catch(final ClassCastException | NullPointerException ignored){ // field not required, def -1
             }catch(final NumberFormatException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.index", context) + LoggerService.getStackTraceAsString(e));
             }
@@ -123,8 +120,8 @@ public class DefaultFrontMatterLoader {
 
         // lower configs set first so higher can override
         final Map<String,? super Object> config = new HashMap<>();
-        for(final YamlMapping map : configs)
-            config.putAll(YamlUtility.asMap(map));
+        for(final Map<String,? super Object> map : configs)
+            config.putAll(map);
         config.remove(DEFAULT); // remove default key
 
         return config.isEmpty() ? null : config;
