@@ -2,8 +2,7 @@ package com.kttdevelopment.webdir.client;
 
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
-import com.kttdevelopment.simplehttpserver.handler.FileHandler;
-import com.kttdevelopment.simplehttpserver.handler.ThrottledHandler;
+import com.kttdevelopment.simplehttpserver.handler.*;
 import com.kttdevelopment.webdir.client.server.*;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
@@ -32,8 +31,8 @@ public final class FileServer {
 
         final DefaultThrottler throttler = new DefaultThrottler();
 
-        final DefaultSiteHandler _siteHandler = new DefaultSiteHandler(Main.getPageRenderingService(), server);
-        _siteHandler.addDirectory(new File(Main.getConfig().string(ConfigService.OUTPUT)), "", true);
+        final DefaultSiteHandler _siteHandler = new DefaultSiteHandler(Main.getPageRenderingService(), server, new File(config.string(ConfigService.OUTPUT), config.string(ConfigService.F04)));
+        _siteHandler.addDirectory(new File(config.string(ConfigService.OUTPUT)), "", true);
         final DefaultFileHandler filesHandler = new DefaultFileHandler(Main.getPageRenderingService(), server);
         final FileHandler rawHandler          = new RawFileHandler();
 

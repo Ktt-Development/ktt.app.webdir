@@ -87,6 +87,7 @@ public class PluginLoaderAndRenderTests {
             writeInput("perm"  , "---\nrenderers:\n  - 1\n---\nF");
             writeInput("tf"  , "");
             writeInput("ff"  , "");
+            writeInput("404", "404");
 
             // default dependencies
             Map.of(
@@ -289,7 +290,7 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("", getResponseContent(head + "/to"));
             Assertions.assertEquals("1", getResponseContent(head + "/cfg"));
             Assertions.assertNotNull(getResponseContent(head + "/output"));
-            Assertions.assertNull(getResponseContent(head + "/null"));
+            Assertions.assertEquals("404", getResponseContent(head + "/null")); // test 404 (#77)
             Assertions.assertEquals("F", getResponseContent(head + "/false"));
 
             // exchange render tests

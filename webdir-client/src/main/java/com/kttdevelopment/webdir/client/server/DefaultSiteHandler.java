@@ -14,17 +14,19 @@ public class DefaultSiteHandler extends FileHandler {
 
     final PageRenderingService renderer;
     final SimpleHttpServer server;
+    final File _404;
 
-    public DefaultSiteHandler(final PageRenderingService renderer, final SimpleHttpServer server){
+    public DefaultSiteHandler(final PageRenderingService renderer, final SimpleHttpServer server, final File _404){
         super(new HTMLNameAdapter());
         this.renderer = renderer;
         this.server   = server;
+        this._404     = _404;
     }
 
     @Override
     public void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
         try{
-            exchange.send(Objects.requireNonNull(renderer.render(source, server, exchange)).getContentAsBytes());
+            exchange.send(Objects.requireNonNull(renderer.render(_404 == null || (source != null &&  source.exists()) ? source : _404, server, exchange)).getContentAsBytes());
         }finally{
             exchange.close();
         }
