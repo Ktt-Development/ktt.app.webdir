@@ -81,11 +81,13 @@ public class PluginLoaderAndRenderTests {
             writeInput("cfg"   , "---\nrenderers:\n  - set\n  - get\n---");
             writeInput("out"   , "---\nrenderers:\n  - out\n---");
             writeInput("null"  , "---\nrenderers:\n  - 'null'\n---");
+            writeInput("nullCfg"  , "---\nignore: true\n---");
             writeInput("false"  , "---\nrenderers:\n  - false\n---\nF");
             writeInput("exchange"  , "---\nrenderers:\n  - 1\n---\nF");
             writeInput("perm"  , "---\nrenderers:\n  - 1\n---\nF");
             writeInput("tf"  , "");
             writeInput("ff"  , "");
+            writeInput("404", "404");
 
             // default dependencies
             Map.of(
@@ -199,9 +201,12 @@ public class PluginLoaderAndRenderTests {
             final WebDirPlugin plugin = Objects.requireNonNull(Main.getPluginLoader().getPlugin("ValidPlugin"));
             Assertions.assertEquals("ValidPlugin", plugin.getPluginName());
             Assertions.assertEquals(plugin, plugin.getPlugin("ValidPlugin"));
-            Assertions.assertEquals(Main.getPluginLoader().getPluginsFolder().getAbsoluteFile(), plugin.getPluginsFolder().getAbsoluteFile());
             Assertions.assertEquals(new File(Main.getPluginLoader().getPluginsFolder(), "ValidPlugin").getAbsoluteFile(), plugin.getPluginFolder().getAbsoluteFile());
+            Assertions.assertEquals("ValidPlugin", plugin.getPluginYml().get(PluginLoader.NAME));
+            Assertions.assertEquals(Main.getConfig().string(ConfigService.DEFAULT), plugin.getConfigYml().get(ConfigService.DEFAULT));
+
             Assertions.assertEquals("ValidPlugin", plugin.getLogger().getName());
+            Assertions.assertEquals(Main.getPluginLoader().getPluginsFolder().getAbsoluteFile(), plugin.getPluginsFolder().getAbsoluteFile());
             Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.DEFAULT)), plugin.getDefaultsFolder());
             Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.SOURCES)), plugin.getSourcesFolder());
             Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.OUTPUT)), plugin.getOutputFolder());
@@ -234,6 +239,7 @@ public class PluginLoaderAndRenderTests {
 
             // null ignore
             Assertions.assertFalse(new File(_site, "null.html").exists());
+            Assertions.assertFalse(new File(_site, "nullCfg.html").exists());
 
             // filter
             Assertions.assertEquals("F", Files.readString(new File(_site, "false.html").toPath()));
@@ -284,7 +290,7 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("", getResponseContent(head + "/to"));
             Assertions.assertEquals("1", getResponseContent(head + "/cfg"));
             Assertions.assertNotNull(getResponseContent(head + "/output"));
-            Assertions.assertNull(getResponseContent(head + "/null"));
+            Assertions.assertEquals("404", getResponseContent(head + "/null")); // test 404 (#77)
             Assertions.assertEquals("F", getResponseContent(head + "/false"));
 
             // exchange render tests
@@ -299,12 +305,17 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals(ignore, getResponseContent(path), String.format("Failed to read %s (make sure tests are run with Windows OS)", path));
 
             // test drive default
-            final String readme = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
-            Assertions.assertEquals("2", getResponseContent(readme), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readme));
+            final String readmePath = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
+            Assertions.assertEquals("2", getResponseContent(readmePath), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readmePath));
+
+            // test raw
+            final String readme = Files.readString(new File("../README.md").toPath());
+            final String raw = head + "/raw/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
+            Assertions.assertEquals(readme, getResponseContent(raw), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", raw));
 
             // test folder default
             final String folder = head + "/files/" + new File("../").getCanonicalPath().replace('\\', '/');
-            Assertions.assertEquals("2", getResponseContent(folder), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readme));
+            Assertions.assertEquals("2", getResponseContent(folder), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readmePath));
         }
     }
 

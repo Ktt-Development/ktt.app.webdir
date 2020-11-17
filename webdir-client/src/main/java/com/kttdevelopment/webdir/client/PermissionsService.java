@@ -111,8 +111,7 @@ public final class PermissionsService {
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("permissionsFile", permissionsFile)
-            .addObject("default", defaultYaml)
-            .addObject("permissions", PERMISSIONS)
+            .addObject("permissions", permissionsSchema)
             .toString();
     }
 

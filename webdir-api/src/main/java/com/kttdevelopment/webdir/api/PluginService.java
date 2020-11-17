@@ -1,6 +1,7 @@
 package com.kttdevelopment.webdir.api;
 
 import java.io.File;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -17,6 +18,10 @@ public abstract class PluginService {
     public abstract Logger getLogger();
 
     public abstract File getPluginFolder();
+
+    public abstract Map<String,? super Object> getPluginYml();
+
+    public abstract Map<String,? super Object> getConfigYml();
 
     public abstract WebDirPlugin getPlugin(final String pluginName);
 

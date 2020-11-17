@@ -24,6 +24,7 @@ public class PageRenderer {
         EXCHANGE_RENDERERS  = "exchange_renderers",
         PLUGIN              = "plugin",
         RENDERER            = "renderer",
+        IGNORE              = "ignore",
         IMPORT              = "import",
         IMPORT_RELATIVE     = "import_relative";
 
@@ -86,6 +87,9 @@ public class PageRenderer {
         finalFrontMatter.remove(PageRenderer.EXCHANGE_RENDERERS);
 
         final FileRenderImpl fileRender = new FileRenderImpl(IN, OUT, finalFrontMatter, bytes, server, exchange);
+
+        final boolean ignore = Boolean.parseBoolean(finalFrontMatter.getOrDefault(IGNORE, "false").toString());
+        if(ignore) fileRender.setOutputFile(null); // set here so isEmpty returns null output
         {
             if(renderersStr.isEmpty())
                 return fileRender;
@@ -130,6 +134,8 @@ public class PageRenderer {
                 }
             }
         }
+        if(ignore) fileRender.setOutputFile(null); // set here so renderers can't override ignore
+
         return fileRender;
     }
 

@@ -15,17 +15,14 @@ public final class RootWatchService {
     private final List<File> drives = Collections.synchronizedList(new ArrayList<>());
     private final FileHandler handler;
 
-    private final String context;
-
     private final LocaleService locale;
     private final Logger logger;
 
-    public RootWatchService(final FileHandler handler, final String context){
+    public RootWatchService(final FileHandler handler){
         this.locale = Main.getLocale();
         this.logger = Main.getLogger(locale.getString("page-renderer.name"));
 
         this.handler = handler;
-        this.context = context;
         check();
     }
 
@@ -53,12 +50,12 @@ public final class RootWatchService {
     }
 
     public synchronized final void onAddedEvent(final File file){
-        handler.addDirectory(context, file, true);
+        handler.addDirectory(file, true);
         logger.fine(locale.getString("server.roots.added", file.getPath()));
     }
 
     public synchronized final void onRemovedEvent(final File file){
-        handler.removeDirectory(context, file);
+        handler.removeDirectory(file);
         logger.fine(locale.getString("server.roots.removed", file.getPath()));
     }
 
@@ -66,7 +63,6 @@ public final class RootWatchService {
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("drives", drives)
-            .addObject("context", context)
             .toString();
     }
 

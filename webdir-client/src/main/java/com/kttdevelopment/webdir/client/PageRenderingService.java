@@ -124,7 +124,7 @@ public final class PageRenderingService {
             final Path rel  = (!online ? sources : output).getCanonicalFile().toPath().relativize(path);
             rendered        = new File(output, rel.toString()).getCanonicalFile();
         }catch(final IOException e){
-            logger.warning(locale.getString("page-renderer.render.missing", IN.getPath()));
+            logger.warning(locale.getString("page-renderer.render.missing", IN.getPath()) + '\n' + LoggerService.getStackTraceAsString(e));
             return null;
         }
 
