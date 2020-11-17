@@ -13,7 +13,7 @@ public final class DefaultFileHandler extends DefaultSiteHandler {
     private final RootWatchService rootWatchService;
 
     public DefaultFileHandler(final PageRenderingService renderer, final SimpleHttpServer server){
-        super(renderer, server);
+        super(renderer, server, null);
         this.rootWatchService = new RootWatchService(this);
     }
 

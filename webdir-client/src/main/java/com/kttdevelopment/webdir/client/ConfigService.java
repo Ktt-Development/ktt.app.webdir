@@ -25,6 +25,7 @@ public final class ConfigService {
         PORT        = "port",
         RAW         = "raw",
         CONTEXT     = "context",
+        F04         = "404",
         PERMISSIONS = "permissions";
 
     private static final Setting[] settings = new Setting[]{
@@ -39,6 +40,7 @@ public final class ConfigService {
         new Setting(PORT, String.valueOf(80), "The port to run the server at."),
         new Setting(RAW, "raw", "The context to view raw files at.\nEx: setting this to 'raw' would put files from C://* at http://localhost/raw/C:/*"),
         new Setting(CONTEXT, "files", "The context to view files at.\nEx: setting this to 'files' would put files from C://* at http://localhost/files/C:/*"),
+        new Setting(F04, "404.html", "The file to use as the 404 page."),
         new Setting(PERMISSIONS, "permissions.yml", "The file to load permissions from (server only).")
     };
 
