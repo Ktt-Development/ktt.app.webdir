@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.kttdevelopment</groupId>
             <artifactId>simplehttpserver</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.0</version>
         </dependency>
     </dependencies>
 
