@@ -43,9 +43,13 @@ public class PluginLoaderAndRenderTests {
 
         for(final File file : Objects.requireNonNullElse(defaultsOutput.listFiles(), new File[0]))
             Files.delete(file.toPath());
+        for(final File file : Objects.requireNonNullElse(new File(_site, "folder").listFiles(), new File[0]))
+            Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(_site.listFiles(), new File[0]))
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(defaultsInput.listFiles(), new File[0]))
+            Files.delete(file.toPath());
+        for(final File file : Objects.requireNonNullElse(new File(_root, "folder").listFiles(), new File[0]))
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(_root.listFiles(), new File[0]))
             Files.delete(file.toPath());
@@ -88,6 +92,8 @@ public class PluginLoaderAndRenderTests {
             writeInput("tf"  , "");
             writeInput("ff"  , "");
             writeInput("404", "404");
+            Assertions.assertTrue(new File(_root, "folder").mkdirs());
+            Assertions.assertTrue(new File(_root, "folder/test").createNewFile());
 
             // default dependencies
             Map.of(
@@ -293,6 +299,10 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals("404", getResponseContent(head + "/null")); // test 404 (#77)
             Assertions.assertEquals("F", getResponseContent(head + "/false"));
 
+            // test index.html -> / (#65)
+            Assertions.assertEquals("2", getResponseContent(head + '/' + defaultsInput.getName()));
+            Assertions.assertNull(getResponseContent(head + '/' + "folder"));
+
             // exchange render tests
             Assertions.assertEquals("exchange", getResponseContent(head + "/exchange"));
 
@@ -308,7 +318,7 @@ public class PluginLoaderAndRenderTests {
             final String readmePath = head + "/files/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
             Assertions.assertEquals("2", getResponseContent(readmePath), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", readmePath));
 
-            // test raw
+            // test raw (#75)
             final String readme = Files.readString(new File("../README.md").toPath());
             final String raw = head + "/raw/" + new File("../README.md").getCanonicalPath().replace('\\', '/');
             Assertions.assertEquals(readme, getResponseContent(raw), String.format("Failed to read default with %s (make sure tests are run with Windows OS)", raw));
@@ -326,7 +336,7 @@ public class PluginLoaderAndRenderTests {
 
     private String getResponseContent(final String url){
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
+            .uri(URI.create(url.replace('\\', '/')))
             .timeout(Duration.ofSeconds(1000))
             .build();
 

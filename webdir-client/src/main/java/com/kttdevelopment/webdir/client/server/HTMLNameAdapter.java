@@ -10,7 +10,7 @@ public final class HTMLNameAdapter implements FileHandlerAdapter {
 
     @Override
     public final String getName(final File file){
-        final String name = file.getName();
+        final String name  = file.getName();
         final String rhtml = name.toLowerCase().endsWith(".html") ? name.substring(0, name.length()-len) : name;
         return file.isDirectory() || rhtml.isBlank() || rhtml.equalsIgnoreCase(".html") ? name : rhtml;
     }
