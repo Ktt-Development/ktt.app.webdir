@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  * This class implements the methods required by the {@link WebDirPlugin}. Plugin developers do not use this class.
  *
  * @since 1.0.0
- * @version 1.1.0
+ * @version 1.0.0
  * @author Ktt Development
  */
 public abstract class PluginService {

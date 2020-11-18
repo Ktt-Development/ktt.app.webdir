@@ -43,9 +43,13 @@ public class PluginLoaderAndRenderTests {
 
         for(final File file : Objects.requireNonNullElse(defaultsOutput.listFiles(), new File[0]))
             Files.delete(file.toPath());
+        for(final File file : Objects.requireNonNullElse(new File(_site, "folder").listFiles(), new File[0]))
+            Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(_site.listFiles(), new File[0]))
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(defaultsInput.listFiles(), new File[0]))
+            Files.delete(file.toPath());
+        for(final File file : Objects.requireNonNullElse(new File(_root, "folder").listFiles(), new File[0]))
             Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(_root.listFiles(), new File[0]))
             Files.delete(file.toPath());
@@ -88,6 +92,8 @@ public class PluginLoaderAndRenderTests {
             writeInput("tf"  , "");
             writeInput("ff"  , "");
             writeInput("404", "404");
+            Assertions.assertTrue(new File(_root, "folder").mkdirs());
+            Assertions.assertTrue(new File(_root, "folder/test").createNewFile());
 
             // default dependencies
             Map.of(
@@ -295,6 +301,7 @@ public class PluginLoaderAndRenderTests {
 
             // test index.html -> / (#65)
             Assertions.assertEquals("2", getResponseContent(head + '/' + defaultsInput.getName()));
+            Assertions.assertNull(getResponseContent(head + '/' + "folder"));
 
             // exchange render tests
             Assertions.assertEquals("exchange", getResponseContent(head + "/exchange"));

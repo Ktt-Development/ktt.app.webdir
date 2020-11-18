@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  * This class allows you to add custom renders to WebDir.
  *
  * @since 1.0.0
- * @version 1.1.0
+ * @version 1.0.0
  * @author Ktt Development
  */
 public class WebDirPlugin {

@@ -26,7 +26,17 @@ public class DefaultSiteHandler extends FileHandler {
     @Override
     public void handle(final SimpleHttpExchange exchange, final File source, final byte[] bytes) throws IOException{
         try{
-            exchange.send(Objects.requireNonNull(renderer.render(_404 == null || (source != null &&  source.exists()) ? source : _404, server, exchange)).getContentAsBytes());
+            final File index;
+            exchange.send(Objects.requireNonNull(
+                renderer.render(
+                    _404 == null || (source != null &&  source.exists())
+                    ? source.isDirectory() && (index = new File(source, "index.html")).exists()
+                        ? index
+                        : source
+                    : _404,
+                server,
+                exchange)
+            ).getContentAsBytes());
         }finally{
             exchange.close();
         }
