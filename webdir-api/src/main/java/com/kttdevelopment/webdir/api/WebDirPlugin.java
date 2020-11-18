@@ -70,7 +70,7 @@ public class WebDirPlugin {
      *
      * @return plugin.yml
      *
-     * @since 1.1.0
+     * @since 1.0.0
      * @author Ktt Development
      */
     public final Map<String,? super Object> getPluginYml(){
@@ -82,7 +82,7 @@ public class WebDirPlugin {
      *
      * @return config.yml
      *
-     * @since 1.1.0
+     * @since 1.0.0
      * @author Ktt Development
      */
     public final Map<String,? super Object> getConfigYml(){

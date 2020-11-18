@@ -17,7 +17,7 @@ public class DefaultSiteHandler extends FileHandler {
     final File _404;
 
     public DefaultSiteHandler(final PageRenderingService renderer, final SimpleHttpServer server, final File _404){
-        super(new HTMLIndexNameAdapter());
+        super(new HTMLNameAdapter());
         this.renderer = renderer;
         this.server   = server;
         this._404     = _404;
