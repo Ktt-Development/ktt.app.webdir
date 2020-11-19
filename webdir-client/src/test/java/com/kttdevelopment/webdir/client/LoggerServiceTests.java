@@ -21,16 +21,12 @@ public class LoggerServiceTests {
         Assertions.assertTrue(latest.exists());
         Assertions.assertTrue(debug.exists());
 
-        // check if current file
-        Assertions.assertEquals(3, Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log")), new File[0]).length);
-        clearLogFiles();
-
         // queued messages
         Assertions.assertFalse(service.getQueuedLoggerMessages().isEmpty());
         
         // duplicate handlers
         service.getLogger("logger");
-        Assertions.assertEquals(4, service.getLogger("logger").getHandlers().length);
+        Assertions.assertEquals(3, service.getLogger("logger").getHandlers().length);
     }
 
     public static void clearLogFiles(){

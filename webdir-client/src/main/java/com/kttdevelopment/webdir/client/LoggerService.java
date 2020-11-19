@@ -52,27 +52,6 @@ public final class LoggerService {
                 Level.FINE
             );
         }
-        // current handler
-        {
-            final String log = FileUtility.getFreeFile(new File(System.currentTimeMillis() + ".log")).getName();
-            try{
-                handlers.add(new FileHandler(log) {{
-                    setLevel(Level.INFO);
-                    setFormatter(new LoggerFormatter(true, false));
-                }});
-                addQueuedLoggerMessageSafe(
-                    "logger.name", "logger.constructor.log.success",
-                    loggerName, "Started logging to file %s.",
-                    Level.FINE, log
-                );
-            }catch(final IOException e){
-                addQueuedLoggerMessageSafe(
-                    "logger.name", "logger.constructor.log.fail",
-                    loggerName, "Failed to start logging for file %s. %s",
-                    Level.SEVERE, log, getStackTraceAsString(e)
-                );
-            }
-        }
         // latest handler
             {
             final String log = "latest.log";
