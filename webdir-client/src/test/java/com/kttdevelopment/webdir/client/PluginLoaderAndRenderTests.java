@@ -65,6 +65,7 @@ public class PluginLoaderAndRenderTests {
     private static final File defaultsInput  = new File(_root, "defaultsTests");
     private static final File defaultsOutput = new File(_site, defaultsInput.getName());
 
+    @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void test() throws IOException{
         // plugin deps
