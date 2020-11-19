@@ -75,14 +75,14 @@ public class PageRenderer {
         }
 
         final Map<String,? super Object> finalFrontMatter = YamlFrontMatter.loadImports(IN, merged); // do not make immutable, variables are shared across renders
-        finalFrontMatter.remove(PageRenderer.IMPORT);
-        finalFrontMatter.remove(PageRenderer.IMPORT_RELATIVE);
         logger.finest(locale.getString("page-renderer.front-matter.finished", IN.getPath(), finalFrontMatter));
 
         // render
         final Object r = Objects.requireNonNullElse(finalFrontMatter.get(!online ? RENDERERS : EXCHANGE_RENDERERS), new ArrayList<>());
         final List<?> renderersStr = r instanceof List ? (List<?>) r : List.of(r);
 
+        finalFrontMatter.remove(PageRenderer.IMPORT);
+        finalFrontMatter.remove(PageRenderer.IMPORT_RELATIVE);
         finalFrontMatter.remove(PageRenderer.RENDERERS);
         finalFrontMatter.remove(PageRenderer.EXCHANGE_RENDERERS);
 

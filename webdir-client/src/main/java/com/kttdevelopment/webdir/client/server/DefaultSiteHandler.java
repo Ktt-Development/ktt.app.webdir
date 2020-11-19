@@ -29,7 +29,7 @@ public class DefaultSiteHandler extends FileHandler {
             final File index;
             exchange.send(Objects.requireNonNull(
                 renderer.render(
-                    _404 == null || (source != null &&  source.exists())
+                    _404 == null || !_404.exists() || (source != null &&  source.exists())
                     ? source.isDirectory() && (index = new File(source, "index.html")).exists()
                         ? index
                         : source

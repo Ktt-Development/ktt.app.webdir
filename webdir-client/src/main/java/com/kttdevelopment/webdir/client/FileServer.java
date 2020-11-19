@@ -36,7 +36,6 @@ public final class FileServer {
         final DefaultFileHandler filesHandler = new DefaultFileHandler(Main.getPageRenderingService(), server);
         final FileHandler rawHandler          = new RawFileHandler();
 
-        // todo: add 404 here ↓
         server.createContext("", new ThrottledHandler(_siteHandler, throttler));
         server.createContext(Main.getConfig().string(ConfigService.CONTEXT), new ThrottledHandler(filesHandler, throttler));
         server.createContext(Main.getConfig().string(ConfigService.RAW), new ThrottledHandler(rawHandler, throttler));

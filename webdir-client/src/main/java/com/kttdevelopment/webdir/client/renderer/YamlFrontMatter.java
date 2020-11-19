@@ -81,7 +81,6 @@ public final class YamlFrontMatter {
           }
 
           final List<String> relativeImports = new ArrayList<>();
-
           {
                final Object obj = config.get(PageRenderer.IMPORT_RELATIVE);
                if(obj instanceof List)
