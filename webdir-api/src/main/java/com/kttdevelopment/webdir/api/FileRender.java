@@ -107,7 +107,7 @@ public abstract class FileRender {
      * @since 1.0.0
      * @author Ktt Development
      */
-    public abstract SimpleHttpServer getServer();
+    public abstract SimpleHttpServer getHttpServer();
 
     /**
      * Returns the http exchange or null if there is none.
@@ -115,7 +115,7 @@ public abstract class FileRender {
      * @return http exchange
      *
      * @see SimpleHttpExchange
-     * @see #getServer()
+     * @see #getHttpServer()
      * @since 1.0.0
      * @author Ktt Development
      */

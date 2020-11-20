@@ -75,7 +75,7 @@ public final class FileRenderImpl extends FileRender {
     }
 
     @Override
-    public final SimpleHttpServer getServer(){
+    public final SimpleHttpServer getHttpServer(){
         return server;
     }
 
