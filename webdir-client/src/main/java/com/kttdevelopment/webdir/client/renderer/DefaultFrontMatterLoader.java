@@ -110,6 +110,7 @@ public class DefaultFrontMatterLoader {
         // sort so lower indexes are at the top (see next)
         configs.sort(Comparator.comparingInt(map -> {
             try{
+                //noinspection rawtypes
                 return Integer.parseInt(((Map) map.get(DEFAULT)).get(INDEX).toString());
             }catch(final ClassCastException | NullPointerException ignored){ // field not required, def -1
             }catch(final NumberFormatException e){

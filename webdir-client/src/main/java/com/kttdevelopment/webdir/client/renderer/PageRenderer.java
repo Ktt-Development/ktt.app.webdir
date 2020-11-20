@@ -6,8 +6,7 @@ import com.kttdevelopment.webdir.api.FileRender;
 import com.kttdevelopment.webdir.api.Renderer;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
-import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
-import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
+import com.kttdevelopment.webdir.client.utility.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +63,8 @@ public class PageRenderer {
         {
              final Map<String,? super Object> defaultFrontMatter = defaultFrontMatterLoader.getDefaultFrontMatter(IN);
              if(defaultFrontMatter != null)
-                merged.putAll(defaultFrontMatter);
+                 //noinspection unchecked
+                 merged.putAll(MapUtility.deepCopy(defaultFrontMatter));
         }
         if(!online && bytes != null){ // online & null bytes will not have front matter
             final YamlFrontMatter frontMatter = new YamlFrontMatter(new String(bytes, StandardCharsets.UTF_8));

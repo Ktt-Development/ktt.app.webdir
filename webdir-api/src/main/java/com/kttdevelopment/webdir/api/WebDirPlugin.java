@@ -73,19 +73,21 @@ public class WebDirPlugin {
      * @since 1.0.0
      * @author Ktt Development
      */
-    public final Map<String,? super Object> getPluginYml(){
+    @SuppressWarnings("rawtypes")
+    public final Map getPluginYml(){
         return new HashMap<>(service.getPluginYml());
     }
 
     /**
-     * Returns the config.yml from webdir as a map.
+     * Returns the config.yml from WebDir as a map.
      *
      * @return config.yml
      *
      * @since 1.0.0
      * @author Ktt Development
      */
-    public final Map<String,? super Object> getConfigYml(){
+    @SuppressWarnings("rawtypes")
+    public final Map getConfigYml(){
         return new HashMap<>(service.getConfigYml());
     }
 
