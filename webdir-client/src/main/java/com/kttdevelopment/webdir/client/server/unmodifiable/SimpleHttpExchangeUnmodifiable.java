@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client.server.unmodifiable;
 
 import com.kttdevelopment.simplehttpserver.*;
-import com.kttdevelopment.simplehttpserver.var.RequestMethod;
 import com.sun.net.httpserver.*;
 
 import java.io.*;
@@ -54,7 +53,7 @@ public final class SimpleHttpExchangeUnmodifiable extends SimpleHttpExchange {
     }
 
     @Override
-    public final RequestMethod getRequestMethod(){
+    public final String getRequestMethod(){
         return exchange.getRequestMethod();
     }
 
