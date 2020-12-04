@@ -99,7 +99,7 @@
         <dependency>
             <groupId>com.amihaiemil.web</groupId>
             <artifactId>eo-yaml</artifactId>
-            <version>5.1.6</version>
+            <version>5.1.7</version>
         </dependency>
 
         <!-- tests -->
