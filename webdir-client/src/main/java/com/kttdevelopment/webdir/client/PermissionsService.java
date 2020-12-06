@@ -1,13 +1,14 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.client.permissions.Permissions;
+import com.kttdevelopment.webdir.client.utility.MapUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -54,12 +55,12 @@ public final class PermissionsService {
         this.permissionsFile = Objects.requireNonNull(permissionsFile);
 
         // load default permissions
-        final YamlMapping defaultPermissions;
+        final Map<String,Object> defaultPermissions;
         {
             logger.fine(locale.getString("permissions.constructor.default.start"));
             try{
-                defaultPermissions = Yaml.createYamlInput(defaultYaml).readYamlMapping();
-            }catch(final IOException e){
+                defaultPermissions = MapUtility.asStringObjectMap(new Yaml().load(defaultYaml));
+            }catch(final ClassCastException e){
                 logger.severe(locale.getString("permissions.constructor.default.fail") + LoggerService.getStackTraceAsString(e));
                 throw e;
             }
@@ -71,10 +72,10 @@ public final class PermissionsService {
             final String fileName = permissionsFile.getPath();
             logger.info(locale.getString("permissions.constructor.permissions.start", fileName));
 
-            YamlMapping yaml = null;
+            Map<String,Object> yaml = null;
             try{
-                yaml = Yaml.createYamlInput(permissionsFile).readYamlMapping();
-            }catch(final IOException e){
+                yaml = MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissionsFile)));
+            }catch(final ClassCastException | IOException e){
                 logger.warning(locale.getString("permissions.constructor.permissions." + (e instanceof FileNotFoundException ? "missing" : "malformed"), fileName) + LoggerService.getStackTraceAsString(e));
 
                 if(!permissionsFile.exists())

@@ -1,10 +1,7 @@
 package com.kttdevelopment.webdir.client.permissions;
 
-import com.amihaiemil.eoyaml.*;
-import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import com.kttdevelopment.webdir.client.*;
-import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
-import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
+import com.kttdevelopment.webdir.client.utility.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,11 +14,11 @@ public final class PermissionsUser {
     private final List<String> groups = new ArrayList<>(), permissions = new ArrayList<>();
     private final Map<String,String> options = new HashMap<>();
 
-    public PermissionsUser(final String user, final YamlMapping value) throws UnknownHostException{
+    public PermissionsUser(final String user, final Map<String,Object> value) throws UnknownHostException{
         this(InetAddress.getByName(user), value);
     }
 
-    public PermissionsUser(final InetAddress user, final YamlMapping value){
+    public PermissionsUser(final InetAddress user, final Map<String,Object> value){
         final LocaleService locale = Main.getLocale();
         final Logger logger = Main.getLogger(locale.getString("permissions.name"));
 
@@ -43,27 +40,23 @@ public final class PermissionsUser {
 
         // groups
         {
-            final YamlSequence seq = value.yamlSequence(PermissionsService.GROUPS);
-            String inherit;
-            if(seq != null)
-                seq.forEach(e -> groups.add(asString(e)));
-            else if((inherit = value.string(PermissionsService.GROUPS)) != null)
-                groups.add(inherit);
+            final Object obj = value.get(PermissionsService.GROUPS);
+            if(obj instanceof List<?>)
+                groups.addAll(MapUtility.asStringList((List<?>) obj));
+            else if(obj != null)
+                groups.add(obj.toString());
         }
 
         // options
         {
-            final YamlMapping map = value.yamlMapping(PermissionsService.OPTIONS);
-            if(map != null)
-                for(final YamlNode key : map.keys())
-                    options.put(asString(key), map.string(key));
+            options.putAll(MapUtility.asStringMap((Map<?,?>) value.getOrDefault(PermissionsService.OPTIONS, new HashMap<>())));
         }
 
         // permissions
         {
-            final YamlSequence seq = value.yamlSequence(PermissionsService.PERMISSIONS);
-            if(seq != null)
-                seq.forEach(e -> permissions.add(asString(e)));
+            final Object obj = value.get(PermissionsService.PERMISSIONS);
+            if(obj instanceof List<?>)
+                permissions.addAll(MapUtility.asStringList((List<?>) obj));
         }
 
         logger.finest(locale.getString("permissions.permissionsUser.finish", this.user.getHostAddress()));
@@ -83,18 +76,6 @@ public final class PermissionsUser {
 
     public final List<String> getPermissions(){
         return Collections.unmodifiableList(permissions);
-    }
-
-    private String asString(final YamlNode e){
-        final LocaleService locale = Main.getLocale();
-        final Logger logger = Main.getLogger(locale.getString("permissions.name"));
-
-        try{
-            return e.asScalar().value();
-        }catch(final YamlReadingException | ClassCastException err){
-            logger.warning(locale.getString("permissions.permissionsUser.string", e, user.getHostAddress()) + LoggerService.getStackTraceAsString(err));
-            return null;
-        }
     }
 
     @Override

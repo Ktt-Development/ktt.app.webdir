@@ -4,6 +4,7 @@ import com.amihaiemil.eoyaml.*;
 
 import java.util.*;
 
+@Deprecated
 public abstract class YamlUtility {
 
     public static String asString(final YamlNode e){

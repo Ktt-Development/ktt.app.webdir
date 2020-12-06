@@ -1,12 +1,12 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.Yaml;
 import com.kttdevelopment.webdir.client.permissions.*;
+import com.kttdevelopment.webdir.client.utility.MapUtility;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.UUID;
@@ -43,7 +43,7 @@ public class PermissionsServiceTests {
                 "  - %s"
             ).replace("%s", testGroup);
 
-            final PermissionsGroup group = new PermissionsGroup(testGroup, Yaml.createYamlInput(yml).readYamlMapping());
+            final PermissionsGroup group = new PermissionsGroup(testGroup, MapUtility.asStringObjectMap(new Yaml().load(yml)));
             Assertions.assertEquals(testGroup, group.getGroup());
             Assertions.assertEquals(testGroup, group.getInheritance().get(0));
             Assertions.assertEquals(testGroup, group.getOptions().get(testGroup));
@@ -59,7 +59,7 @@ public class PermissionsServiceTests {
                 "permissions: %s\n"
             ).replace("%s", testGroup);
 
-            final PermissionsGroup group = new PermissionsGroup(testGroup, Yaml.createYamlInput(yml).readYamlMapping());
+            final PermissionsGroup group = new PermissionsGroup(testGroup, MapUtility.asStringObjectMap(new Yaml().load(yml)));
             Assertions.assertEquals(testGroup, group.getGroup());
             Assertions.assertEquals(testGroup, group.getInheritance().get(0));
             Assertions.assertEquals(0, group.getOptions().size());
@@ -75,7 +75,7 @@ public class PermissionsServiceTests {
                 "permissions: %s\n"
             ).replace("%s", testGroup);
 
-            final PermissionsGroup group = new PermissionsGroup(testGroup, Yaml.createYamlInput(yml).readYamlMapping());
+            final PermissionsGroup group = new PermissionsGroup(testGroup, MapUtility.asStringObjectMap(new Yaml().load(yml)));
             Assertions.assertEquals(testGroup, group.getGroup());
             // for inheritance a map will just be interpreted as a string or throw a line error
             // Assertions.assertEquals(0, group.getInheritance().size());
@@ -87,7 +87,7 @@ public class PermissionsServiceTests {
         {
             final String testGroup = "testGroup";
 
-            final PermissionsGroup group = new PermissionsGroup(testGroup, Yaml.createYamlInput("").readYamlMapping());
+            final PermissionsGroup group = new PermissionsGroup(testGroup, MapUtility.asStringObjectMap(new Yaml().load("")));
             Assertions.assertEquals(testGroup, group.getGroup());
             Assertions.assertEquals(0, group.getInheritance().size());
             Assertions.assertEquals(0, group.getOptions().size());
@@ -112,7 +112,7 @@ public class PermissionsServiceTests {
                 "  - %s"
             ).replace("%s", testValue);
 
-            final PermissionsUser user = new PermissionsUser("127.0.0.1", Yaml.createYamlInput(yml).readYamlMapping());
+            final PermissionsUser user = new PermissionsUser("127.0.0.1", MapUtility.asStringObjectMap(new Yaml().load(yml)));
             Assertions.assertEquals(InetAddress.getLocalHost().getHostAddress(), user.getUser().getHostAddress());
             Assertions.assertEquals(testValue, user.getGroups().get(0));
             Assertions.assertEquals(testValue, user.getOptions().get(testValue));
@@ -128,7 +128,7 @@ public class PermissionsServiceTests {
                 "permissions: %s\n"
             ).replace("%s", testValue);
 
-            final PermissionsUser user = new PermissionsUser("255.255.255.255", Yaml.createYamlInput(yml).readYamlMapping());
+            final PermissionsUser user = new PermissionsUser("255.255.255.255", MapUtility.asStringObjectMap(new Yaml().load(yml)));
             Assertions.assertEquals("255.255.255.255", user.getUser().getHostAddress());
             Assertions.assertEquals(testValue, user.getGroups().get(0));
             Assertions.assertEquals(0, user.getOptions().size());
@@ -144,7 +144,7 @@ public class PermissionsServiceTests {
                 "permissions: %s\n"
             ).replace("%s", testValue);
 
-            final PermissionsUser user = new PermissionsUser("255.255.255.255", Yaml.createYamlInput(yml).readYamlMapping());
+            final PermissionsUser user = new PermissionsUser("255.255.255.255", MapUtility.asStringObjectMap(new Yaml().load(yml)));
             // for inheritance a map will just be interpreted as a string or throw a line error
             // Assertions.assertEquals(0, user.getGroups().size());
             Assertions.assertEquals(0, user.getOptions().size());
@@ -153,7 +153,7 @@ public class PermissionsServiceTests {
 
         // test none
         {
-            final PermissionsUser user = new PermissionsUser("255.255.255.255", Yaml.createYamlInput("").readYamlMapping());
+            final PermissionsUser user = new PermissionsUser("255.255.255.255", MapUtility.asStringObjectMap(new Yaml().load("")));
             Assertions.assertEquals(0, user.getGroups().size());
             Assertions.assertEquals(0, user.getOptions().size());
             Assertions.assertEquals(0, user.getPermissions().size());
@@ -173,14 +173,14 @@ public class PermissionsServiceTests {
                 "users: %s\n"
             ).replace("%s", testValue);
 
-            final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+            final Permissions perm = new Permissions(MapUtility.asStringObjectMap(new Yaml().load(yml)));
             Assertions.assertEquals(0, perm.getGroups().size());
             Assertions.assertEquals(0, perm.getUsers().size());
             Assertions.assertFalse(perm.hasPermission(""));
         }
         // test none
         {
-            final Permissions perm = new Permissions(Yaml.createYamlInput("").readYamlMapping());
+            final Permissions perm = new Permissions(MapUtility.asStringObjectMap(new Yaml().load("")));
             Assertions.assertEquals(0, perm.getGroups().size());
             Assertions.assertEquals(0, perm.getUsers().size());
             Assertions.assertFalse(perm.hasPermission(""));
@@ -212,7 +212,7 @@ public class PermissionsServiceTests {
                 .replace("$1", testValue)
                 .replace("$2", testValueInherit);
 
-                final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+                final Permissions perm = new Permissions(MapUtility.asStringObjectMap(new Yaml().load(yml)));
 
                 Assertions.assertEquals(2, perm.getGroups().size());
                 Assertions.assertEquals(1, perm.getUsers().size());
@@ -251,7 +251,7 @@ public class PermissionsServiceTests {
                 .replace("$1", testValue)
                 .replace("$2", testValueInherit);
 
-                final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+                final Permissions perm = new Permissions(MapUtility.asStringObjectMap(new Yaml().load(yml)));
                 Assertions.assertEquals(2, perm.getGroups().size());
                 Assertions.assertEquals(1, perm.getUsers().size());
 
@@ -293,7 +293,7 @@ public class PermissionsServiceTests {
                 .replace("$1", testValue)
                 .replace("$2", testValueInherit);
 
-                final Permissions perm = new Permissions(Yaml.createYamlInput(yml).readYamlMapping());
+                final Permissions perm = new Permissions(MapUtility.asStringObjectMap(new Yaml().load(yml)));
                 Assertions.assertEquals(2, perm.getGroups().size());
                 Assertions.assertEquals(1, perm.getUsers().size());
 
@@ -319,7 +319,7 @@ public class PermissionsServiceTests {
 
         // test file exists and is valid
         Assertions.assertTrue(permissions.exists());
-        Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(permissions).readYamlMapping());
+        Assertions.assertDoesNotThrow(() -> MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissions))));
 
         Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
         Assertions.assertEquals(2, service.getPermissions().getGroups().size());
@@ -327,7 +327,7 @@ public class PermissionsServiceTests {
 
         // test OK
         service = new PermissionsService(permissions);
-        Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(permissions).readYamlMapping());
+        Assertions.assertDoesNotThrow(() -> MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissions))));
 
         Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
         Assertions.assertEquals(2, service.getPermissions().getGroups().size());
@@ -339,7 +339,7 @@ public class PermissionsServiceTests {
         Files.write(permissions.toPath(), "X: {".getBytes());
         service = new PermissionsService(permissions);
         Assertions.assertTrue(permissions.exists());
-        Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(permissions).readYamlMapping());
+        Assertions.assertDoesNotThrow(() -> MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissions))));
 
         Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
         // Assertions.assertEquals(2, service.getPermissions().getGroups().size());

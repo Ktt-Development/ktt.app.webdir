@@ -1,10 +1,10 @@
 package com.kttdevelopment.webdir.client.renderer;
 
-import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.client.LoggerService;
 import com.kttdevelopment.webdir.client.Main;
 import com.kttdevelopment.webdir.client.utility.*;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ public class DefaultFrontMatterLoader {
 
         for(final File file : Objects.requireNonNullElse(defaults.listFiles(File::isFile), new File[0])){
             try{
-                final Map<String,? super Object> map = YamlUtility.asMap(Yaml.createYamlInput(file).readYamlMapping());
+                final Map<String,? super Object> map = MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(file)));
                 final List<? super Object> scopes = new ArrayList<>();
                 if(map.containsKey(DEFAULT) && ((Map<?,?>) map.get(DEFAULT)).containsKey(SCOPE) && ((Map<?,?>) map.get(DEFAULT)).get(SCOPE) instanceof List){
                     final List<?> list = (List<?>) ((Map<?,?>) map.get(DEFAULT)).get(SCOPE);
@@ -54,7 +54,7 @@ public class DefaultFrontMatterLoader {
                     Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.scope", file.getPath()));
             }catch(final FileNotFoundException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.default.missing", file.getPath()) + LoggerService.getStackTraceAsString(e));
-            }catch(final IOException e){
+            }catch(final ClassCastException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.read", file.getPath()) + LoggerService.getStackTraceAsString(e));
             }
         }

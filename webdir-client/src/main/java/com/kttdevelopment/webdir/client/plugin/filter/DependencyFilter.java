@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
-import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.YamlUtility;
 
@@ -8,7 +7,7 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
+public final class DependencyFilter implements Filter<Map<File,Map<String,Object>>> {
 
 
     private final LocaleService locale;
@@ -21,7 +20,7 @@ public final class DependencyFilter implements Filter<Map<File,YamlMapping>> {
 
     @SuppressWarnings("SpellCheckingInspection")
     @Override
-    public final Map<File,YamlMapping> filter(final Map<File,YamlMapping> in){
+    public final Map<File,Map<String,Object>> filter(final Map<File,Map<String,Object>> in){
         final Map<File,YamlMapping> deps = new HashMap<>();
         // remove plugins with missing deps
         {

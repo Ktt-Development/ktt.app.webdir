@@ -1,11 +1,26 @@
 package com.kttdevelopment.webdir.client.utility;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.*;
 
 public class MapUtilityTests {
+
+    // todo
+    @Test @Disabled
+    public final void testStringList(){
+
+    }
+
+    @Test @Disabled
+    public final void testStringMap(){
+
+    }
+
+    @Test @Disabled
+    public final void testStringObjectMap(){
+
+    }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test

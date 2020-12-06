@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.simplehttpserver.SimpleHttpExchange;
 import com.kttdevelopment.simplehttpserver.SimpleHttpServer;
 import com.kttdevelopment.webdir.api.FileRender;
@@ -10,8 +9,7 @@ import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -27,7 +25,7 @@ public final class PageRenderingService {
     PageRenderingService(final File defaults, final File sources, final File output){
         locale = Main.getLocale();
         logger = Main.getLogger(locale.getString("page-renderer.name"));
-        final YamlMapping config    = Main.getConfig();
+        final Map<String,Object> config    = Main.getConfig();
 
         logger.info(locale.getString("page-renderer.constructor.start"));
 
@@ -37,7 +35,7 @@ public final class PageRenderingService {
 
         // clean if dir exists, is parent of project (safety check) and clean bool
         try{
-            if(Boolean.parseBoolean(config.string(ConfigService.CLEAN)) && output.exists() && output.getCanonicalPath().startsWith(new File(".").getAbsolutePath())){
+            if(Boolean.parseBoolean(config.get(ConfigService.CLEAN).toString()) && output.exists() && output.getCanonicalPath().startsWith(new File(".").getAbsolutePath())){
                 try(final Stream<Path> walk = Files.walk(output.toPath())){
                     walk.sorted(Comparator.reverseOrder()) // reverse because inner must be deleted first
                         .forEach(path -> {

@@ -1,13 +1,12 @@
 package com.kttdevelopment.webdir.client.renderer;
 
-import com.amihaiemil.eoyaml.Yaml;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.utility.*;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,13 +20,13 @@ public final class YamlFrontMatter {
      private final String content;
 
      public YamlFrontMatter(final String raw){
-          Map<String,? super Object> map = null;
+          Map<String,Object> map = null;
           final Matcher matcher = pattern.matcher(raw);
           if(matcher.find()){
                this.content = matcher.group(4);
                try{
-                    map = YamlUtility.asMap(Yaml.createYamlInput(matcher.group(2)).readYamlMapping());
-               }catch(final IOException ignored){} // malformed
+                    map = MapUtility.asStringObjectMap(new Yaml().load(matcher.group(2)));
+               }catch(final ClassCastException ignored){} // malformed
           }else
                this.content = raw;
           frontMatter = map;
@@ -53,9 +52,9 @@ public final class YamlFrontMatter {
 
      public static Map<String,? super Object> loadImports(final File source, final List<Path> checked){
           try{
-               final Map<String,? super Object> config = YamlUtility.asMap(Yaml.createYamlInput(source).readYamlMapping());
+               final Map<String,Object> config = MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(source)));
                return loadImports(source, config, checked);
-          }catch(final IOException e){
+          }catch(final ClassCastException | IOException e){
                Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.fail", source.getPath()) + LoggerService.getStackTraceAsString(e));
           }
           return new HashMap<>();

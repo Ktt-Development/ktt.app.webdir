@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
-import com.amihaiemil.eoyaml.*;
 import com.kttdevelopment.webdir.client.PluginLoader;
 import com.kttdevelopment.webdir.client.utility.*;
 

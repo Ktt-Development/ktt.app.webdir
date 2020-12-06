@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.client.permissions.Permissions;
 import com.kttdevelopment.webdir.client.utility.ExceptionUtility;
 import com.kttdevelopment.webdir.client.utility.FileUtility;
@@ -9,6 +8,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public abstract class Main {
@@ -25,9 +25,9 @@ public abstract class Main {
 
     static ConfigService config = null;
 
-        public static YamlMapping getConfig(){
-        return config.getConfiguration();
-    }
+        public static Map<String,Object> getConfig(){
+            return config.getConfiguration();
+        }
 
     static LocaleService locale = null;
 
@@ -65,17 +65,17 @@ public abstract class Main {
             config = new ConfigService(new File("config.yml"));
             locale = new LocaleService("lang/locale");
 
-            pluginLoader = new PluginLoader(new File(getConfig().string(ConfigService.PLUGINS)));
+            pluginLoader = new PluginLoader(new File(getConfig().get(ConfigService.PLUGINS).toString()));
             pageRenderingService = new PageRenderingService(
-                new File(getConfig().string(ConfigService.DEFAULT)),
-                new File(getConfig().string(ConfigService.SOURCES)),
-                new File(getConfig().string(ConfigService.OUTPUT))
+                new File(getConfig().get(ConfigService.DEFAULT).toString()),
+                new File(getConfig().get(ConfigService.SOURCES).toString()),
+                new File(getConfig().get(ConfigService.OUTPUT).toString())
             );
 
             // server only
-            if(Boolean.parseBoolean(getConfig().string(ConfigService.SERVER))){
+            if(Boolean.parseBoolean(getConfig().get(ConfigService.SERVER).toString())){
                 permissions = new PermissionsService(new File("permissions.yml"));
-                server = new FileServer(getConfig().string(ConfigService.PORT));
+                server = new FileServer(getConfig().get(ConfigService.PORT).toString());
 
             }
         }catch(final Throwable e){

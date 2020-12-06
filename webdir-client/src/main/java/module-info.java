@@ -6,7 +6,7 @@ module webdir.client {
     requires jdk.httpserver;
     requires java.net.http;
 
-    requires com.amihaiemil.eoyaml;
+    requires org.yaml.snakeyaml;
 
     requires java.logging;
     requires java.desktop;

@@ -1,8 +1,5 @@
 package com.kttdevelopment.webdir.client.permissions;
 
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlNode;
-import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.*;
 
@@ -19,7 +16,7 @@ public final class Permissions {
     private final Set<PermissionsGroup> groups = new HashSet<>();
     private final Set<PermissionsUser> users   = new HashSet<>();
 
-    public Permissions(final YamlMapping value){
+    public Permissions(final Map<String,Object> value){
         final LocaleService locale = Main.getLocale();
         final Logger logger = Main.getLogger(locale.getString("permissions.name"));
 
@@ -35,39 +32,25 @@ public final class Permissions {
 
         // groups
         {
-            final YamlMapping map = value.yamlMapping(PermissionsService.GROUPS);
-            if(map != null)
-                for(final YamlNode key : map.keys())
-                    groups.add(new PermissionsGroup(asString(key), map.yamlMapping(key)));
+            final Map<String,Object> map = MapUtility.asStringObjectMap((Map<?,?>) value.get(PermissionsService.GROUPS));
+            if(!map.isEmpty())
+                for(final Map.Entry<String,Object> entry : map.entrySet())
+                    groups.add(new PermissionsGroup(entry.getKey(), MapUtility.asStringObjectMap((Map<?,?>) entry.getValue())));
         }
 
         // users
         {
-            final YamlMapping map = value.yamlMapping(PermissionsService.USERS);
-            if(map != null)
-                for(final YamlNode key : map.keys()){
-                    final String k = asString(key);
+            final Map<String,Object> map = MapUtility.asStringObjectMap((Map<?,?>) value.get(PermissionsService.USERS));
+            if(!map.isEmpty())
+                for(final Map.Entry<String,Object> entry : map.entrySet())
                     try{
-                        users.add(new PermissionsUser(k, map.yamlMapping(key)));
+                        users.add(new PermissionsUser(entry.getKey(), MapUtility.asStringObjectMap((Map<?, ?>) entry.getValue())));
                     }catch(final UnknownHostException e){
-                        logger.severe(locale.getString("permissions.permissions.unknownUser", k) + LoggerService.getStackTraceAsString(e));
+                        logger.severe(locale.getString("permissions.permissions.unknownUser", entry.getKey()) + LoggerService.getStackTraceAsString(e));
                     }
-                }
         }
 
         logger.finer(locale.getString("permissions.permissions.finish"));
-    }
-
-    private String asString(final YamlNode e){
-        final LocaleService locale = Main.getLocale();
-        final Logger logger = Main.getLogger(locale.getString("permissions.name"));
-
-        try{
-            return e.asScalar().value();
-        }catch(final YamlReadingException | ClassCastException err){
-            logger.warning(locale.getString("permissions.permissions.string", e) + LoggerService.getStackTraceAsString(err));
-            return null;
-        }
     }
 
     public final List<PermissionsGroup> getGroups(){

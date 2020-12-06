@@ -47,8 +47,8 @@ public class ConfigServiceTests {
 
         Assertions.assertDoesNotThrow(() -> Yaml.createYamlInput(config).readYamlMapping());
 
-        Assertions.assertEquals("true", service.getConfiguration().string(ConfigService.SERVER));
-        Assertions.assertEquals("80", service.getConfiguration().string(ConfigService.PORT));
+        Assertions.assertEquals("true", service.getConfiguration().get(ConfigService.SERVER).toString());
+        Assertions.assertEquals("80", service.getConfiguration().get(ConfigService.PORT).toString());
 
         LoggerServiceTests.clearLogFiles();
     }

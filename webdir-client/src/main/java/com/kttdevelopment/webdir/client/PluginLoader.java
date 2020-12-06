@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.plugin.filter.*;
@@ -45,9 +44,9 @@ public final class PluginLoader {
     private final boolean safe;
 
     public PluginLoader(final File pluginsFolder){
-        final LocaleService locale = Main.getLocale();
-        final YamlMapping config   = Main.getConfig();
-        final Logger logger        = Main.getLogger(locale.getString("plugin-loader.name"));
+        final LocaleService locale      = Main.getLocale();
+        final Map<String,Object> config = Main.getConfig();
+        final Logger logger             = Main.getLogger(locale.getString("plugin-loader.name"));
 
         logger.info(locale.getString("plugin-loader.constructor.start"));
 
@@ -56,7 +55,7 @@ public final class PluginLoader {
         if(pluginsFolder.exists() && !pluginsFolder.isDirectory())
             logger.severe(locale.getString("plugin-loader.constructor.dir", pluginsFolder.getPath()));
 
-        if(safe = Boolean.parseBoolean(config.string(ConfigService.SAFE))){
+        if(safe = Boolean.parseBoolean(config.get(ConfigService.SAFE).toString())){
             logger.info(locale.getString("plugin-loader.constructor.safe"));
             return;
         }
@@ -68,11 +67,11 @@ public final class PluginLoader {
 
         // plugin.yml filter + validate
         logger.fine(locale.getString("plugin-loader.filter.yml.start"));
-        final Map<File,YamlMapping> ymls = new YmlFilter().filter(jars);
+        final Map<File,Map<String,Object>> ymls = new YmlFilter().filter(jars);
 
         // validate + sort dep
         logger.fine(locale.getString("plugin-loader.filter.dep.start"));
-        final Map<File,YamlMapping> deps = new DependencyFilter().filter(ymls);
+        final Map<File,Map<String,Object>> deps = new DependencyFilter().filter(ymls);
 
         // enable +verify dependents
         logger.fine(locale.getString("plugin-loader.filter.enable.start"));

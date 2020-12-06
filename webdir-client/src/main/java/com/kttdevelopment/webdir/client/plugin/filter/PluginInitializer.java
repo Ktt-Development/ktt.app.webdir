@@ -1,6 +1,5 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
-import com.amihaiemil.eoyaml.YamlMapping;
 import com.kttdevelopment.webdir.api.PluginService;
 import com.kttdevelopment.webdir.api.WebDirPlugin;
 import com.kttdevelopment.webdir.client.*;
@@ -14,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
-public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,List<WebDirPlugin>> {
+public final class PluginInitializer implements IOFilter<Map<File,Map<String,Object>>,List<WebDirPlugin>> {
 
     private final LocaleService locale;
     private final Logger logger;
@@ -27,7 +26,7 @@ public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,L
     }
 
     @Override
-    public final List<WebDirPlugin> filter(final Map<File,YamlMapping> in){
+    public final List<WebDirPlugin> filter(final Map<File,Map<String,Object>> in){
         final List<WebDirPlugin> loaded = new ArrayList<>();
         in.forEach((file, yml) -> {
             // check that all dependencies have been loaded
@@ -54,7 +53,7 @@ public final class PluginInitializer implements IOFilter<Map<File,YamlMapping>,L
                         WebDirPlugin plugin = null;
                         try{
                             plugin = (WebDirPlugin) loader
-                                .loadClass(yml.string(PluginLoader.MAIN))
+                                .loadClass(yml.get(PluginLoader.MAIN).toString())
                                 .getDeclaredConstructor(PluginService.class)
                                 .newInstance(new PluginServiceImpl(yml, pluginFolder));
                         }catch(final ClassCastException e){
