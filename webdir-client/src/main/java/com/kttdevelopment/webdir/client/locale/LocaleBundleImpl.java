@@ -4,6 +4,7 @@ import com.kttdevelopment.webdir.api.LocaleBundle;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.*;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.parser.ParserException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +61,7 @@ public final class LocaleBundleImpl implements LocaleBundle {
             try{
                 localized.putAll(flattenYaml(new Yaml().load(classLoader.getResourceAsStream(resource + ".yml"))));
             }catch(final NullPointerException ignored){ // ignore missing
-            }catch(final ClassCastException e){
+            }catch(final ClassCastException | ParserException e){
                 Main.getLogger().addQueuedLoggerMessage(
                     "locale.name", "locale.bundle.malformed",
                     "Locale Service", "Failed to parse locale file %s (malformed yaml). %s",

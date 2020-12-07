@@ -27,7 +27,7 @@ public final class YamlFrontMatter {
                this.content = matcher.group(4);
                try{
                     map = MapUtility.asStringObjectMap(new Yaml().load(matcher.group(2)));
-               }catch(final ClassCastException ignored){} // malformed
+               }catch(final ClassCastException | ParserException ignored){} // malformed
           }else
                this.content = raw;
           frontMatter = map;

@@ -61,7 +61,7 @@ public final class PermissionsService {
             logger.fine(locale.getString("permissions.constructor.default.start"));
             try{
                 defaultPermissions = MapUtility.asStringObjectMap(new Yaml().load(defaultYaml));
-            }catch(final ClassCastException e){
+            }catch(final ClassCastException | ParserException e){
                 logger.severe(locale.getString("permissions.constructor.default.fail") + LoggerService.getStackTraceAsString(e));
                 throw e;
             }

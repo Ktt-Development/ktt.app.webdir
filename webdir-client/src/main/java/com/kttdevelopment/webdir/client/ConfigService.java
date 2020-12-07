@@ -91,7 +91,7 @@ public final class ConfigService {
             defaultYaml = defaultYamlBuilder.toString();
             try{
                 defaultConfig = MapUtility.asStringObjectMap(new Yaml().load(defaultYaml));
-            }catch(final ClassCastException e){
+            }catch(final ClassCastException | ParserException e){
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.default.fail",
                     loggerName, "Failed to load default configuration.",

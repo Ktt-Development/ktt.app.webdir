@@ -1,7 +1,6 @@
 package com.kttdevelopment.webdir.client;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.util.Objects;
@@ -29,6 +28,7 @@ public class LoggerServiceTests {
         Assertions.assertEquals(3, service.getLogger("logger").getHandlers().length);
     }
 
+    @AfterAll
     public static void clearLogFiles(){
         for(final File file : Objects.requireNonNullElse(new File(".").listFiles((dir, name) -> name.endsWith(".log") || name.endsWith(".lck")), new File[0]))
             file.deleteOnExit();
