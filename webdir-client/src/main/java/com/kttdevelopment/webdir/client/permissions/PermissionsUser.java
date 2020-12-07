@@ -12,7 +12,7 @@ public final class PermissionsUser {
 
     private final InetAddress user;
     private final List<String> groups = new ArrayList<>(), permissions = new ArrayList<>();
-    private final Map<String,String> options = new HashMap<>();
+    private final Map<String,Object> options = new HashMap<>();
 
     public PermissionsUser(final String user, final Map<String,Object> value) throws UnknownHostException{
         this(InetAddress.getByName(user), value);
@@ -49,7 +49,9 @@ public final class PermissionsUser {
 
         // options
         {
-            options.putAll(MapUtility.asStringMap((Map<?,?>) value.getOrDefault(PermissionsService.OPTIONS, new HashMap<>())));
+            final Object obj = value.get(PermissionsService.OPTIONS);
+            if(obj instanceof Map<?,?> && !((Map<?, ?>) obj).isEmpty())
+                options.putAll(MapUtility.asStringObjectMap((Map<?,?>) obj));
         }
 
         // permissions
@@ -70,7 +72,7 @@ public final class PermissionsUser {
         return Collections.unmodifiableList(groups);
     }
 
-    public final Map<String,String> getOptions(){
+    public final Map<String,Object> getOptions(){
         return Collections.unmodifiableMap(options);
     }
 

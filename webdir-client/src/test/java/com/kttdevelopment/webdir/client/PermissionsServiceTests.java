@@ -70,7 +70,7 @@ public class PermissionsServiceTests {
         {
             final String testGroup = "testGroup";
             final String yml = (
-                "inheritance: %s" +
+                "inheritance: %s\n" +
                 "options: %s\n" +
                 "permissions: %s\n"
             ).replace("%s", testGroup);
@@ -280,7 +280,7 @@ public class PermissionsServiceTests {
                     "      default: true\n" +
                     "    permissions:\n" +
                     "      - $1\n" +
-                    "      - !$2\n" +
+                    "      - '!$2'\n" +
                     "  $2:\n" +
                     "    permissions:\n" +
                     "      - $1\n" +
@@ -288,7 +288,7 @@ public class PermissionsServiceTests {
                     "users:\n" +
                     "  255.255.255.255:\n" +
                     "    permissions:\n" +
-                    "      - !$1"
+                    "      - '!$1'"
                 )
                 .replace("$1", testValue)
                 .replace("$2", testValueInherit);

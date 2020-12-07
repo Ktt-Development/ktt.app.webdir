@@ -32,17 +32,17 @@ public final class Permissions {
 
         // groups
         {
-            final Map<String,Object> map = MapUtility.asStringObjectMap((Map<?,?>) value.get(PermissionsService.GROUPS));
-            if(!map.isEmpty())
-                for(final Map.Entry<String,Object> entry : map.entrySet())
+            final Object obj = value.get(PermissionsService.GROUPS);
+            if(obj instanceof Map<?,?> && !((Map<?, ?>) obj).isEmpty())
+                for(final Map.Entry<String,Object> entry : MapUtility.asStringObjectMap((Map<?,?>) obj).entrySet())
                     groups.add(new PermissionsGroup(entry.getKey(), MapUtility.asStringObjectMap((Map<?,?>) entry.getValue())));
         }
 
         // users
         {
-            final Map<String,Object> map = MapUtility.asStringObjectMap((Map<?,?>) value.get(PermissionsService.USERS));
-            if(!map.isEmpty())
-                for(final Map.Entry<String,Object> entry : map.entrySet())
+            final Object obj = value.get(PermissionsService.USERS);
+            if(obj instanceof Map<?,?> && !((Map<?, ?>) obj).isEmpty())
+                for(final Map.Entry<String,Object> entry : MapUtility.asStringObjectMap((Map<?,?>) value.get(PermissionsService.USERS)).entrySet())
                     try{
                         users.add(new PermissionsUser(entry.getKey(), MapUtility.asStringObjectMap((Map<?, ?>) entry.getValue())));
                     }catch(final UnknownHostException e){
@@ -80,14 +80,14 @@ public final class Permissions {
         String defaultValue = null;
         for(final PermissionsGroup group : getDefaultGroupsAndInherited())
             if(defaultValue == null && group.getOptions().get(option) != null)
-                defaultValue = group.getOptions().get(option);
+                defaultValue = group.getOptions().get(option).toString();
 
         if(user == null) return defaultValue;
 
         // user
         // user option is most specific one available
-        if(user.getOptions().containsKey(option))
-            return user.getOptions().get(option);
+        if(user.getOptions().containsKey(option) && user.getOptions().get(option) != null)
+            return user.getOptions().get(option).toString();
 
         // group
         // should not inherit option 'default' from groups, this value just tells permissions which ones are default groups.
@@ -95,7 +95,7 @@ public final class Permissions {
 
         for(final PermissionsGroup group : getGroupsAndInherited(user.getGroups()))
             if(group.getOptions().get(option) != null)
-                return group.getOptions().get(option);
+                return group.getOptions().get(option).toString();
         return defaultValue;
     }
 
@@ -161,7 +161,8 @@ public final class Permissions {
 
         for(final PermissionsGroup group : groups){
             // try catch not needed because invalid boolean resolves to false
-            if(group.getOptions().containsKey(PermissionsService.DEF) && Boolean.parseBoolean(group.getOptions().get(PermissionsService.DEF))){
+            Object def;
+            if(group.getOptions().containsKey(PermissionsService.DEF) && Boolean.parseBoolean((def = group.getOptions().get(PermissionsService.DEF)) == null ? null : def.toString())){
                 defaultGroups.add(group);
                 defaultGroups.addAll(getInheritedGroups(group));
                 // if default group inherits another group the default option doesn't matter, sub inheritance as well
