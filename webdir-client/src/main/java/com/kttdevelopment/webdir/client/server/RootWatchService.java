@@ -30,9 +30,12 @@ public final class RootWatchService {
         final FileSystemView fileSys = FileSystemView.getFileSystemView();
         final File[] allRoots = File.listRoots();
         final List<File> loadedDrives = new ArrayList<>();
+        final List<String> loadedDrivesAsStr = new ArrayList<>();
         for(final File root : allRoots)
-            if(fileSys.isDrive(root))
+            if(fileSys.isDrive(root)){
                 loadedDrives.add(root);
+                loadedDrivesAsStr.add(root.getAbsolutePath());
+            }
 
         for(final File drive : loadedDrives){
             if(!drives.contains(drive.getAbsolutePath())){
@@ -41,14 +44,9 @@ public final class RootWatchService {
             }
         }
 
-        for(final String drive : drives){
-            for(final File loadedDrive : loadedDrives){
-                if(loadedDrive.getAbsolutePath().equalsIgnoreCase(drive)){
-                    drives.remove(drive);
-                    onRemovedEvent(loadedDrive);
-                }
-            }
-        }
+        for(final String drive : drives)
+            if(!loadedDrivesAsStr.contains(drive))
+                onRemovedEvent(new File(drive));
     }
 
     public synchronized final void onAddedEvent(final File file){
