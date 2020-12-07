@@ -31,7 +31,7 @@ public final class LocaleService {
         locale = new LocaleBundleImpl(resource);
         addWatchedLocale(locale);
 
-        final Locale configLocale = new Locale(Main.getConfig().string(ConfigService.LANG));
+        final Locale configLocale = new Locale(Main.getConfig().get(ConfigService.LANG).toString());
         setLocale(configLocale);
 
         final Logger logger = Main.getLogger(getString("locale.name"));

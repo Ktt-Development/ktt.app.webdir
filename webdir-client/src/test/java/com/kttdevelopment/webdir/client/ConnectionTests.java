@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ConnectionTests {
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "RedundantSuppression"})
     private static String head, ignore, path;
 
     @BeforeAll

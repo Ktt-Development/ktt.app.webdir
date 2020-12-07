@@ -4,7 +4,6 @@ import com.kttdevelopment.webdir.client.logger.LoggerFormatter;
 import com.kttdevelopment.webdir.client.logger.QueuedLoggerMessage;
 import com.kttdevelopment.webdir.client.utility.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
@@ -13,6 +12,7 @@ public final class LoggerService {
 
     private final List<QueuedLoggerMessage> queuedMessages = new ArrayList<>();
 
+    @SuppressWarnings("SameParameterValue")
     private synchronized void addQueuedLoggerMessageSafe(final String localizedLoggerKey, final String localeKey, final String defaultLoggerName, final String defaultMessage, final Level level, final Object... args){
         queuedMessages.add(new QueuedLoggerMessage(localizedLoggerKey, localeKey, defaultLoggerName, defaultMessage, level, args));
         Logger.getLogger(defaultLoggerName).log(level, String.format(defaultMessage, args));

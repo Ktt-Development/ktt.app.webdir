@@ -8,11 +8,11 @@ import java.util.*;
 final class CircularDependencyChecker  {
 
     private final String pluginName;
-    private final YamlMapping plugin;
-    private final List<YamlMapping> plugins;
+    private final Map<String,Object> plugin;
+    private final List<Map<String,Object>> plugins;
 
-    public CircularDependencyChecker(final YamlMapping plugin, final List<YamlMapping> plugins){
-        this.pluginName = plugin.string(PluginLoader.NAME);
+    public CircularDependencyChecker(final Map<String,Object> plugin, final List<Map<String,Object>> plugins){
+        this.pluginName = plugin.get(PluginLoader.NAME).toString();
         this.plugin     = plugin;
         this.plugins    = Collections.unmodifiableList(plugins);
     }
@@ -20,16 +20,16 @@ final class CircularDependencyChecker  {
     // TRUE if has a circular dependency
     public final boolean test(){
         final List<String> parent = List.of(pluginName);
-        for(final YamlMapping dependency : DependencyFilter.getDependencies(plugin, plugins))
+        for(final Map<String,Object> dependency : DependencyFilter.getDependencies(plugin, plugins))
             if(test(dependency, new ArrayList<>(parent)))
                 return true;
         return false;
     }
 
-    private boolean test(final YamlMapping plugin, final List<String> checked){
-        checked.add(plugin.string(PluginLoader.NAME));
-        for(final YamlMapping dependency : DependencyFilter.getDependencies(plugin, plugins)){
-            final String dependencyName = dependency.string(PluginLoader.NAME);
+    private boolean test(final Map<String,Object> plugin, final List<String> checked){
+        checked.add(plugin.get(PluginLoader.NAME).toString());
+        for(final Map<String,Object> dependency : DependencyFilter.getDependencies(plugin, plugins)){
+            final String dependencyName = dependency.get(PluginLoader.NAME).toString();
             if(checked.contains(dependencyName)) // if dependency already requested
                 return true;
             else{

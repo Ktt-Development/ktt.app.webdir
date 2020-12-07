@@ -1,7 +1,7 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
 import com.kttdevelopment.webdir.client.*;
-import com.kttdevelopment.webdir.client.utility.YamlUtility;
+import com.kttdevelopment.webdir.client.utility.MapUtility;
 
 import java.io.File;
 import java.util.*;
@@ -21,12 +21,12 @@ public final class DependencyFilter implements Filter<Map<File,Map<String,Object
     @SuppressWarnings("SpellCheckingInspection")
     @Override
     public final Map<File,Map<String,Object>> filter(final Map<File,Map<String,Object>> in){
-        final Map<File,YamlMapping> deps = new HashMap<>();
+        final Map<File,Map<String,Object>> deps = new HashMap<>();
         // remove plugins with missing deps
         {
             final List<String> plugins = new ArrayList<>();
-            for(final YamlMapping value : in.values())
-                plugins.add(value.string(PluginLoader.NAME));
+            for(final Map<String,Object> value : in.values())
+                plugins.add(value.get(PluginLoader.NAME).toString());
 
             in.forEach((file, map) -> {
                 for(final String dependency : getDependencies(map))
@@ -36,10 +36,10 @@ public final class DependencyFilter implements Filter<Map<File,Map<String,Object
             });
         }
 
-        final Map<File,YamlMapping> safeDeps = new HashMap<>();
+        final Map<File,Map<String,Object>> safeDeps = new HashMap<>();
         // remove plugins with circular deps
         {
-            final List<YamlMapping> plugins = List.copyOf(deps.values());
+            final List<Map<String,Object>> plugins = List.copyOf(deps.values());
             deps.forEach((file, yml) -> {
                 if(new CircularDependencyChecker(yml, plugins).test()) // if has:
                     logger.severe(locale.getString("plugin-loader.filter.dep.circular", file.getName()));
@@ -48,22 +48,22 @@ public final class DependencyFilter implements Filter<Map<File,Map<String,Object
             });
         }
 
-        final Map<File,YamlMapping> sortDeps = new LinkedHashMap<>();
+        final Map<File,Map<String,Object>> sortDeps = new LinkedHashMap<>();
         // sort dependency loading order
         {
             final int total = safeDeps.size();
-            final List<Map.Entry<File,YamlMapping>> queue = new ArrayList<>(safeDeps.entrySet());
+            final List<Map.Entry<File,Map<String,Object>>> queue = new ArrayList<>(safeDeps.entrySet());
             int index = 0;
 
             // sort so dependencies load first, dependents last
             while(sortDeps.size() < total){
-                final Map.Entry<File,YamlMapping> iterator = queue.get(index);
-                final List<YamlMapping> unloadedDependencies = getDependencies(iterator.getValue(), new ArrayList<>(safeDeps.values()));
+                final Map.Entry<File,Map<String,Object>> iterator = queue.get(index);
+                final List<Map<String,Object>> unloadedDependencies = getDependencies(iterator.getValue(), new ArrayList<>(safeDeps.values()));
 
                 // remove dependency if it is already loaded
                 unloadedDependencies.removeIf(dependency -> {
-                    for(final YamlMapping dep : sortDeps.values())
-                        if(dep.string(PluginLoader.NAME).equals(dependency.string(PluginLoader.NAME)))
+                    for(final Map<String,Object> dep : sortDeps.values())
+                        if(dep.get(PluginLoader.NAME).toString().equals(dependency.get(PluginLoader.NAME).toString()))
                             return true;
                     return false;
                 });
@@ -79,33 +79,23 @@ public final class DependencyFilter implements Filter<Map<File,Map<String,Object
         return sortDeps;
     }
 
-    static List<String> getDependencies(final YamlMapping plugin){
-        if(YamlUtility.containsKey(PluginLoader.DEPENDENCIES, plugin)){
-            final Node type = plugin.value(PluginLoader.DEPENDENCIES).type();
-            if(type == Node.SCALAR)
-                return new ArrayList<>(List.of(plugin.string(PluginLoader.DEPENDENCIES)));
-            else if(type == Node.SEQUENCE){
-                final List<String> deps = new ArrayList<>();
-                for(final YamlNode node : plugin.yamlSequence(PluginLoader.DEPENDENCIES)){
-                    final String dep = YamlUtility.asString(node);
-                    if(dep != null)
-                        deps.add(dep);
-                }
-                return deps;
-            }
+    static List<String> getDependencies(final Map<String,Object> plugin){
+        if(plugin.containsKey(PluginLoader.DEPENDENCIES)){
+            final Object obj = plugin.get(PluginLoader.DEPENDENCIES);
+            return obj instanceof List<?> ? MapUtility.asStringList((List<?>) obj) : new ArrayList<>(List.of(obj.toString()));
         }
         return new ArrayList<>();
     }
 
-    static List<YamlMapping> getDependencies(final YamlMapping plugin, final List<YamlMapping> plugins){
-        final Map<String,YamlMapping> map = new HashMap<>();
-        for(final YamlMapping yml : plugins)
-            map.put(yml.string(PluginLoader.NAME), yml);
+    static List<Map<String,Object>> getDependencies(final Map<String,Object> plugin, final List<Map<String,Object>> plugins){
+        final Map<String,Map<String,Object>> map = new HashMap<>();
+        for(final Map<String,Object> yml : plugins)
+            map.put(yml.get(PluginLoader.NAME).toString(), yml);
         return getDependencies(plugin, map);
     }
 
-    static List<YamlMapping> getDependencies(final YamlMapping plugin, final Map<String,YamlMapping> plugins){
-        final List<YamlMapping> required = new ArrayList<>();
+    static List<Map<String,Object>> getDependencies(final Map<String,Object> plugin, final Map<String,Map<String,Object>> plugins){
+        final List<Map<String,Object>> required = new ArrayList<>();
         for(final String dependency : getDependencies(plugin))
             required.add(plugins.get(dependency));
         return required;

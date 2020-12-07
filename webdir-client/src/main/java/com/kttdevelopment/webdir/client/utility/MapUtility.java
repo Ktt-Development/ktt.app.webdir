@@ -15,17 +15,18 @@ public abstract class MapUtility {
     public static Map<String,String> asStringMap(final Map<?,?> map){
         if(map == null || map.isEmpty()) return new HashMap<>();
         final Map<String,String> OUT = new HashMap<>();
-        Object obj;
+        Object key, obj;
         for(final Map.Entry<?,?> entry : map.entrySet())
-            OUT.put(entry.getKey().toString(), (obj = entry.getValue()) == null ? null : obj.toString());
+            OUT.put((key = entry.getKey()) == null ? null : key.toString(), (obj = entry.getValue()) == null ? null : obj.toString());
         return OUT;
     }
 
     public static Map<String,Object> asStringObjectMap(final Map<?,?> map){
         if(map == null || map.isEmpty()) return new HashMap<>();
         final Map<String,Object> OUT = new HashMap<>();
+        Object key;
         for(final Map.Entry<?,?> entry : map.entrySet())
-            OUT.put(entry.getKey().toString(), entry.getValue());
+            OUT.put((key = entry.getKey()) == null ? null : key.toString(), entry.getValue());
         return OUT;
     }
 

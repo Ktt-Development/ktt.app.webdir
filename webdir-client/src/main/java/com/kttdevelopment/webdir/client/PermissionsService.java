@@ -46,7 +46,7 @@ public final class PermissionsService {
     private final Permissions permissionsSchema;
     private final File permissionsFile;
 
-    PermissionsService(final File permissionsFile) throws IOException{
+    PermissionsService(final File permissionsFile){
         final LocaleService locale = Main.getLocale();
         final Logger logger = Main.getLogger(locale.getString("permissions.name"));
 

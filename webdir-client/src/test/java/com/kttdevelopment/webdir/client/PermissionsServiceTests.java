@@ -27,7 +27,7 @@ public class PermissionsServiceTests {
     }
 
     @Test
-    public void testGroup() throws IOException{
+    public void testGroup(){
         // test null
         Assertions.assertDoesNotThrow(() -> new PermissionsGroup("", null));
 

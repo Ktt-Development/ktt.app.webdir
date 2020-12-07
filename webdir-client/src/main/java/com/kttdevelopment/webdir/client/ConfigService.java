@@ -53,7 +53,7 @@ public final class ConfigService {
         return configuration;
     }
 
-    ConfigService(final File configFile) throws IOException{
+    ConfigService(final File configFile){
         final LoggerService loggerService = Main.getLogger();
         final String loggerName = "Configuration Service";
         final String fileName = configFile.getPath();
