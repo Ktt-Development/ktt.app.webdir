@@ -26,25 +26,20 @@ public class ConfigServiceTests {
 
         // test file exists and is valid
         Assertions.assertTrue(config.exists());
-        Assertions.assertDoesNotThrow(() -> new Yaml().load(new FileInputStream(config)));
 
         // test OK
         service = new ConfigService(config);
-        Assertions.assertDoesNotThrow(() -> new Yaml().load(new FileInputStream(config)));
 
         // test malformed
         Files.delete(config.toPath());
         Files.write(config.toPath(),"X: {".getBytes());
         service = new ConfigService(config);
         Assertions.assertTrue(config.exists());
-        Assertions.assertDoesNotThrow(() -> new Yaml().load(new FileInputStream(config)));
 
         // test missing keys & config override default
         Files.write(config.toPath(),"server: true".getBytes());
         service = new ConfigService(config);
         Assertions.assertTrue(config.exists());
-
-        Assertions.assertDoesNotThrow(() -> new Yaml().load(new FileInputStream(config)));
 
         Assertions.assertEquals("true", service.getConfiguration().get(ConfigService.SERVER).toString());
         Assertions.assertEquals("80", service.getConfiguration().get(ConfigService.PORT).toString());

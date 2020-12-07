@@ -319,7 +319,6 @@ public class PermissionsServiceTests {
 
         // test file exists and is valid
         Assertions.assertTrue(permissions.exists());
-        Assertions.assertDoesNotThrow(() -> MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissions))));
 
         Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
         Assertions.assertEquals(2, service.getPermissions().getGroups().size());
@@ -327,7 +326,6 @@ public class PermissionsServiceTests {
 
         // test OK
         service = new PermissionsService(permissions);
-        Assertions.assertDoesNotThrow(() -> MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissions))));
 
         Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
         Assertions.assertEquals(2, service.getPermissions().getGroups().size());
@@ -339,7 +337,6 @@ public class PermissionsServiceTests {
         Files.write(permissions.toPath(), "X: {".getBytes());
         service = new PermissionsService(permissions);
         Assertions.assertTrue(permissions.exists());
-        Assertions.assertDoesNotThrow(() -> MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(permissions))));
 
         Assertions.assertTrue(Files.isSameFile(permissions.toPath(), service.getPermissionsFile().toPath()));
         // Assertions.assertEquals(2, service.getPermissions().getGroups().size());

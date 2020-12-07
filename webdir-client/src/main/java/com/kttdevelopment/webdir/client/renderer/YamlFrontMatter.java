@@ -5,6 +5,7 @@ import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.utility.*;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.parser.ParserException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -51,10 +52,10 @@ public final class YamlFrontMatter {
      //
 
      public static Map<String,? super Object> loadImports(final File source, final List<Path> checked){
-          try{
-               final Map<String,Object> config = MapUtility.asStringObjectMap(new Yaml().load(new FileInputStream(source)));
+          try(final FileInputStream IN = new FileInputStream(source)){
+               final Map<String,Object> config = MapUtility.asStringObjectMap(new Yaml().load(IN));
                return loadImports(source, config, checked);
-          }catch(final ClassCastException | IOException e){
+          }catch(final ClassCastException | ParserException | IOException e){
                Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.fail", source.getPath()) + LoggerService.getStackTraceAsString(e));
           }
           return new HashMap<>();
