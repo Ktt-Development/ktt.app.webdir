@@ -75,7 +75,7 @@ public final class YamlFrontMatter {
                final Object obj = config.get(PageRenderer.IMPORT);
                if(obj instanceof List)
                     ExceptionUtility.runIgnoreException(() -> imports.addAll(((List<String>) obj)));
-               else if(obj != null)
+               else if(obj != null && !(obj instanceof Map))
                     imports.add(obj.toString());
                Collections.reverse(imports);
           }
@@ -85,7 +85,7 @@ public final class YamlFrontMatter {
                final Object obj = config.get(PageRenderer.IMPORT_RELATIVE);
                if(obj instanceof List)
                     ExceptionUtility.runIgnoreException(() -> relativeImports.addAll(((List<String>) obj)));
-               else if(obj != null)
+               else if(obj != null && !(obj instanceof Map))
                     relativeImports.add(obj.toString());
                Collections.reverse(relativeImports);
           }
@@ -137,7 +137,7 @@ public final class YamlFrontMatter {
                     }catch(final NullPointerException e){
                          Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.missing") + LoggerService.getStackTraceAsString(e));
                     }
-               }else if(obj != null){
+               }else if(obj != null && !(obj instanceof List)){
                     renderer = new PluginRendererEntry(null, obj.toString(), null);
                }
 

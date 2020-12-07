@@ -43,7 +43,7 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,Map<Stri
                             return;
                         }else if(map.containsKey(PluginLoader.DEPENDENCIES)){
                             final Object obj =  map.get(PluginLoader.DEPENDENCIES);
-                            if(!(obj instanceof String) && !(obj instanceof List<?>)){
+                            if(obj instanceof Map<?,?>){
                                 logger.severe(locale.getString("plugin-loader.filter.yml.dep", file.getName()));
                                 return;
                             }

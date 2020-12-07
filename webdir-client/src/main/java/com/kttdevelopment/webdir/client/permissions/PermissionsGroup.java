@@ -33,7 +33,7 @@ public final class PermissionsGroup {
             final Object obj = value.get(PermissionsService.INHERITANCE);
             if(obj instanceof List<?>)
                 inheritance.addAll(MapUtility.asStringList((List<?>) obj));
-            else if(obj != null)
+            else if(obj != null && !(obj instanceof Map<?,?>))
                 inheritance.add(obj.toString());
         }
 

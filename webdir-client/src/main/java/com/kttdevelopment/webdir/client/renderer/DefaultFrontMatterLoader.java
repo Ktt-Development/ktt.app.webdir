@@ -90,7 +90,7 @@ public class DefaultFrontMatterLoader {
         defaultConfigurations.forEach((scopes, config) -> {
             boolean canUse = false;
             for(final Object scope : scopes)
-                if(scope instanceof String)
+                if(scope instanceof String) // constructor asserts its either a String or boolean
                     switch(SymbolicStringMatcher.matches((String) scope, path)){
                         case MATCH:
                             canUse = true;
