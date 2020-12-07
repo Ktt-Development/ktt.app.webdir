@@ -192,7 +192,7 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
 
             // permissions dependencies
-            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - !perm2\n    options:\n      connection-limit: -1".getBytes());
+            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - '!perm2'\n    options:\n      connection-limit: -1".getBytes());
         }
 
         Main.main(null);
