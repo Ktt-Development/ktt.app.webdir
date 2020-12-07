@@ -75,8 +75,8 @@ public final class YamlFrontMatter {
                final Object obj = config.get(PageRenderer.IMPORT);
                if(obj instanceof List)
                     ExceptionUtility.runIgnoreException(() -> imports.addAll(((List<String>) obj)));
-               else if(obj instanceof String)
-                    imports.add((String) obj);
+               else if(obj != null)
+                    imports.add(obj.toString());
                Collections.reverse(imports);
           }
 
@@ -85,8 +85,8 @@ public final class YamlFrontMatter {
                final Object obj = config.get(PageRenderer.IMPORT_RELATIVE);
                if(obj instanceof List)
                     ExceptionUtility.runIgnoreException(() -> relativeImports.addAll(((List<String>) obj)));
-               else if(obj instanceof String)
-                    relativeImports.add((String) obj);
+               else if(obj != null)
+                    relativeImports.add(obj.toString());
                Collections.reverse(relativeImports);
           }
 
