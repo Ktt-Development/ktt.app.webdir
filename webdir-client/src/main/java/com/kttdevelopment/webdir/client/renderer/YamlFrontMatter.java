@@ -126,9 +126,7 @@ public final class YamlFrontMatter {
 
           for(final Object obj : renderers){
                PluginRendererEntry renderer = null;
-               if(obj instanceof String)
-                    renderer = new PluginRendererEntry(null, obj.toString(), null);
-               else if(obj instanceof Map){
+               if(obj instanceof Map){
                     final Map<?,?> map = (Map<?,?>) obj;
                     try{
                          renderer = new PluginRendererEntry(
@@ -139,6 +137,8 @@ public final class YamlFrontMatter {
                     }catch(final NullPointerException e){
                          Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.missing") + LoggerService.getStackTraceAsString(e));
                     }
+               }else if(obj != null){
+                    renderer = new PluginRendererEntry(null, obj.toString(), null);
                }
 
                if(renderer == null) continue;

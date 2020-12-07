@@ -34,12 +34,12 @@ public final class RootWatchService {
         for(final File root : allRoots)
             if(fileSys.isDrive(root)){
                 loadedDrives.add(root);
-                loadedDrivesAsStr.add(root.getAbsolutePath());
+                loadedDrivesAsStr.add(root.getPath());
             }
 
         for(final File drive : loadedDrives){
-            if(!drives.contains(drive.getAbsolutePath())){
-                drives.add(drive.getAbsolutePath());
+            if(!drives.contains(drive.getPath())){
+                drives.add(drive.getPath());
                 onAddedEvent(drive);
             }
         }
