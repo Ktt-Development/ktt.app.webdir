@@ -4,12 +4,11 @@ import com.kttdevelopment.webdir.client.config.Setting;
 import com.kttdevelopment.webdir.client.utility.MapUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.ParseException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -91,7 +90,7 @@ public final class ConfigService {
             defaultYaml = defaultYamlBuilder.toString();
             try{
                 defaultConfig = MapUtility.asStringObjectMap(new Yaml().load(defaultYaml));
-            }catch(final ClassCastException | ParserException e){
+            }catch(final ClassCastException | YAMLException e){
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.default.fail",
                     loggerName, "Failed to load default configuration.",
@@ -118,7 +117,7 @@ public final class ConfigService {
             Map<String,Object> yaml = null;
             try(final FileInputStream IN = new FileInputStream(configFile)){
                 yaml = new Yaml().load(IN);
-            }catch(final ClassCastException | ParserException | IOException e){
+            }catch(final ClassCastException | YAMLException | IOException e){
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.config." + (e instanceof FileNotFoundException ? "missing" : "malformed"),
                     loggerName, e instanceof FileNotFoundException ? "Failed to load configuration from file %s (file not found). Using default configuration. %s" : "Failed to load configuration from file %s (malformed yaml). Using default configuration. %s",

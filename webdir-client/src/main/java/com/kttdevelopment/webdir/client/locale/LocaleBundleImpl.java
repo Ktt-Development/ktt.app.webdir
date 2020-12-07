@@ -4,8 +4,10 @@ import com.kttdevelopment.webdir.api.LocaleBundle;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.*;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.error.YAMLException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -58,10 +60,10 @@ public final class LocaleBundleImpl implements LocaleBundle {
 
 
         for(final String resource : resources){
-            try{
-                localized.putAll(flattenYaml(new Yaml().load(classLoader.getResourceAsStream(resource + ".yml"))));
+            try(final InputStream IN = classLoader.getResourceAsStream(resource + ".yml")){
+                localized.putAll(flattenYaml(new Yaml().load(IN)));
             }catch(final NullPointerException ignored){ // ignore missing
-            }catch(final ClassCastException | ParserException e){
+            }catch(final ClassCastException | IOException | YAMLException e){
                 Main.getLogger().addQueuedLoggerMessage(
                     "locale.name", "locale.bundle.malformed",
                     "Locale Service", "Failed to parse locale file %s (malformed yaml). %s",
@@ -98,7 +100,7 @@ public final class LocaleBundleImpl implements LocaleBundle {
             if(value instanceof Map<?,?>) // if map then flatten
                 OUT.putAll(flattenYaml(MapUtility.asStringObjectMap((Map<?,?>) value), next));
             else if(value != null) // if key then add to map
-                OUT.put(key, value.toString());
+                OUT.put(next, value.toString());
         }
 
         return OUT;

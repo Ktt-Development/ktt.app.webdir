@@ -3,7 +3,7 @@ package com.kttdevelopment.webdir.client.plugin.filter;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.MapUtility;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.net.URL;
@@ -50,7 +50,7 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,Map<Stri
                         }
 
                         ymls.put(file, map);
-                    }catch(final ClassCastException | ParserException e){
+                    }catch(final ClassCastException | YAMLException e){
                         logger.severe(locale.getString("plugin-loader.filter.yml.yml", file.getName()) + LoggerService.getStackTraceAsString(e));
                     }
                 }catch(final IOException e){

@@ -3,7 +3,6 @@ package com.kttdevelopment.webdir.client;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.nio.file.Files;

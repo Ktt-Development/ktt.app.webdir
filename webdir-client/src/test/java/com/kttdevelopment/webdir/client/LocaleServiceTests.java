@@ -24,7 +24,7 @@ public class LocaleServiceTests {
     }
 
     @Test
-    public void testLocale() throws IOException{
+    public void testLocale(){
         new File("config.yml").deleteOnExit();
         Main.logger = new LoggerService();
         Main.config = new ConfigService(new File("config.yml"));

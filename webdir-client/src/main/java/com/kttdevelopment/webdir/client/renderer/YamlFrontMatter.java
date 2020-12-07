@@ -5,7 +5,7 @@ import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.utility.*;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -27,7 +27,7 @@ public final class YamlFrontMatter {
                this.content = matcher.group(4);
                try{
                     map = MapUtility.asStringObjectMap(new Yaml().load(matcher.group(2)));
-               }catch(final ClassCastException | ParserException ignored){} // malformed
+               }catch(final ClassCastException | YAMLException ignored){} // malformed
           }else
                this.content = raw;
           frontMatter = map;
@@ -55,7 +55,7 @@ public final class YamlFrontMatter {
           try(final FileInputStream IN = new FileInputStream(source)){
                final Map<String,Object> config = MapUtility.asStringObjectMap(new Yaml().load(IN));
                return loadImports(source, config, checked);
-          }catch(final ClassCastException | ParserException | IOException e){
+          }catch(final ClassCastException | YAMLException | IOException e){
                Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.fail", source.getPath()) + LoggerService.getStackTraceAsString(e));
           }
           return new HashMap<>();

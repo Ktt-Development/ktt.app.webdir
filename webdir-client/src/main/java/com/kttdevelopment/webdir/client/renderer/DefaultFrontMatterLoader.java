@@ -5,7 +5,7 @@ import com.kttdevelopment.webdir.client.LoggerService;
 import com.kttdevelopment.webdir.client.Main;
 import com.kttdevelopment.webdir.client.utility.*;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -55,7 +55,7 @@ public class DefaultFrontMatterLoader {
                     Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.scope", file.getPath()));
             }catch(final FileNotFoundException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.default.missing", file.getPath()) + LoggerService.getStackTraceAsString(e));
-            }catch(final ClassCastException | ParserException | IOException e){
+            }catch(final ClassCastException | YAMLException | IOException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.read", file.getPath()) + LoggerService.getStackTraceAsString(e));
             }
         }

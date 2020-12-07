@@ -4,7 +4,7 @@ import com.kttdevelopment.webdir.client.permissions.Permissions;
 import com.kttdevelopment.webdir.client.utility.MapUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +61,7 @@ public final class PermissionsService {
             logger.fine(locale.getString("permissions.constructor.default.start"));
             try{
                 defaultPermissions = MapUtility.asStringObjectMap(new Yaml().load(defaultYaml));
-            }catch(final ClassCastException | ParserException e){
+            }catch(final ClassCastException | YAMLException e){
                 logger.severe(locale.getString("permissions.constructor.default.fail") + LoggerService.getStackTraceAsString(e));
                 throw e;
             }
@@ -76,7 +76,7 @@ public final class PermissionsService {
             Map<String,Object> yaml = null;
             try(final FileInputStream IN = new FileInputStream(permissionsFile)){
                 yaml = MapUtility.asStringObjectMap(new Yaml().load(IN));
-            }catch(final ClassCastException | ParserException | IOException e){
+            }catch(final ClassCastException | YAMLException | IOException e){
                 logger.warning(locale.getString("permissions.constructor.permissions." + (e instanceof FileNotFoundException ? "missing" : "malformed"), fileName) + LoggerService.getStackTraceAsString(e));
 
                 if(!permissionsFile.exists())
