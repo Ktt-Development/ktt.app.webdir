@@ -78,8 +78,8 @@ public class PluginLoaderAndRenderTests {
             writeInput("render", "---\nrenderers:\n  - 1\nexchange_renderers:\n  - 2\n---");
             writeInput("v1"    , "---\nrenderers:\n  - plugin: ValidPlugin\n    renderer: 1\n---");
             writeInput("v2"    , "---\nrenderers:\n  - plugin: ValidDependent\n    renderer: 1\n---");
-            writeInput("ro3"   , "---\nrenderers:\n  - 2\n  -3\n---");
-            writeInput("ro2"   , "---\nrenderers:\n  - 3\n  -2\n---");
+            writeInput("ro3"   , "---\nrenderers:\n  - 2\n  - 3\n---");
+            writeInput("ro2"   , "---\nrenderers:\n  - 3\n  - 2\n---");
             writeInput("cp"    , "---\nrenderers:\n  - 3\n  - copy\n---");
             writeInput("ex"    , "---\nrenderers:\n  - ex\n---");
             writeInput("to"    , "---\nrenderers:\n  - times\n---");
@@ -151,15 +151,13 @@ public class PluginLoaderAndRenderTests {
                 new File(_defaults, "tf.yml"),
                 "default:\n" +
                 "  scope:\n" +
-                "    -\n" +
-                "      file: true\n" +
+                "    - file: true\n" +
                 "    - 'tf.html'\n" +
                 "renderers: 2",
                 new File(_defaults, "ff.yml"),
                 "default:\n" +
                 "  scope:\n" +
-                "    -\n" +
-                "      file: false\n" +
+                "    - file: false\n" +
                 "    - 'ff.html'\n" +
                 "renderers: 2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));

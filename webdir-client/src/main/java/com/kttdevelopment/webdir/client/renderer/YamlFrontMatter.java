@@ -144,12 +144,9 @@ public final class YamlFrontMatter {
                if(renderer == null) continue;
 
                for(final PluginRendererEntry entry : installed){
-                    if(
-                         (renderer.getPluginName() == null &&
-                         renderer.getRendererName().equals(entry.getRendererName())) ||
-                         (renderer.getPluginName() != null &&
-                         renderer.getPluginName().equals(entry.getPluginName()) &&
-                         renderer.getRendererName().equals(entry.getRendererName()))
+                    if( // add if renderer name matches AND plugin name only if plugin name is provided
+                       renderer.getRendererName().equals(entry.getRendererName()) &&
+                       (renderer.getPluginName() == null || renderer.getPluginName().equals(entry.getPluginName()))
                     ){
                          out.add(entry);
                          break;
