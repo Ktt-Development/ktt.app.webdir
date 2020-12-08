@@ -26,7 +26,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <output>../modules</output>
     </properties>
 
     <build>
@@ -43,10 +42,9 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                     <archive>
+                    <archive>
                         <manifest>
                             <mainClass>com.kttdevelopment.webdir.client.Main</mainClass>
                         </manifest>
@@ -54,23 +52,18 @@
                             <Built-By>Ktt Development</Built-By>
                         </manifestEntries>
                     </archive>
-                    <outputDirectory>${output}</outputDirectory>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory>../package</outputDirectory>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${output}</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
