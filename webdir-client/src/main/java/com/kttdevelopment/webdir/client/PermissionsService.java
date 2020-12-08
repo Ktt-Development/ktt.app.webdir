@@ -1,10 +1,10 @@
 package com.kttdevelopment.webdir.client;
 
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.client.permissions.Permissions;
 import com.kttdevelopment.webdir.client.utility.MapUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -47,7 +47,7 @@ public final class PermissionsService {
     private final Permissions permissionsSchema;
     private final File permissionsFile;
 
-    PermissionsService(final File permissionsFile){
+    PermissionsService(final File permissionsFile) throws YamlException{
         final LocaleService locale = Main.getLocale();
         final Logger logger = Main.getLogger(locale.getString("permissions.name"));
 
@@ -60,8 +60,8 @@ public final class PermissionsService {
         {
             logger.fine(locale.getString("permissions.constructor.default.start"));
             try{
-                defaultPermissions = MapUtility.asStringObjectMap(new Yaml().load(defaultYaml));
-            }catch(final ClassCastException | YAMLException e){
+                defaultPermissions = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(defaultYaml).read());
+            }catch(final ClassCastException | YamlException e){
                 logger.severe(locale.getString("permissions.constructor.default.fail") + LoggerService.getStackTraceAsString(e));
                 throw e;
             }
@@ -74,9 +74,9 @@ public final class PermissionsService {
             logger.info(locale.getString("permissions.constructor.permissions.start", fileName));
 
             Map<String,Object> yaml = null;
-            try(final FileInputStream IN = new FileInputStream(permissionsFile)){
-                yaml = MapUtility.asStringObjectMap(new Yaml().load(IN));
-            }catch(final ClassCastException | YAMLException | IOException e){
+            try(final FileReader IN = new FileReader(permissionsFile)){
+                yaml = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(IN).read());
+            }catch(final ClassCastException | IOException e){
                 logger.warning(locale.getString("permissions.constructor.permissions." + (e instanceof FileNotFoundException ? "missing" : "malformed"), fileName) + LoggerService.getStackTraceAsString(e));
 
                 if(!permissionsFile.exists())

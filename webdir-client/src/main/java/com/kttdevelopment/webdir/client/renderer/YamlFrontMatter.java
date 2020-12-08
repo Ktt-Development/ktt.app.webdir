@@ -1,11 +1,11 @@
 package com.kttdevelopment.webdir.client.renderer;
 
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.utility.*;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -26,8 +26,8 @@ public final class YamlFrontMatter {
           if(matcher.find()){
                this.content = matcher.group(4);
                try{
-                    map = MapUtility.asStringObjectMap(new Yaml().load(matcher.group(2)));
-               }catch(final ClassCastException | YAMLException ignored){} // malformed
+                    map = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(matcher.group(2)).read());
+               }catch(final ClassCastException | YamlException ignored){} // malformed
           }else
                this.content = raw;
           frontMatter = map;
@@ -52,10 +52,10 @@ public final class YamlFrontMatter {
      //
 
      public static Map<String,? super Object> loadImports(final File source, final List<Path> checked){
-          try(final FileInputStream IN = new FileInputStream(source)){
-               final Map<String,Object> config = MapUtility.asStringObjectMap(new Yaml().load(IN));
+          try(final FileReader IN = new FileReader(source)){
+               final Map<String,Object> config = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(IN).read());
                return loadImports(source, config, checked);
-          }catch(final ClassCastException | YAMLException | IOException e){
+          }catch(final ClassCastException | IOException e){
                Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.fail", source.getPath()) + LoggerService.getStackTraceAsString(e));
           }
           return new HashMap<>();

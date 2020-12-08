@@ -1,9 +1,9 @@
 package com.kttdevelopment.webdir.client.plugin.filter;
 
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.MapUtility;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.net.URL;
@@ -30,9 +30,9 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,Map<Stri
             try(final URLClassLoader loader = new URLClassLoader(new URL[]{url})){
                 final URL uyml = Objects.requireNonNull(loader.findResource("plugin.yml"));
                 // transform into yaml
-                try(final InputStream stream = uyml.openStream()){
+                try(final InputStreamReader IN = new InputStreamReader(uyml.openStream())){
                     try{
-                        final Map<String,Object> map = MapUtility.asStringObjectMap( new Yaml().load(stream));
+                        final Map<String,Object> map = MapUtility.asStringObjectMap( (Map<?,?>) new YamlReader(IN).read());
 
                         // validate
                         if(!map.containsKey(PluginLoader.MAIN)){
@@ -50,7 +50,7 @@ public final class YmlFilter implements IOFilter<Map<File,URL>,Map<File,Map<Stri
                         }
 
                         ymls.put(file, map);
-                    }catch(final ClassCastException | YAMLException e){
+                    }catch(final ClassCastException | YamlException e){
                         logger.severe(locale.getString("plugin-loader.filter.yml.yml", file.getName()) + LoggerService.getStackTraceAsString(e));
                     }
                 }catch(final IOException e){
