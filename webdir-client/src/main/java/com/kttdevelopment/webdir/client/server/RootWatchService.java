@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public final class RootWatchService {
 
-    private final List<File> drives = Collections.synchronizedList(new ArrayList<>());
+    private final List<String> drives = Collections.synchronizedList(new ArrayList<>());
     private final FileHandler handler;
 
     private final LocaleService locale;
@@ -30,23 +30,23 @@ public final class RootWatchService {
         final FileSystemView fileSys = FileSystemView.getFileSystemView();
         final File[] allRoots = File.listRoots();
         final List<File> loadedDrives = new ArrayList<>();
+        final List<String> loadedDrivesAsStr = new ArrayList<>();
         for(final File root : allRoots)
-            if(fileSys.isDrive(root))
+            if(fileSys.isDrive(root)){
                 loadedDrives.add(root);
+                loadedDrivesAsStr.add(root.getPath());
+            }
 
         for(final File drive : loadedDrives){
-            if(!drives.contains(drive)){
-                drives.add(drive);
+            if(!drives.contains(drive.getPath())){
+                drives.add(drive.getPath());
                 onAddedEvent(drive);
             }
         }
 
-        for(final File drive : drives){
-            if(!loadedDrives.contains(drive)){
-                drives.remove(drive);
-                onRemovedEvent(drive);
-            }
-        }
+        for(final String drive : drives)
+            if(!loadedDrivesAsStr.contains(drive))
+                onRemovedEvent(new File(drive));
     }
 
     public synchronized final void onAddedEvent(final File file){

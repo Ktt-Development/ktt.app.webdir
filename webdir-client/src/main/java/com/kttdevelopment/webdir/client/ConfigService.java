@@ -1,14 +1,15 @@
 package com.kttdevelopment.webdir.client;
 
-import com.amihaiemil.eoyaml.*;
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.client.config.Setting;
+import com.kttdevelopment.webdir.client.utility.MapUtility;
 import com.kttdevelopment.webdir.client.utility.ToStringBuilder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 public final class ConfigService {
@@ -47,13 +48,13 @@ public final class ConfigService {
     //
 
     private final File configFile;
-    private final YamlMapping configuration;
+    private final Map<String,Object> configuration;
 
-    public final YamlMapping getConfiguration(){
+    public final Map<String,Object> getConfiguration(){
         return configuration;
     }
 
-    ConfigService(final File configFile) throws IOException{
+    ConfigService(final File configFile) throws YamlException{
         final LoggerService loggerService = Main.getLogger();
         final String loggerName = "Configuration Service";
         final String fileName = configFile.getPath();
@@ -67,7 +68,7 @@ public final class ConfigService {
         this.configFile = Objects.requireNonNull(configFile);
 
         // load default configuration
-        final YamlMapping defaultConfig;
+        final Map<String,Object> defaultConfig;
         final String defaultYaml;
         {
             loggerService.addQueuedLoggerMessage(
@@ -88,8 +89,8 @@ public final class ConfigService {
 
             defaultYaml = defaultYamlBuilder.toString();
             try{
-                defaultConfig = Yaml.createYamlInput(defaultYaml).readYamlMapping();
-            }catch(final IOException e){
+                defaultConfig = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(defaultYaml).read());
+            }catch(final ClassCastException | YamlException e){
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.default.fail",
                     loggerName, "Failed to load default configuration.",
@@ -113,10 +114,10 @@ public final class ConfigService {
                 Level.INFO, fileName
             );
 
-            YamlMapping yaml = null;
-            try{
-                yaml = Yaml.createYamlInput(configFile).readYamlMapping();
-            }catch(final IOException e){
+            Map<String,Object> yaml = null;
+            try(final FileReader IN = new FileReader(configFile)){
+                yaml = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(IN).read());
+            }catch(final ClassCastException | IOException e){
                 loggerService.addQueuedLoggerMessage(
                     "config.name", "config.constructor.config." + (e instanceof FileNotFoundException ? "missing" : "malformed"),
                     loggerName, e instanceof FileNotFoundException ? "Failed to load configuration from file %s (file not found). Using default configuration. %s" : "Failed to load configuration from file %s (malformed yaml). Using default configuration. %s",
@@ -144,12 +145,12 @@ public final class ConfigService {
             if(yaml == null)
                 configuration = defaultConfig;
             else{
-                YamlMappingBuilder map = Yaml.createYamlMappingBuilder();
+                Map<String,Object> map = new HashMap<>();
                 for(final Setting setting : settings){
                     final String key = setting.getKey();
-                    map = map.add(key, Objects.requireNonNullElse(yaml.string(key), defaultConfig.string(key)));
+                    map.put(key, yaml.getOrDefault(key, defaultConfig.get(key)).toString());
                 }
-                configuration = map.build();
+                configuration = map;
             }
 
             loggerService.addQueuedLoggerMessage(

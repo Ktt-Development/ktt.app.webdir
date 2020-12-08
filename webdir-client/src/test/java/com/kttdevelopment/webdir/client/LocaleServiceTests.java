@@ -1,5 +1,6 @@
 package com.kttdevelopment.webdir.client;
 
+import com.esotericsoftware.yamlbeans.YamlException;
 import com.kttdevelopment.webdir.client.locale.LocaleBundleImpl;
 import org.junit.jupiter.api.*;
 
@@ -24,7 +25,7 @@ public class LocaleServiceTests {
     }
 
     @Test
-    public void testLocale() throws IOException{
+    public void testLocale() throws YamlException{
         new File("config.yml").deleteOnExit();
         Main.logger = new LoggerService();
         Main.config = new ConfigService(new File("config.yml"));

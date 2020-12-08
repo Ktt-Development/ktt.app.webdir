@@ -1,13 +1,13 @@
 package com.kttdevelopment.webdir.client.renderer;
 
-import com.amihaiemil.eoyaml.Yaml;
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.plugin.PluginRendererEntry;
 import com.kttdevelopment.webdir.client.utility.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,13 +21,13 @@ public final class YamlFrontMatter {
      private final String content;
 
      public YamlFrontMatter(final String raw){
-          Map<String,? super Object> map = null;
+          Map<String,Object> map = null;
           final Matcher matcher = pattern.matcher(raw);
           if(matcher.find()){
                this.content = matcher.group(4);
                try{
-                    map = YamlUtility.asMap(Yaml.createYamlInput(matcher.group(2)).readYamlMapping());
-               }catch(final IOException ignored){} // malformed
+                    map = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(matcher.group(2)).read());
+               }catch(final ClassCastException | YamlException ignored){} // malformed
           }else
                this.content = raw;
           frontMatter = map;
@@ -52,10 +52,10 @@ public final class YamlFrontMatter {
      //
 
      public static Map<String,? super Object> loadImports(final File source, final List<Path> checked){
-          try{
-               final Map<String,? super Object> config = YamlUtility.asMap(Yaml.createYamlInput(source).readYamlMapping());
+          try(final FileReader IN = new FileReader(source)){
+               final Map<String,Object> config = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(IN).read());
                return loadImports(source, config, checked);
-          }catch(final IOException e){
+          }catch(final ClassCastException | IOException e){
                Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.fail", source.getPath()) + LoggerService.getStackTraceAsString(e));
           }
           return new HashMap<>();
@@ -75,8 +75,8 @@ public final class YamlFrontMatter {
                final Object obj = config.get(PageRenderer.IMPORT);
                if(obj instanceof List)
                     ExceptionUtility.runIgnoreException(() -> imports.addAll(((List<String>) obj)));
-               else if(obj instanceof String)
-                    imports.add((String) obj);
+               else if(obj != null && !(obj instanceof Map))
+                    imports.add(obj.toString());
                Collections.reverse(imports);
           }
 
@@ -85,8 +85,8 @@ public final class YamlFrontMatter {
                final Object obj = config.get(PageRenderer.IMPORT_RELATIVE);
                if(obj instanceof List)
                     ExceptionUtility.runIgnoreException(() -> relativeImports.addAll(((List<String>) obj)));
-               else if(obj instanceof String)
-                    relativeImports.add((String) obj);
+               else if(obj != null && !(obj instanceof Map))
+                    relativeImports.add(obj.toString());
                Collections.reverse(relativeImports);
           }
 
@@ -126,9 +126,7 @@ public final class YamlFrontMatter {
 
           for(final Object obj : renderers){
                PluginRendererEntry renderer = null;
-               if(obj instanceof String)
-                    renderer = new PluginRendererEntry(null, obj.toString(), null);
-               else if(obj instanceof Map){
+               if(obj instanceof Map){
                     final Map<?,?> map = (Map<?,?>) obj;
                     try{
                          renderer = new PluginRendererEntry(
@@ -139,17 +137,16 @@ public final class YamlFrontMatter {
                     }catch(final NullPointerException e){
                          Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.front-matter.missing") + LoggerService.getStackTraceAsString(e));
                     }
+               }else if(obj != null && !(obj instanceof List)){
+                    renderer = new PluginRendererEntry(null, obj.toString(), null);
                }
 
                if(renderer == null) continue;
 
                for(final PluginRendererEntry entry : installed){
-                    if(
-                         (renderer.getPluginName() == null &&
-                         renderer.getRendererName().equals(entry.getRendererName())) ||
-                         (renderer.getPluginName() != null &&
-                         renderer.getPluginName().equals(entry.getPluginName()) &&
-                         renderer.getRendererName().equals(entry.getRendererName()))
+                    if( // add if renderer name matches AND plugin name only if plugin name is provided
+                       renderer.getRendererName().equals(entry.getRendererName()) &&
+                       (renderer.getPluginName() == null || renderer.getPluginName().equals(entry.getPluginName()))
                     ){
                          out.add(entry);
                          break;

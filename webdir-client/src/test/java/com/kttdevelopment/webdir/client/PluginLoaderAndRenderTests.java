@@ -78,8 +78,8 @@ public class PluginLoaderAndRenderTests {
             writeInput("render", "---\nrenderers:\n  - 1\nexchange_renderers:\n  - 2\n---");
             writeInput("v1"    , "---\nrenderers:\n  - plugin: ValidPlugin\n    renderer: 1\n---");
             writeInput("v2"    , "---\nrenderers:\n  - plugin: ValidDependent\n    renderer: 1\n---");
-            writeInput("ro3"   , "---\nrenderers:\n  - 2\n  -3\n---");
-            writeInput("ro2"   , "---\nrenderers:\n  - 3\n  -2\n---");
+            writeInput("ro3"   , "---\nrenderers:\n  - 2\n  - 3\n---");
+            writeInput("ro2"   , "---\nrenderers:\n  - 3\n  - 2\n---");
             writeInput("cp"    , "---\nrenderers:\n  - 3\n  - copy\n---");
             writeInput("ex"    , "---\nrenderers:\n  - ex\n---");
             writeInput("to"    , "---\nrenderers:\n  - times\n---");
@@ -151,15 +151,13 @@ public class PluginLoaderAndRenderTests {
                 new File(_defaults, "tf.yml"),
                 "default:\n" +
                 "  scope:\n" +
-                "    -\n" +
-                "      file: true\n" +
+                "    - file: true\n" +
                 "    - 'tf.html'\n" +
                 "renderers: 2",
                 new File(_defaults, "ff.yml"),
                 "default:\n" +
                 "  scope:\n" +
-                "    -\n" +
-                "      file: false\n" +
+                "    - file: false\n" +
                 "    - 'ff.html'\n" +
                 "renderers: 2"
             ).forEach((f, v) -> Assertions.assertDoesNotThrow(() -> Files.write(f.toPath(), v.getBytes())));
@@ -192,7 +190,7 @@ public class PluginLoaderAndRenderTests {
             Files.write(new File("config.yml").toPath(), "port: 8080\nserver: true".getBytes());
 
             // permissions dependencies
-            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - !perm2\n    options:\n      connection-limit: -1".getBytes());
+            Files.write(new File("permissions.yml").toPath(), "users:\n  127.0.0.1:\n    permissions:\n      - perm\n      - '!perm2'\n    options:\n      connection-limit: -1".getBytes());
         }
 
         Main.main(null);
@@ -210,13 +208,13 @@ public class PluginLoaderAndRenderTests {
             Assertions.assertEquals(plugin, plugin.getPlugin("ValidPlugin"));
             Assertions.assertEquals(new File(Main.getPluginLoader().getPluginsFolder(), "ValidPlugin").getAbsoluteFile(), plugin.getPluginFolder().getAbsoluteFile());
             Assertions.assertEquals("ValidPlugin", plugin.getPluginYml().get(PluginLoader.NAME));
-            Assertions.assertEquals(Main.getConfig().string(ConfigService.DEFAULT), plugin.getConfigYml().get(ConfigService.DEFAULT));
+            Assertions.assertEquals(Main.getConfig().get(ConfigService.DEFAULT).toString(), plugin.getConfigYml().get(ConfigService.DEFAULT));
 
             Assertions.assertEquals("ValidPlugin", plugin.getLogger().getName());
             Assertions.assertEquals(Main.getPluginLoader().getPluginsFolder().getAbsoluteFile(), plugin.getPluginsFolder().getAbsoluteFile());
-            Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.DEFAULT)), plugin.getDefaultsFolder());
-            Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.SOURCES)), plugin.getSourcesFolder());
-            Assertions.assertEquals(new File(Main.getConfig().string(ConfigService.OUTPUT)), plugin.getOutputFolder());
+            Assertions.assertEquals(new File(Main.getConfig().get(ConfigService.DEFAULT).toString()), plugin.getDefaultsFolder());
+            Assertions.assertEquals(new File(Main.getConfig().get(ConfigService.SOURCES).toString()), plugin.getSourcesFolder());
+            Assertions.assertEquals(new File(Main.getConfig().get(ConfigService.OUTPUT).toString()), plugin.getOutputFolder());
         }
 
         // test render

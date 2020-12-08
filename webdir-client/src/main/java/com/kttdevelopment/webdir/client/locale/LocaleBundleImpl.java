@@ -1,11 +1,11 @@
 package com.kttdevelopment.webdir.client.locale;
 
-import com.amihaiemil.eoyaml.*;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.webdir.api.LocaleBundle;
 import com.kttdevelopment.webdir.client.*;
 import com.kttdevelopment.webdir.client.utility.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -58,10 +58,10 @@ public final class LocaleBundleImpl implements LocaleBundle {
 
 
         for(final String resource : resources){
-            try{
-                localized.putAll(flattenYaml(Yaml.createYamlInput(classLoader.getResourceAsStream(resource + ".yml")).readYamlMapping()));
+            try(final InputStreamReader IN = new InputStreamReader(Objects.requireNonNull(classLoader.getResourceAsStream(resource + ".yml")))){
+                localized.putAll(flattenYaml(MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(IN).read())));
             }catch(final NullPointerException ignored){ // ignore missing
-            }catch(final IOException e){
+            }catch(final ClassCastException | IOException e){
                 Main.getLogger().addQueuedLoggerMessage(
                     "locale.name", "locale.bundle.malformed",
                     "Locale Service", "Failed to parse locale file %s (malformed yaml). %s",
@@ -82,29 +82,25 @@ public final class LocaleBundleImpl implements LocaleBundle {
         return locale;
     }
 
-    private Map<String,String> flattenYaml(final YamlMapping map){
+    private Map<String,String> flattenYaml(final Map<String,Object> map){
         return flattenYaml(map, "");
     }
 
-    private Map<String,String> flattenYaml(final YamlMapping map, final String head){
+    private Map<String,String> flattenYaml(final Map<String,Object> map, final String head){
         if(map == null)
             return new HashMap<>();
         final Map<String,String> OUT = new HashMap<>();
 
-        for(final YamlNode node : map.keys()){
-            final String key = YamlUtility.asString(node);
-            if(key != null){
-                final String next = head + (!head.isEmpty() ? '.' : "") + key;
-                final YamlNode value = map.value(node);
-                if(value.type() == Node.MAPPING)
-                    OUT.putAll(flattenYaml(value.asMapping(), next)); // if map dive further
-                else if(value.type() == Node.SCALAR){
-                    final String s = YamlUtility.asString(value);
-                    if(s != null)
-                        OUT.put(next, s); // if key then add to map
-                }
-            }
+        for(final Map.Entry<String,Object> entry : map.entrySet()){
+            final String key    = entry.getKey();
+            final Object value  = entry.getValue();
+            final String next   = head + (!head.isEmpty() ? '.' : "") + key;
+            if(value instanceof Map<?,?>) // if map then flatten
+                OUT.putAll(flattenYaml(MapUtility.asStringObjectMap((Map<?,?>) value), next));
+            else if(value != null) // if key then add to map
+                OUT.put(next, value.toString());
         }
+
         return OUT;
     }
 

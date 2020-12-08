@@ -1,6 +1,6 @@
 package com.kttdevelopment.webdir.client.renderer;
 
-import com.amihaiemil.eoyaml.*;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kttdevelopment.simplehttpserver.ContextUtil;
 import com.kttdevelopment.webdir.client.LoggerService;
 import com.kttdevelopment.webdir.client.Main;
@@ -36,8 +36,8 @@ public class DefaultFrontMatterLoader {
         this.oath = ExceptionUtility.requireNonExceptionElse(() -> output.getCanonicalFile().toPath(), output.getAbsoluteFile().toPath());
 
         for(final File file : Objects.requireNonNullElse(defaults.listFiles(File::isFile), new File[0])){
-            try{
-                final Map<String,? super Object> map = YamlUtility.asMap(Yaml.createYamlInput(file).readYamlMapping());
+            try(final FileReader IN = new FileReader(file)){
+                final Map<String,? super Object> map = MapUtility.asStringObjectMap((Map<?,?>) new YamlReader(IN).read());
                 final List<? super Object> scopes = new ArrayList<>();
                 if(map.containsKey(DEFAULT) && ((Map<?,?>) map.get(DEFAULT)).containsKey(SCOPE) && ((Map<?,?>) map.get(DEFAULT)).get(SCOPE) instanceof List){
                     final List<?> list = (List<?>) ((Map<?,?>) map.get(DEFAULT)).get(SCOPE);
@@ -54,7 +54,7 @@ public class DefaultFrontMatterLoader {
                     Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.scope", file.getPath()));
             }catch(final FileNotFoundException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).severe(Main.getLocale().getString("page-renderer.default.missing", file.getPath()) + LoggerService.getStackTraceAsString(e));
-            }catch(final IOException e){
+            }catch(final ClassCastException | IOException e){
                 Main.getLogger(Main.getLocale().getString("page-renderer.name")).warning(Main.getLocale().getString("page-renderer.default.read", file.getPath()) + LoggerService.getStackTraceAsString(e));
             }
         }
@@ -89,7 +89,7 @@ public class DefaultFrontMatterLoader {
         defaultConfigurations.forEach((scopes, config) -> {
             boolean canUse = false;
             for(final Object scope : scopes)
-                if(scope instanceof String)
+                if(scope instanceof String) // constructor asserts its either a String or boolean
                     switch(SymbolicStringMatcher.matches((String) scope, path)){
                         case MATCH:
                             canUse = true;
