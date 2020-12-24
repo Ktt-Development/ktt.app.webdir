@@ -4,11 +4,9 @@
     </a>
     <h3 align="center">WebDir</h3>
     <p align="center">
-        Extensible site generator and file explorer.
+        Extensible static and dynamic site generator.
         <br />
-        <a href="https://docs.kttdevelopment.com/webdir/">Docs</a>
-        •
-        <a href="https://wiki.kttdevelopment.com/webdir/">Wiki</a>
+        <a href="https://docs.kttdevelopment.com/webdir/">Documentation</a>
         •
         <a href="https://github.com/Ktt-Development/webdir/issues">Issues</a>
     </p>
