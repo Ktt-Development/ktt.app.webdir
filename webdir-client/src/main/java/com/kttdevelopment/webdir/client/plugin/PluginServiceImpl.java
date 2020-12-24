@@ -8,10 +8,11 @@ import com.kttdevelopment.webdir.client.utility.*;
 import java.io.File;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class PluginServiceImpl extends PluginService {
 
-    private static final String badFileChars = "[\\\\/:*?\"<>|]";
+    private static final Pattern badFileChars = Pattern.compile("[\\\\/:*?\"<>|]");
 
     private final String pluginName;
     private final Logger logger;
@@ -22,7 +23,7 @@ public class PluginServiceImpl extends PluginService {
     public PluginServiceImpl(final Map<String,Object> plugin, final File pluginFolder){
         this.pluginName     = plugin.get(PluginLoader.NAME).toString();
         this.logger         = Main.getLogger(pluginName);
-        this.pluginFolder   = new File(pluginFolder,pluginName.replaceAll(badFileChars, "_"));
+        this.pluginFolder   = new File(pluginFolder,badFileChars.matcher(pluginName).replaceAll("_"));
         this.yml            = MapUtility.asStringObjectMap(plugin);
         this.cfg            = MapUtility.deepCopy(MapUtility.asStringObjectMap(Main.getConfig()));
         this.sources        = new File(Main.getConfig().get(ConfigService.SOURCES).toString());
