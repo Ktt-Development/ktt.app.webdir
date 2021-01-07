@@ -1,8 +1,6 @@
 name: temp
-on:
-  push:
-    - main
-    
+on: [push]
+
 jobs:
   release:
     name: temp
