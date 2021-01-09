@@ -16,7 +16,7 @@ jpackage \
 --main-class com.kttdevelopment.webdir.client.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "Copyright $Vendor 2020" \
+--copyright "Copyright $Vendor 2021" \
 --win-console
 
 cp LICENSE $Dest/LICENSE
