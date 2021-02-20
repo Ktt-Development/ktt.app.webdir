@@ -19,6 +19,9 @@
 [![license](https://img.shields.io/github/license/Ktt-Development/webdir)](https://github.com/Ktt-Development/webdir/blob/main/LICENSE)
 ---
 
+
+<h3 align="center">This project is no longer being maintained.</h3>
+
 # Setup
 
 For people using WebDir, executables are available in releases. [![version](https://img.shields.io/github/v/release/Ktt-Development/webdir)](https://github.com/Ktt-Development/webdir/releases)
